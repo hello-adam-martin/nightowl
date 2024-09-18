@@ -36,12 +36,14 @@ const AddressForm: React.FC<AddressFormProps> = ({
     isServiceable, 
     setIsServiceable,
     isVerified,
-    setIsVerified
+    setIsVerified,
+    customerName,  // Add this line
+    setCustomerName  // Add this line
   } = useAddress();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (address.trim() !== '' && phoneNumber.trim() !== '') {
+    if (address.trim() !== '' && phoneNumber.trim() !== '' && customerName.trim() !== '') {  // Update this line
       setAddressEntered(true);
       setIsServiceable(null);
       await checkServiceability();
@@ -61,36 +63,47 @@ const AddressForm: React.FC<AddressFormProps> = ({
     setPhoneNumberEntered(e.target.value.trim() !== '')
   }
 
+  const handleCustomerNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {  // Add this function
+    setCustomerName(e.target.value);
+  }
+
   return (
     <Card className={`border-2 ${isVerified ? 'border-gray-300' : 'border-blue-500'} shadow-lg p-4 sm:p-6`}>
       <CardHeader>
         <CardTitle className={`text-xl sm:text-2xl font-bold ${isVerified ? 'text-gray-600' : 'text-blue-600'}`}>Get Started</CardTitle>
-        <CardDescription className="text-sm sm:text-base text-gray-700">NightOwl is a delivery-only service. Please enter your address and phone number to get started.</CardDescription>
+        <CardDescription className="text-sm sm:text-base text-gray-700">NightOwl is a delivery-only service. Please enter your name, address, and phone number to get started.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit}>
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="address">Address and Phone Number</Label>
-              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+              <Label htmlFor="customerDetails">Name, Address, and Phone Number</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
                 <Input
-                  id="address"
-                  placeholder="Enter your full address"
-                  value={address}
-                  onChange={handleAddressChange}
-                  className={`flex-grow ${isVerified ? 'bg-gray-100' : 'bg-blue-50'}`}
+                  id="customerName"
+                  placeholder="Full Name"
+                  value={customerName}
+                  onChange={handleCustomerNameChange}
+                  className={`${isVerified ? 'bg-gray-100' : 'bg-blue-50'}`}
                 />
                 <Input
                   type="tel"
                   placeholder="Phone Number"
                   value={phoneNumber}
                   onChange={handlePhoneNumberChange}
-                  className={`w-full sm:w-1/3 ${isVerified ? 'bg-gray-100' : 'bg-blue-50'}`}
+                  className={`${isVerified ? 'bg-gray-100' : 'bg-blue-50'}`}
+                />
+                <Input
+                  id="address"
+                  placeholder="Full Address"
+                  value={address}
+                  onChange={handleAddressChange}
+                  className={`sm:col-span-2 ${isVerified ? 'bg-gray-100' : 'bg-blue-50'}`}
                 />
                 <Button 
                   type="submit" 
-                  disabled={isVerified || address.trim() === '' || phoneNumber.trim() === ''}
-                  className={`w-full sm:w-auto ${isVerified ? 'bg-gray-300 text-gray-600' : 'bg-blue-500 text-white'}`}
+                  disabled={isVerified || address.trim() === '' || phoneNumber.trim() === '' || customerName.trim() === ''}
+                  className={`lg:col-span-4 ${isVerified ? 'bg-gray-300 text-gray-600' : 'bg-blue-500 text-white'}`}
                 >
                   {isVerified ? "Verified" : "Verify Details"}
                 </Button>

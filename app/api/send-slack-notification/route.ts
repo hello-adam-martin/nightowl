@@ -29,7 +29,7 @@ export async function POST(request: Request) {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `:person_raising_hand: Customer: ${customer}\n:phone: Phone: ${phone}\n:round_pushpin: Address: ${address}\n-----------------------`
+          text: `:bust_in_silhouette: Customer: ${customer}\n:phone: Phone: ${phone}\n:round_pushpin: Address: ${address}\n-----------------------`
         }
       },
       {

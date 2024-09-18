@@ -6,6 +6,7 @@ import { Elements, CardElement, useStripe, useElements } from '@stripe/react-str
 import { CartItem } from '@/types/cart'
 import { useCart } from '../context/CartContext'
 import { storeConfig } from '@/config/config'
+import { useAddress } from '../context/AddressContext'; // Add this import
 
 interface CartProps {
   isCartOpen: boolean;
@@ -123,6 +124,8 @@ export default function Cart({
 
   const [paymentSuccess, setPaymentSuccess] = useState(false)
 
+  const { customerName, address, phoneNumber } = useAddress(); // Add this line to get customer details
+
   const handlePaymentSuccess = async () => {
     setPaymentSuccess(true)
     clearCart() // Clear the cart upon successful payment
@@ -130,12 +133,12 @@ export default function Cart({
     // Generate a random order ID (you might want to replace this with a real order ID generation system)
     const orderId = Math.floor(100000 + Math.random() * 900000);
 
-    // Prepare order information
+    // Prepare order information with real customer data
     const orderInfo = {
       orderId: orderId,
-      customer: "John Doe", // Replace with actual customer name
-      phone: "+1 234-567-8900", // Replace with actual phone number
-      address: "123 Main St, Anytown, AN 12345", // Replace with actual address
+      customer: customerName, // Use real customer name
+      phone: phoneNumber, // Use real phone number
+      address: address, // Use real address
       items: cart.map(item => ({
         name: item.name,
         quantity: item.quantity,
@@ -143,7 +146,7 @@ export default function Cart({
       })),
       total: subtotal,
       deliveryCharge: deliveryCharge,
-      specialInstructions: "Please knock, don't ring doorbell." // Replace with actual special instructions if any
+      specialInstructions: "" // You might want to add a field for special instructions in your AddressForm if needed
     }
 
     // Send order information to Slack

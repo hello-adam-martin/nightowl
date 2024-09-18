@@ -13,6 +13,8 @@ type AddressContextType = {
   setIsAddressValid: (isAddressValid: boolean) => void;
   isVerified: boolean;
   setIsVerified: React.Dispatch<React.SetStateAction<boolean>>;
+  customerName: string;
+  setCustomerName: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const AddressContext = createContext<AddressContextType | undefined>(undefined);
@@ -23,6 +25,7 @@ export const AddressProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [isServiceable, setIsServiceable] = useState<boolean | null>(null);
   const [isAddressValid, setIsAddressValid] = useState(false);
   const [isVerified, setIsVerified] = useState<boolean>(false);
+  const [customerName, setCustomerName] = useState('');
 
   return (
     <AddressContext.Provider value={{ 
@@ -35,7 +38,9 @@ export const AddressProvider: React.FC<{ children: React.ReactNode }> = ({ child
       isAddressValid,
       setIsAddressValid,
       isVerified,
-      setIsVerified
+      setIsVerified,
+      customerName,
+      setCustomerName
     }}>
       {children}
     </AddressContext.Provider>
