@@ -1,11 +1,11 @@
 export const storeConfig = {
-  openingHour: 7, // 7 AM
+  openingHour: 18, // 7 AM
   closingHour: 22, // 10 PM
   deliveryCharge: 10, // $10 delivery charge
   serviceInfo: {
     deliveryTime: '30-45 minutes (usually quicker)',
     serviceArea: 'Akaroa Township',
-    minOrderValue: 0,
+    minOrderValue: 5,
   },
 };
 
@@ -13,7 +13,7 @@ export const storeConfig = {
 export const siteInfo = {
   name: 'NightOwl',
   shortDescription: 'NightOwl is a delivery only service.',
-  longDescription: 'NightOwl is your go-to late-night delivery service. We bring groceries, household essentials, and more right to your doorstep, ensuring you have what you need, when you need it. We\'re here to make your life easier with quick and reliable deliveries.',
+  longDescription: 'NightOwl is your convenient delivery service, offering groceries, household essentials, and more whenever you need them. With quick and reliable deliveries, we’re here to make sure you have what you need, when you need it.',
 };
 
 export const categories = [

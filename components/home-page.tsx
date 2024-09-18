@@ -14,6 +14,7 @@ import { storeConfig, products, siteInfo } from '../config/config'
 import Link from 'next/link'
 import { useAddress } from '../context/AddressContext';
 import { useCart } from '../context/CartContext'; // Make sure this import is present
+import ClosedStoreNotice from './ClosedStoreNotice'
 
 type CartItem = {
   id: string;  // Change this from number to string
@@ -40,6 +41,7 @@ export function HomePage() {
   const [phoneNumberEntered, setPhoneNumberEntered] = useState(false)
   const { isServiceable, setIsServiceable } = useAddress();
   const { cart: cartFromContext } = useCart(); // Use the cart from the CartContext
+  const [nextOpeningTime, setNextOpeningTime] = useState('')
 
   const checkServiceability = useCallback(async () => {
     setIsServiceable(null);
@@ -71,6 +73,7 @@ export function HomePage() {
         const minutesUntilOpen = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60))
         const secondsUntilOpen = Math.floor((timeDiff % (1000 * 60)) / 1000)
         setTimeUntilOpen(`${hoursUntilOpen}h ${minutesUntilOpen}m ${secondsUntilOpen}s`)
+        setNextOpeningTime(formatHour(storeConfig.openingHour))
       }
     }, 1000)
 
@@ -147,40 +150,42 @@ export function HomePage() {
               itemCount={getTotalItems}
             />
           </div>
-          {!isStoreOpen && timeUntilOpen && (
-            <p className="text-sm text-red-600 mt-1 text-center font-semibold">
-              Store is Currently Closed. Opens in {timeUntilOpen}
-            </p>
-          )}
         </div>
       </div>
 
       {/* Main content */}
       <div className="pt-20 p-8">
         <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-8">
-          {/* Welcome message */}
-          <h2 className="text-2xl font-bold text-center mb-4">Welcome</h2>
-          {/* Compact introduction */}
-          <p className="text-sm text-gray-600 mb-4 text-center">
-            {siteInfo.longDescription}
-          </p>
-          {/* Updated button text */}
-          <div className="text-center mb-6">
-            <Link href="/about">
-              <Button variant="outline" size="sm">
-                Learn More
-              </Button>
-            </Link>
+          {/* Welcome section */}
+          <div className="mb-8 text-center">
+            <h2 className="text-3xl font-bold mb-4">Welcome to NightOwl</h2>
+            <div className="max-w-2xl mx-auto">
+              <p className="text-gray-600 mb-6">
+                {siteInfo.longDescription}
+              </p>
+              <Link href="/about">
+                <Button variant="outline">
+                  Learn More
+                </Button>
+              </Link>
+            </div>
           </div>
 
-          <AddressForm
-            addressEntered={addressEntered}
-            setAddressEntered={setAddressEntered}
-            checkServiceability={checkServiceability}
-            setAddressChanged={setAddressChanged}
-            setPhoneNumberEntered={setPhoneNumberEntered}
-            serviceInfo={storeConfig.serviceInfo}
-          />
+          {isStoreOpen ? (
+            <AddressForm
+              addressEntered={addressEntered}
+              setAddressEntered={setAddressEntered}
+              checkServiceability={checkServiceability}
+              setAddressChanged={setAddressChanged}
+              setPhoneNumberEntered={setPhoneNumberEntered}
+              serviceInfo={storeConfig.serviceInfo}
+            />
+          ) : (
+            <ClosedStoreNotice
+              timeUntilOpen={timeUntilOpen}
+              nextOpeningTime={nextOpeningTime}
+            />
+          )}
 
           <div className="relative mt-12 mb-12">
             <h2 className="text-xl font-semibold mb-4 text-center">Products</h2>

@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import Link from 'next/link'
 import Image from 'next/image'
@@ -13,33 +12,6 @@ const formatHour = (hour: number) => {
 };
 
 export default function AboutPage() {
-  const [isStoreOpen, setIsStoreOpen] = useState(false)
-  const [timeUntilOpen, setTimeUntilOpen] = useState('')
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date()
-      const currentHour = now.getHours()
-      const isOpen = currentHour >= storeConfig.openingHour && currentHour < storeConfig.closingHour
-      setIsStoreOpen(isOpen)
-
-      if (!isOpen) {
-        const openingTime = new Date(now)
-        openingTime.setHours(storeConfig.openingHour, 0, 0, 0)
-        if (currentHour >= storeConfig.closingHour) {
-          openingTime.setDate(openingTime.getDate() + 1)
-        }
-        const timeDiff = openingTime.getTime() - now.getTime()
-        const hoursUntilOpen = Math.floor(timeDiff / (1000 * 60 * 60))
-        const minutesUntilOpen = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60))
-        const secondsUntilOpen = Math.floor((timeDiff % (1000 * 60)) / 1000)
-        setTimeUntilOpen(`${hoursUntilOpen}h ${minutesUntilOpen}m ${secondsUntilOpen}s`)
-      }
-    }, 1000)
-
-    return () => clearInterval(timer)
-  }, [])
-
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Fixed top bar */}
@@ -59,17 +31,17 @@ export default function AboutPage() {
               </Button>
             </Link>
           </div>
-          {!isStoreOpen && timeUntilOpen && (
-            <p className="text-sm text-red-600 mt-1 text-center font-semibold">
-              Store is Currently Closed. Opens in {timeUntilOpen}
-            </p>
-          )}
         </div>
       </div>
 
       {/* Main content */}
       <div className="pt-20 p-8">
         <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-8">
+          {/* Add logo here */}
+          <div className="flex justify-center mb-6">
+            <Image src="/NightOwl.png" alt="NightOwl Logo" width={120} height={120} />
+          </div>
+          
           <h2 className="text-2xl font-bold text-center mb-6">About NightOwl</h2>
           
           <section className="mb-8">
@@ -93,6 +65,22 @@ export default function AboutPage() {
             </p>
           </section>
 
+          <section className="mb-8">
+            <h3 className="text-xl font-semibold mb-4">Our Service Area</h3>
+            <p className="text-gray-700">
+              We currently serve [list of neighborhoods or cities]. Check our delivery page to see if we deliver to your area!
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h3 className="text-xl font-semibold mb-4">Contact Us</h3>
+            <p className="text-gray-700">
+              Have questions or feedback? We&apos;d love to hear from you!<br />
+              Email: support@nightowl.com<br />
+              Phone: (555) 123-4567
+            </p>
+          </section>
+
           <section>
             <h3 className="text-xl font-semibold mb-4">Frequently Asked Questions</h3>
             <div className="space-y-4">
@@ -107,6 +95,10 @@ export default function AboutPage() {
               <div>
                 <h4 className="font-medium">Q: Do you have a minimum order amount?</h4>
                 <p className="text-gray-700">A: Yes, our minimum order amount is ${storeConfig.serviceInfo.minOrderValue.toFixed(2)}.</p>
+              </div>
+              <div>
+                <h4 className="font-medium">Q: What payment methods do you accept?</h4>
+                <p className="text-gray-700">A: We accept all major credit cards, debit cards, and mobile payment options.</p>
               </div>
             </div>
           </section>
