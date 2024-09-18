@@ -21,7 +21,7 @@ interface ProductGridProps {
   isStoreOpen: boolean;
 }
 
-export default function ProductGrid({
+export default React.memo(function ProductGrid({
   products,
   isStoreOpen,
 }: ProductGridProps) {
@@ -68,6 +68,7 @@ export default function ProductGrid({
                 src={product.image ? `/product-images/${product.image}` : "/images/placeholder.png"}
                 alt={product.name} 
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="rounded-md" 
                 style={{ objectFit: 'cover' }}
               />
@@ -97,21 +98,16 @@ export default function ProductGrid({
                   </div>
                 ) : (
                   <Button onClick={() => {
-                    console.log('Adding product to cart:', product);
                     addToCart({ id: product.id.toString(), name: product.name, price: product.price, quantity: 1 });
                   }}>
                     Add to Cart
                   </Button>
                 )}
               </div>
-            ) : (
-              <p className="text-red-500 w-full text-right">
-                {!isStoreOpen ? "Store is closed" : !isVerified ? "Please enter a valid address" : "We don't service this area"}
-              </p>
-            )}
+            ) : null}
           </CardFooter>
         </Card>
       ))}
     </div>
   )
-}
+})

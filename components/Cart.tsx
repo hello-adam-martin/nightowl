@@ -114,14 +114,10 @@ export default function Cart({
   }
 
   const handleUpdateQuantity = (id: string, increment: boolean) => {
-    console.log(`handleUpdateQuantity called with id: ${id}, increment: ${increment}`);
     const item = cart.find(item => item.id === id);
     if (item) {
       const currentQuantity = item.quantity;
-      console.log(`Current quantity for item ${id}: ${currentQuantity}`);
-      
       const newQuantity = increment ? currentQuantity + 1 : Math.max(1, currentQuantity - 1);
-      console.log(`New quantity will be ${newQuantity}`);
       
       updateQuantity(id, newQuantity);
     } else {

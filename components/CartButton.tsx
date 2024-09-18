@@ -9,7 +9,6 @@ interface CartButtonProps {
 }
 
 const CartButton: React.FC<CartButtonProps> = React.memo(({ isCartOpen, setIsCartOpen, itemCount }) => {
-  console.log('CartButton received itemCount:', itemCount); // Add this line
   
   return (
     <Button onClick={() => setIsCartOpen(!isCartOpen)} variant="outline" className="relative">

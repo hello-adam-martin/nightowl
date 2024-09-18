@@ -100,18 +100,9 @@ export function HomePage() {
 
   const getTotalItems = useMemo(() => {
     const total = cartFromContext.reduce((total, item) => total + item.quantity, 0);
-    console.log('Total items in cart:', total);
     return total;
   }, [cartFromContext]); // This will recalculate whenever the cart changes
 
-  useEffect(() => {
-    console.log('Cart updated:', cart)
-  }, [cart])
-
-  useEffect(() => {
-    console.log('New cart item count:', getTotalItems)
-    console.log('Cart:', cart)
-  }, [cart, getTotalItems])
 
   const getTotalPrice = () => {
     return cart.reduce((total, item) => total + item.price * item.quantity, 0)
