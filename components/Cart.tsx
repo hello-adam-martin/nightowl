@@ -123,9 +123,46 @@ export default function Cart({
 
   const [paymentSuccess, setPaymentSuccess] = useState(false)
 
-  const handlePaymentSuccess = () => {
+  const handlePaymentSuccess = async () => {
     setPaymentSuccess(true)
     clearCart() // Clear the cart upon successful payment
+
+    // Generate a random order ID (you might want to replace this with a real order ID generation system)
+    const orderId = Math.floor(100000 + Math.random() * 900000);
+
+    // Prepare order information
+    const orderInfo = {
+      orderId: orderId,
+      customer: "John Doe", // Replace with actual customer name
+      phone: "+1 234-567-8900", // Replace with actual phone number
+      address: "123 Main St, Anytown, AN 12345", // Replace with actual address
+      items: cart.map(item => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price
+      })),
+      total: subtotal,
+      deliveryCharge: deliveryCharge,
+      specialInstructions: "Please knock, don't ring doorbell." // Replace with actual special instructions if any
+    }
+
+    // Send order information to Slack
+    try {
+      const response = await fetch('/api/send-slack-notification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderInfo),
+      })
+
+      if (!response.ok) {
+        console.error('Failed to send Slack notification')
+      }
+    } catch (error) {
+      console.error('Error sending Slack notification:', error)
+    }
+
     // Here you would typically update order status, send confirmation, etc.
   }
 

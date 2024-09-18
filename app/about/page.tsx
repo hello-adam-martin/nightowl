@@ -47,7 +47,7 @@ export default function AboutPage() {
           <section className="mb-8">
             <h3 className="text-xl font-semibold mb-4">Our Story</h3>
             <p className="text-gray-700">
-              NightOwl was founded with a simple mission: to provide late-night convenience to our community. We understand that life doesn&apos;t stop when the sun goes down, and neither should your access to essential items.
+            NightOwl was founded with a simple mission: to provide convenient service to our community. We understand that life doesn’t stop at certain hours, and neither should your access to essential items.
             </p>
           </section>
 

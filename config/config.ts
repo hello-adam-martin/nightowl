@@ -1,6 +1,6 @@
 export const storeConfig = {
   openingHour: 18, // 7 AM
-  closingHour: 22, // 10 PM
+  closingHour: 23, // 10 PM
   deliveryCharge: 10, // $10 delivery charge
   serviceInfo: {
     deliveryTime: '30-45 minutes (usually quicker)',
