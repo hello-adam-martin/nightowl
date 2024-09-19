@@ -11,7 +11,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 export async function POST(req: Request) {
   try {
-    const { amount, customerInfo } = await req.json();
+    const { amount, customerInfo, cartItems } = await req.json();
 
     if (!amount || typeof amount !== 'number') {
       return NextResponse.json({ error: 'Invalid amount' }, { status: 400 });
@@ -57,6 +57,11 @@ export async function POST(req: Request) {
       });
     }
 
+    // Format cart items for Stripe metadata
+    const formattedItems = cartItems.map((item: { name: string; quantity: number; price: number }, index: number) => 
+      `${index + 1}. ${item.name} x${item.quantity} ($${(item.price * item.quantity).toFixed(2)})`
+    ).join(', ');
+
     // Create a PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
@@ -72,6 +77,7 @@ export async function POST(req: Request) {
         customerName: customerInfo.name,
         customerPhone: customerInfo.phone,
         customerAddress: customerInfo.address,
+        orderItems: formattedItems, // Add this line to include order items
       },
     });
 
