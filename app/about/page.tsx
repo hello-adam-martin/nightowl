@@ -1,9 +1,11 @@
 'use client';
 
-import { Button } from "@/components/ui/button"
-import Link from 'next/link'
+import { useState } from 'react'
+import TopBar from '@/components/TopBar'
 import Image from 'next/image'
 import { storeConfig } from '../../config/config'
+import Cart from '@/components/Cart'
+import { useCart } from '@/context/CartContext'
 
 const formatHour = (hour: number) => {
   const period = hour >= 12 ? 'PM' : 'AM';
@@ -12,27 +14,20 @@ const formatHour = (hour: number) => {
 };
 
 export default function AboutPage() {
+  const [isCartOpen, setIsCartOpen] = useState(false)
+  const { cart, updateQuantity, removeFromCart } = useCart()
+
+  const getTotalPrice = () => {
+    return cart.reduce((total, item) => total + item.price * item.quantity, 0)
+  }
+
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Fixed top bar */}
-      <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
-        <div className="max-w-7xl mx-auto px-4 py-2">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <Image src="/NightOwl.png" alt="NightOwl Logo" width={30} height={30} />
-              <h1 className="text-xl font-bold ml-2">NightOwl</h1>
-            </div>
-            <p className="text-sm text-gray-600">
-              Open {formatHour(storeConfig.openingHour)} - {formatHour(storeConfig.closingHour)}
-            </p>
-            <Link href="/">
-              <Button variant="outline" size="sm">
-                Back to Home
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
+      <TopBar 
+        currentPage="about" 
+        isCartOpen={isCartOpen} 
+        setIsCartOpen={setIsCartOpen}
+      />
 
       {/* Main content */}
       <div className="pt-20 p-8">
@@ -104,6 +99,17 @@ export default function AboutPage() {
           </section>
         </div>
       </div>
+
+      <Cart
+        isCartOpen={isCartOpen}
+        setIsCartOpen={setIsCartOpen}
+        cart={cart}
+        isAddressValid={true} // You might want to handle this differently for the about page
+        updateQuantity={(id, increment) => updateQuantity(id, (cart.find(item => item.id === id)?.quantity ?? 0) + (increment ? 1 : -1))}
+        removeFromCart={removeFromCart}
+        getTotalPrice={getTotalPrice}
+        deliveryCharge={storeConfig.deliveryCharge}
+      />
     </div>
   )
 }

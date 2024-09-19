@@ -8,20 +8,12 @@ import { Input } from "@/components/ui/input"
 import AddressForm from './AddressForm'
 import ProductGrid from './ProductGrid'
 import Cart from './Cart'
-import CartButton from './CartButton'
-import Image from 'next/image'
 import { storeConfig, products, siteInfo } from '../config/config'
 import Link from 'next/link'
 import { useAddress } from '../context/AddressContext';
 import { useCart } from '../context/CartContext'; // Make sure this import is present
 import ClosedStoreNotice from './ClosedStoreNotice'
-
-type CartItem = {
-  id: string;  // Change this from number to string
-  name: string;
-  price: number;
-  quantity: number;
-}
+import TopBar from './TopBar'
 
 const formatHour = (hour: number) => {
   const period = hour >= 12 ? 'PM' : 'AM';
@@ -33,14 +25,13 @@ export function HomePage() {
   const [isStoreOpen, setIsStoreOpen] = useState(false)
   const [timeUntilOpen, setTimeUntilOpen] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
-  const [cart, setCart] = useState<CartItem[]>([])
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [addressEntered, setAddressEntered] = useState(false)
   const [addressChanged, setAddressChanged] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [phoneNumberEntered, setPhoneNumberEntered] = useState(false)
   const { isServiceable, setIsServiceable } = useAddress();
-  const { cart: cartFromContext } = useCart(); // Use the cart from the CartContext
+  const { cart: cartFromContext, updateCart } = useCart(); // Get updateCart function
   const [nextOpeningTime, setNextOpeningTime] = useState('')
 
   const checkServiceability = useCallback(async () => {
@@ -81,34 +72,26 @@ export function HomePage() {
   }, [])
 
   const removeFromCart = (id: string) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== id))
+    updateCart(cartFromContext.filter(item => item.id !== id));
   }
 
   const updateQuantity = (id: string, newQuantity: number) => {
     if (newQuantity < 1) {
-      removeFromCart(id)
+      removeFromCart(id);
     } else {
-      setCart(prevCart =>
-        prevCart.map(item =>
-          item.id === id ? { ...item, quantity: newQuantity } : item
-        )
-      )
+      updateCart(cartFromContext.map(item =>
+        item.id === id ? { ...item, quantity: newQuantity } : item
+      ));
     }
   }
 
   const getItemQuantity = (id: string) => {
-    const item = cart.find(item => item.id === id)
-    return item ? item.quantity : 0
+    const item = cartFromContext.find(item => item.id === id);
+    return item ? item.quantity : 0;
   }
 
-  const getTotalItems = useMemo(() => {
-    const total = cartFromContext.reduce((total, item) => total + item.quantity, 0);
-    return total;
-  }, [cartFromContext]); // This will recalculate whenever the cart changes
-
-
   const getTotalPrice = () => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0)
+    return cartFromContext.reduce((total, item) => total + item.price * item.quantity, 0);
   }
 
   const filteredProducts = products
@@ -130,28 +113,13 @@ export function HomePage() {
     setSelectedCategory('all')
   }
 
-
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Fixed top bar */}
-      <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
-        <div className="max-w-7xl mx-auto px-4 py-2">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <Image src="/NightOwl.png" alt="NightOwl Logo" width={30} height={30} />
-              <h1 className="text-xl font-bold ml-2">NightOwl</h1>
-            </div>
-            <p className="text-sm text-gray-600">
-              Open {formatHour(storeConfig.openingHour)} - {formatHour(storeConfig.closingHour)}
-            </p>
-            <CartButton 
-              isCartOpen={isCartOpen} 
-              setIsCartOpen={setIsCartOpen} 
-              itemCount={getTotalItems}
-            />
-          </div>
-        </div>
-      </div>
+      <TopBar 
+        currentPage="home" 
+        isCartOpen={isCartOpen} 
+        setIsCartOpen={setIsCartOpen}
+      />
 
       {/* Main content */}
       <div className="pt-20 p-8">
@@ -242,7 +210,7 @@ export function HomePage() {
             <Cart
               isCartOpen={isCartOpen}
               setIsCartOpen={setIsCartOpen}
-              cart={cart}
+              cart={cartFromContext}
               isAddressValid={isAddressValid}
               updateQuantity={(id: string, increment: boolean) => 
                 updateQuantity(id, getItemQuantity(id) + (increment ? 1 : -1))
