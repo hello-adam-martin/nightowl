@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import TopBar from '@/components/TopBar'
 import Image from 'next/image'
-import { storeConfig } from '../../config/config'
+import { storeConfig } from '@/config/config'
 import Cart from '@/components/Cart'
 import { useCart } from '@/context/CartContext'
 import { siteInfo } from '@/config/config';
@@ -18,10 +18,37 @@ const formatHour = (time: string) => {
 export default function AboutPage() {
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [currentDay, setCurrentDay] = useState('');
+  const [isStoreOpen, setIsStoreOpen] = useState(false)
 
   useEffect(() => {
     const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     setCurrentDay(days[new Date().getDay()]);
+  }, []);
+
+  useEffect(() => {
+    const checkStoreStatus = () => {
+      const now = new Date()
+      const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase() as keyof typeof storeConfig.hours
+      const currentHour = now.getHours()
+      const currentMinute = now.getMinutes()
+      const { open, close } = storeConfig.hours[currentDay]
+      
+      const [openHour, openMinute] = open.split(':').map(Number)
+      const [closeHour, closeMinute] = close.split(':').map(Number)
+      
+      const isOpen = (openHour < closeHour || (openHour === closeHour && openMinute < closeMinute)) 
+        ? (currentHour > openHour || (currentHour === openHour && currentMinute >= openMinute)) &&
+          (currentHour < closeHour || (currentHour === closeHour && currentMinute < closeMinute))
+        : (currentHour > openHour || (currentHour === openHour && currentMinute >= openMinute)) ||
+          (currentHour < closeHour || (currentHour === closeHour && currentMinute < closeMinute))
+      
+      setIsStoreOpen(isOpen)
+    }
+
+    checkStoreStatus() // Check immediately on mount
+    const timer = setInterval(checkStoreStatus, 60000) // Update every minute
+
+    return () => clearInterval(timer)
   }, []);
 
   const { cart, updateQuantity, removeFromCart } = useCart()
@@ -118,6 +145,7 @@ export default function AboutPage() {
       <Cart
         isCartOpen={isCartOpen}
         setIsCartOpen={setIsCartOpen}
+        isStoreOpen={isStoreOpen}
         cart={cart}
         isAddressValid={true} 
         updateQuantity={(id, increment) => updateQuantity(id, (cart.find(item => item.id === id)?.quantity ?? 0) + (increment ? 1 : -1))}

@@ -15,16 +15,10 @@ import { useCart } from '../context/CartContext'; // Make sure this import is pr
 import ClosedStoreNotice from './ClosedStoreNotice'
 import TopBar from './TopBar'
 
-const formatHour = (time: string) => {
-  const [hours, minutes] = time.split(':').map(Number);
-  const period = hours >= 12 ? 'PM' : 'AM';
-  const displayHours = hours % 12 || 12;
-  return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
-};
-
 export function HomePage() {
   const [isStoreOpen, setIsStoreOpen] = useState(false)
-  const [timeUntilOpen, setTimeUntilOpen] = useState('')
+  // Remove this line:
+  // const [timeUntilOpen, setTimeUntilOpen] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [addressEntered, setAddressEntered] = useState(false)
@@ -33,7 +27,6 @@ export function HomePage() {
   const [phoneNumberEntered, setPhoneNumberEntered] = useState(false)
   const { isServiceable, setIsServiceable } = useAddress();
   const { cart: cartFromContext, updateCart } = useCart(); // Get updateCart function
-  const [nextOpeningTime, setNextOpeningTime] = useState('')
   const [isLoading, setIsLoading] = useState(true) // Add this state
   const [currentDay, setCurrentDay] = useState<keyof typeof storeConfig.hours>('monday')
 
@@ -74,12 +67,6 @@ export function HomePage() {
         if (currentHour > closeHour || (currentHour === closeHour && currentMinute >= closeMinute)) {
           openingTime.setDate(openingTime.getDate() + 1)
         }
-        const timeDiff = openingTime.getTime() - now.getTime()
-        const hoursUntilOpen = Math.floor(timeDiff / (1000 * 60 * 60))
-        const minutesUntilOpen = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60))
-        const secondsUntilOpen = Math.floor((timeDiff % (1000 * 60)) / 1000)
-        setTimeUntilOpen(`${hoursUntilOpen}h ${minutesUntilOpen}m ${secondsUntilOpen}s`)
-        setNextOpeningTime(formatHour(open))
       }
 
       setIsLoading(false)
