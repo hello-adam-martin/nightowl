@@ -3,14 +3,10 @@ import { Clock } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { storeConfig } from '@/config/config'
 
-type ClosedStoreNoticeProps = {
-  timeUntilOpen: string;
-  nextOpeningTime: string;
-}
-
-const ClosedStoreNotice: React.FC<ClosedStoreNoticeProps> = ({ timeUntilOpen, nextOpeningTime }) => {
+const ClosedStoreNotice: React.FC = () => {
   const [nextOpeningDay, setNextOpeningDay] = useState('')
   const [nextOpeningTimeFormatted, setNextOpeningTimeFormatted] = useState('')
+  const [timeUntilOpen, setTimeUntilOpen] = useState('')
 
   const formatTime = (time: string): string => {
     const [hours, minutes] = time.split(':').map(Number);
@@ -19,49 +15,70 @@ const ClosedStoreNotice: React.FC<ClosedStoreNoticeProps> = ({ timeUntilOpen, ne
     return `${formattedHours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
   };
 
+  const calculateTimeUntilOpen = (openingTime: Date) => {
+    const diff = openingTime.getTime() - new Date().getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    return `${hours}h ${minutes}m ${seconds}s`;
+  };
+
   useEffect(() => {
-    const currentDate = new Date();
-    const currentDay = currentDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-    const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    
-    let daysToAdd = 0;
-    let nextDay = currentDay;
-    let foundNextOpenDay = false;
-
-    while (!foundNextOpenDay && daysToAdd < 7) {
-      const { open, close } = storeConfig.hours[nextDay];
-
-      const [openHour, openMinute] = open.split(':').map(Number);
-      const [closeHour, closeMinute] = close.split(':').map(Number);
+    const updateStoreStatus = () => {
+      const currentTime = new Date();
+      const currentDay = currentTime.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+      const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
       
-      const openingTime = new Date(currentDate);
-      openingTime.setDate(currentDate.getDate() + daysToAdd);
-      openingTime.setHours(openHour, openMinute, 0, 0);
+      let daysToAdd = 0;
+      let nextDay = currentDay;
+      let foundNextOpenDay = false;
+      let nextOpeningTime: Date | null = null;
 
-      const closingTime = new Date(currentDate);
-      closingTime.setDate(currentDate.getDate() + daysToAdd);
-      closingTime.setHours(closeHour, closeMinute, 0, 0);
+      while (!foundNextOpenDay && daysToAdd < 7) {
+        const { open, close } = storeConfig.hours[nextDay];
 
-      if (closeHour < openHour) {
-        closingTime.setDate(closingTime.getDate() + 1);
+        const [openHour, openMinute] = open.split(':').map(Number);
+        const [closeHour, closeMinute] = close.split(':').map(Number);
+        
+        const openingTime = new Date(currentTime);
+        openingTime.setDate(currentTime.getDate() + daysToAdd);
+        openingTime.setHours(openHour, openMinute, 0, 0);
+
+        const closingTime = new Date(currentTime);
+        closingTime.setDate(currentTime.getDate() + daysToAdd);
+        closingTime.setHours(closeHour, closeMinute, 0, 0);
+
+        if (closeHour < openHour) {
+          closingTime.setDate(closingTime.getDate() + 1);
+        }
+
+        if (currentTime >= openingTime && currentTime < closingTime) {
+          // Store is currently open
+          foundNextOpenDay = true;
+          setNextOpeningDay('now');
+          setNextOpeningTimeFormatted('We are currently open');
+        } else if (currentTime < openingTime) {
+          // Store will open later today or in the future
+          foundNextOpenDay = true;
+          setNextOpeningDay(daysToAdd === 0 ? 'today' : daysToAdd === 1 ? 'tomorrow' : nextDay);
+          setNextOpeningTimeFormatted(formatTime(open));
+          nextOpeningTime = openingTime;
+        } else {
+          // Move to the next day
+          daysToAdd++;
+          nextDay = daysOfWeek[(daysOfWeek.indexOf(nextDay) + 1) % 7];
+        }
       }
 
-      if (currentDate >= openingTime && currentDate < closingTime) {
-        // Store is currently open
-        foundNextOpenDay = true;
-        setNextOpeningDay('now');
-        setNextOpeningTimeFormatted('We are currently open');
-      } else if (currentDate < openingTime) {
-        // Store will open later today or in the future
-        foundNextOpenDay = true;
-        setNextOpeningDay(daysToAdd === 0 ? 'today' : daysToAdd === 1 ? 'tomorrow' : nextDay);
-        setNextOpeningTimeFormatted(formatTime(open));
-      } else {
-        // Move to the next day
-        daysToAdd++;
-        nextDay = daysOfWeek[(daysOfWeek.indexOf(nextDay) + 1) % 7];
+      if (nextOpeningTime) {
+        setTimeUntilOpen(calculateTimeUntilOpen(nextOpeningTime));
       }
-    }
+    };
+
+    updateStoreStatus();
+    const intervalId = setInterval(updateStoreStatus, 1000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   return (

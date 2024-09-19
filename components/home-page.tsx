@@ -172,10 +172,7 @@ export function HomePage() {
               serviceInfo={storeConfig.serviceInfo}
             />
           ) : (
-            <ClosedStoreNotice
-              timeUntilOpen={timeUntilOpen}
-              nextOpeningTime={nextOpeningTime}
-            />
+            <ClosedStoreNotice />
           )}
 
           <div className="relative mt-12 mb-12">
