@@ -120,6 +120,9 @@ const InvalidAddressMessage = () => (
   </div>
 )
 
+// Add this type definition at the top of your file
+type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
+
 export default function Cart({
   isCartOpen,
   setIsCartOpen,
@@ -225,7 +228,7 @@ export default function Cart({
         let nextDay = currentDay
         
         while (daysToAdd < 7) {
-          const { open } = storeConfig.hours[nextDay]
+          const { open } = storeConfig.hours[nextDay as DayOfWeek];
           const [openHour, openMinute] = open.split(':').map(Number)
           
           const nextOpenTime = new Date(now)
@@ -380,7 +383,7 @@ export default function Cart({
                     <AlertCircle className="flex-shrink-0 mr-2 mt-1" size={20} />
                     <div>
                       <p className="font-bold">Store is currently closed</p>
-                      <p>We're sorry, but we are not accepting orders at this time.</p>
+                      <p>We&apos;re sorry, but we are not accepting orders at this time.</p>
                       <div className="flex items-center mt-2 text-yellow-600">
                         <Clock className="mr-2 h-5 w-5" />
                         <span>Opens in: {timeUntilOpen}</span>

@@ -35,7 +35,7 @@ const ClosedStoreNotice: React.FC = () => {
       let nextOpeningTime: Date | null = null;
 
       while (!foundNextOpenDay && daysToAdd < 7) {
-        const { open, close } = storeConfig.hours[nextDay];
+        const { open, close } = storeConfig.hours[nextDay as keyof typeof storeConfig.hours];
 
         const [openHour, openMinute] = open.split(':').map(Number);
         const [closeHour, closeMinute] = close.split(':').map(Number);
