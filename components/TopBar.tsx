@@ -38,10 +38,6 @@ export default function TopBar({ currentPage, isCartOpen, setIsCartOpen }: TopBa
   const currentDay = currentDayFull as keyof typeof storeConfig.hours;
   const todayHours = storeConfig.hours[currentDay];
 
-  console.log('Current day:', currentDayFull);
-  console.log('Store hours:', storeConfig.hours);
-  console.log('Today\'s hours:', todayHours);
-
   return (
     <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
       <div className="max-w-7xl mx-auto px-4 py-2">
