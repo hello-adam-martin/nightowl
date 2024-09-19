@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react'
-import { X, AlertCircle, ShoppingCart, Trash2 } from 'lucide-react'
+import { X, AlertCircle, ShoppingCart, Trash2, CheckCircle } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
@@ -138,10 +138,14 @@ export default function Cart({
   const isMinOrderMet = subtotal >= storeConfig.serviceInfo.minOrderValue;
 
   const [paymentSuccess, setPaymentSuccess] = useState(false)
+  const [expectedDeliveryTime, setExpectedDeliveryTime] = useState<string | null>(null)
 
-  const { customerName, address, phoneNumber, isServiceable } = useAddress(); // Add this line to get customer details
+  const { customerName, address, phoneNumber, isServiceable } = useAddress();
+  const firstName = customerName.split(' ')[0];
 
   const handlePaymentSuccess = async () => {
+    const expectedDeliveryTime = calculateExpectedDeliveryTime();
+    setExpectedDeliveryTime(expectedDeliveryTime);
     setPaymentSuccess(true)
     clearCart() // Clear the cart upon successful payment
 
@@ -197,6 +201,14 @@ export default function Cart({
     }
   };
 
+  const calculateExpectedDeliveryTime = () => {
+    const now = new Date();
+    const [minTime, maxTime] = storeConfig.serviceInfo.deliveryTime.split('-').map(t => parseInt(t));
+    const averageTime = (minTime + maxTime) / 2;
+    const deliveryTime = new Date(now.getTime() + averageTime * 60000);
+    return deliveryTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+  };
+
   return (
     <>
       {/* Dark overlay */}
@@ -214,7 +226,7 @@ export default function Cart({
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold flex items-center">
               <ShoppingCart className="mr-2" size={24} />
-              Your Cart ({totalItems} items)
+              {totalItems > 0 ? `Your Cart (${totalItems} items)` : 'Your Cart'}
             </h2>
             <button onClick={() => setIsCartOpen(false)} className="text-gray-500 hover:text-gray-700">
               <X size={24} />
@@ -226,17 +238,29 @@ export default function Cart({
 
           {paymentSuccess ? (
             <div className="flex-grow flex items-center justify-center">
-              <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded w-full">
-                <p className="font-bold">Payment successful!</p>
-                <p>Thank you for your order.</p>
+              <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md border border-gray-200">
+                <div className="flex items-center justify-center mb-6">
+                  <CheckCircle className="text-green-500 w-16 h-16" />
+                </div>
+                <h3 className="font-bold text-2xl mb-4 text-center">Order Received!</h3>
+                <div className="space-y-4">
+                  <p className="text-center">Thank you for your order, {firstName}.</p>
+                  <p className="text-center font-semibold">
+                    We expect to deliver to you by:<br />
+                    <span className="text-xl">{expectedDeliveryTime}</span>
+                  </p>
+                  <p className="text-center text-sm text-gray-500 mt-2">
+                    We&apos;ll do our best to meet this time, but please note that actual delivery time may vary due to unforeseen circumstances.
+                  </p>
+                </div>
                 <Button 
-                  className="mt-4 w-full"
+                  className="mt-8 w-full"
                   onClick={() => {
                     setPaymentSuccess(false)
                     setIsCartOpen(false)
                   }}
                 >
-                  Close
+                  Close and Continue Shopping
                 </Button>
               </div>
             </div>
