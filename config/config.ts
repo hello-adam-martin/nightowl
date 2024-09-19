@@ -2,7 +2,7 @@ export const storeConfig = {
   serviceInfo: {
     deliveryTime: '30-45 minutes (usually quicker)',
     serviceArea: 'Akaroa Township',
-    minOrderValue: 5,
+    minOrderValue: 10,
     deliveryCharge: 10
   },
   hours: {
@@ -20,7 +20,14 @@ export const storeConfig = {
 export const siteInfo = {
   name: 'NightOwl',
   shortDescription: 'NightOwl is a delivery only service.',
-  longDescription: 'NightOwl is your convenient delivery service, offering groceries, household essentials, and more whenever you need them. With quick and reliable deliveries, we’re here to make sure you have what you need, when you need it.',
+  longDescription: 'NightOwl is your convenient delivery service, offering groceries, household essentials, and more whenever you need them. With quick and reliable deliveries, we are here to make sure you have what you need, when you need it.',
+  supportEmail: 'support@nightowl.com',
+  supportPhone: '(0800) 123-4567',
+  socialMedia: {
+    facebook: 'https://facebook.com/nightowl',
+    twitter: 'https://twitter.com/nightowl',
+    instagram: 'https://instagram.com/nightowl',
+  },
 };
 
 export const categories = [

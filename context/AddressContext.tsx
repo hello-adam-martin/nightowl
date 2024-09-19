@@ -1,42 +1,37 @@
 "use client";
 
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-type AddressContextType = {
+interface AddressContextType {
   address: string;
   setAddress: (address: string) => void;
   phoneNumber: string;
   setPhoneNumber: (phoneNumber: string) => void;
   isServiceable: boolean | null;
   setIsServiceable: (isServiceable: boolean | null) => void;
-  isAddressValid: boolean;
-  setIsAddressValid: (isAddressValid: boolean) => void;
   isVerified: boolean;
-  setIsVerified: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsVerified: (isVerified: boolean) => void;
   customerName: string;
-  setCustomerName: React.Dispatch<React.SetStateAction<string>>;
-};
+  setCustomerName: (customerName: string) => void;
+}
 
-export const AddressContext = createContext<AddressContextType | undefined>(undefined);
+const AddressContext = createContext<AddressContextType | undefined>(undefined);
 
-export const AddressProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AddressProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [address, setAddress] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isServiceable, setIsServiceable] = useState<boolean | null>(null);
-  const [isAddressValid, setIsAddressValid] = useState(false);
-  const [isVerified, setIsVerified] = useState<boolean>(false);
+  const [isVerified, setIsVerified] = useState(false);
   const [customerName, setCustomerName] = useState('');
 
   return (
-    <AddressContext.Provider value={{ 
-      address, 
-      setAddress, 
-      phoneNumber, 
-      setPhoneNumber, 
-      isServiceable, 
+    <AddressContext.Provider value={{
+      address,
+      setAddress,
+      phoneNumber,
+      setPhoneNumber,
+      isServiceable,
       setIsServiceable,
-      isAddressValid,
-      setIsAddressValid,
       isVerified,
       setIsVerified,
       customerName,

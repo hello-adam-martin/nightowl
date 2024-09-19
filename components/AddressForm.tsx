@@ -12,7 +12,6 @@ type ServiceInfo = {
 }
 
 type AddressFormProps = {
-  addressEntered: boolean
   setAddressEntered: (addressEntered: boolean) => void
   checkServiceability: () => Promise<void>;
   setAddressChanged: React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,7 +20,6 @@ type AddressFormProps = {
 }
 
 const AddressForm: React.FC<AddressFormProps> = ({
-  addressEntered,
   setAddressEntered,
   checkServiceability,
   setAddressChanged,
@@ -37,13 +35,13 @@ const AddressForm: React.FC<AddressFormProps> = ({
     setIsServiceable,
     isVerified,
     setIsVerified,
-    customerName,  // Add this line
-    setCustomerName  // Add this line
+    customerName,
+    setCustomerName
   } = useAddress();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (address.trim() !== '' && phoneNumber.trim() !== '' && customerName.trim() !== '') {  // Update this line
+    if (address.trim() !== '' && phoneNumber.trim() !== '' && customerName.trim() !== '') {
       setAddressEntered(true);
       setIsServiceable(null);
       await checkServiceability();
@@ -116,7 +114,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
             </div>
           </div>
         </form>
-        {addressEntered && (
+        {isVerified && (
           <div className="mt-4 p-4 rounded-md border">
             {isServiceable === true && (
               <div className="flex items-center text-green-600">

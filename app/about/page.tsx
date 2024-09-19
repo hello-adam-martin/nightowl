@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { storeConfig } from '../../config/config'
 import Cart from '@/components/Cart'
 import { useCart } from '@/context/CartContext'
+import { siteInfo } from '@/config/config';
 
 const formatHour = (time: string) => {
   const [hours, minutes] = time.split(':').map(Number);
@@ -71,16 +72,16 @@ export default function AboutPage() {
           <section className="mb-8">
             <h3 className="text-xl font-semibold mb-4">Our Service Area</h3>
             <p className="text-gray-700">
-              We currently serve [list of neighborhoods or cities]. Check our delivery page to see if we deliver to your area!
+              We currently serve Akaroa Township. You can enter your address on the home page to check if we can deliver to you.
             </p>
           </section>
 
           <section className="mb-8">
             <h3 className="text-xl font-semibold mb-4">Contact Us</h3>
             <p className="text-gray-700">
-              Have questions or feedback? We&apos;d love to hear from you!<br />
-              Email: support@nightowl.com<br />
-              Phone: (555) 123-4567
+              Have questions or feedback? We would love to hear from you!<br />
+              Email: {siteInfo.supportEmail}<br />
+              Phone: {siteInfo.supportPhone}
             </p>
           </section>
 

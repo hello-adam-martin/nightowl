@@ -165,7 +165,6 @@ export function HomePage() {
             </div>
           ) : isStoreOpen ? (
             <AddressForm
-              addressEntered={addressEntered}
               setAddressEntered={setAddressEntered}
               checkServiceability={checkServiceability}
               setAddressChanged={setAddressChanged}
