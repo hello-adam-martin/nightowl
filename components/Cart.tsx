@@ -21,7 +21,7 @@ interface CartProps {
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
-function CheckoutForm({ total, onSuccess, isMinOrderMet }: { total: number; onSuccess: () => void; isMinOrderMet: boolean }) {
+function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid }: { total: number; onSuccess: () => void; isMinOrderMet: boolean; isAddressValid: boolean }) {
   const stripe = useStripe()
   const elements = useElements()
   const [error, setError] = useState<string | null>(null)
@@ -81,7 +81,7 @@ function CheckoutForm({ total, onSuccess, isMinOrderMet }: { total: number; onSu
       <Button 
         className="w-full mt-4" 
         type="submit"
-        disabled={!stripe || processing || !isMinOrderMet}
+        disabled={!stripe || processing || !isMinOrderMet || !isAddressValid}
       >
         {processing ? 'Processing...' : `Pay $${total.toFixed(2)}`}
       </Button>
@@ -98,6 +98,21 @@ const MinOrderMessage = ({ minOrderValue, currentSubtotal }: { minOrderValue: nu
         <p className="font-bold">Minimum order not met</p>
         <p>
           Add ${(minOrderValue - currentSubtotal).toFixed(2)} more to your order to meet the ${minOrderValue.toFixed(2)} minimum.
+        </p>
+      </div>
+    </div>
+  </div>
+)
+
+// New component for the invalid address message
+const InvalidAddressMessage = () => (
+  <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded">
+    <div className="flex items-center">
+      <AlertCircle className="flex-shrink-0 mr-2" size={20} />
+      <div>
+        <p className="font-bold">Invalid Address</p>
+        <p>
+          Your current address is not serviceable. Please update your address to continue.
         </p>
       </div>
     </div>
@@ -124,7 +139,7 @@ export default function Cart({
 
   const [paymentSuccess, setPaymentSuccess] = useState(false)
 
-  const { customerName, address, phoneNumber } = useAddress(); // Add this line to get customer details
+  const { customerName, address, phoneNumber, isServiceable } = useAddress(); // Add this line to get customer details
 
   const handlePaymentSuccess = async () => {
     setPaymentSuccess(true)
@@ -170,6 +185,7 @@ export default function Cart({
   }
 
   const handleUpdateQuantity = (id: string, increment: boolean) => {
+    if (!isServiceable) return; // Prevent quantity updates if address is not serviceable
     const item = cart.find(item => item.id === id);
     if (item) {
       const currentQuantity = item.quantity;
@@ -241,6 +257,7 @@ export default function Cart({
                       <button 
                         onClick={() => handleUpdateQuantity(item.id, false)} 
                         className="px-2 py-1 bg-gray-200 rounded-l"
+                        disabled={!isServiceable}
                       >
                         -
                       </button>
@@ -248,12 +265,14 @@ export default function Cart({
                       <button 
                         onClick={() => handleUpdateQuantity(item.id, true)} 
                         className="px-2 py-1 bg-gray-200 rounded-r"
+                        disabled={!isServiceable}
                       >
                         +
                       </button>
                       <button 
                         onClick={() => removeFromCart(item.id)} 
                         className="ml-4 text-gray-500 hover:text-red-500 transition-colors duration-200"
+                        disabled={!isServiceable}
                       >
                         <Trash2 size={20} />
                       </button>
@@ -283,8 +302,10 @@ export default function Cart({
                   </div>
                 </div>
 
-                {/* Minimum order message or Payment section */}
-                {!isMinOrderMet ? (
+                {/* Invalid address message or Minimum order message or Payment section */}
+                {!isServiceable ? (
+                  <InvalidAddressMessage />
+                ) : !isMinOrderMet ? (
                   <MinOrderMessage 
                     minOrderValue={storeConfig.serviceInfo.minOrderValue} 
                     currentSubtotal={subtotal}
@@ -297,6 +318,7 @@ export default function Cart({
                         total={total} 
                         onSuccess={handlePaymentSuccess} 
                         isMinOrderMet={isMinOrderMet}
+                        isAddressValid={isServiceable}
                       />
                     </Elements>
                   </div>
