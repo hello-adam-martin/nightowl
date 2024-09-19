@@ -7,10 +7,11 @@ import { storeConfig } from '../../config/config'
 import Cart from '@/components/Cart'
 import { useCart } from '@/context/CartContext'
 
-const formatHour = (hour: number) => {
-  const period = hour >= 12 ? 'PM' : 'AM';
-  const displayHour = hour % 12 || 12;
-  return `${displayHour}:00 ${period}`;
+const formatHour = (time: string) => {
+  const [hours, minutes] = time.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const displayHour = hours % 12 || 12;
+  return `${displayHour}:${minutes.toString().padStart(2, '0')} ${period}`;
 };
 
 export default function AboutPage() {
@@ -88,7 +89,6 @@ export default function AboutPage() {
             <div className="space-y-4">
               <div>
                 <h4 className="font-medium mb-2">Q: What are your operating hours?</h4>
-                <p className="text-gray-700 mb-2">A: Our operating hours vary by day:</p>
                 <div className="space-y-1 text-sm text-gray-700">
                   {Object.entries(storeConfig.hours).map(([day, hours]) => (
                     <div key={day} className={`flex ${day === currentDay ? 'font-bold text-blue-600' : ''}`}>
