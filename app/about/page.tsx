@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import TopBar from '@/components/TopBar'
 import Image from 'next/image'
 import { storeConfig } from '../../config/config'
@@ -15,6 +15,13 @@ const formatHour = (hour: number) => {
 
 export default function AboutPage() {
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [currentDay, setCurrentDay] = useState('');
+
+  useEffect(() => {
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    setCurrentDay(days[new Date().getDay()]);
+  }, []);
+
   const { cart, updateQuantity, removeFromCart } = useCart()
 
   const getTotalPrice = () => {
@@ -80,8 +87,16 @@ export default function AboutPage() {
             <h3 className="text-xl font-semibold mb-4">Frequently Asked Questions</h3>
             <div className="space-y-4">
               <div>
-                <h4 className="font-medium">Q: What are your operating hours?</h4>
-                <p className="text-gray-700">A: We operate from {formatHour(storeConfig.openingHour)} to {formatHour(storeConfig.closingHour)} daily.</p>
+                <h4 className="font-medium mb-2">Q: What are your operating hours?</h4>
+                <p className="text-gray-700 mb-2">A: Our operating hours vary by day:</p>
+                <div className="space-y-1 text-sm text-gray-700">
+                  {Object.entries(storeConfig.hours).map(([day, hours]) => (
+                    <div key={day} className={`flex ${day === currentDay ? 'font-bold text-blue-600' : ''}`}>
+                      <span className="w-24">{day.charAt(0).toUpperCase() + day.slice(1)}:</span>
+                      <span>{formatHour(hours.open)} - {formatHour(hours.close)}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div>
                 <h4 className="font-medium">Q: How fast is your delivery?</h4>
@@ -108,7 +123,7 @@ export default function AboutPage() {
         updateQuantity={(id, increment) => updateQuantity(id, (cart.find(item => item.id === id)?.quantity ?? 0) + (increment ? 1 : -1))}
         removeFromCart={removeFromCart}
         getTotalPrice={getTotalPrice}
-        deliveryCharge={storeConfig.deliveryCharge}
+        deliveryCharge={storeConfig.serviceInfo.deliveryCharge}
       />
     </div>
   )

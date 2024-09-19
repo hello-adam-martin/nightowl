@@ -34,6 +34,7 @@ export function HomePage() {
   const { cart: cartFromContext, updateCart } = useCart(); // Get updateCart function
   const [nextOpeningTime, setNextOpeningTime] = useState('')
   const [isLoading, setIsLoading] = useState(true) // Add this state
+  const [currentDay, setCurrentDay] = useState<keyof typeof storeConfig.hours>('monday')
 
   const checkServiceability = useCallback(async () => {
     setIsServiceable(null);
@@ -50,14 +51,20 @@ export function HomePage() {
   useEffect(() => {
     const checkStoreStatus = () => {
       const now = new Date()
+      setCurrentDay(now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase() as keyof typeof storeConfig.hours)
       const currentHour = now.getHours()
-      const isOpen = currentHour >= storeConfig.openingHour && currentHour < storeConfig.closingHour
+      const { open, close } = storeConfig.hours[currentDay]
+      
+      const isOpen = (open < close) 
+        ? (currentHour >= open && currentHour < close)
+        : (currentHour >= open || currentHour < close)
+      
       setIsStoreOpen(isOpen)
 
       if (!isOpen) {
         const openingTime = new Date(now)
-        openingTime.setHours(storeConfig.openingHour, 0, 0, 0)
-        if (currentHour >= storeConfig.closingHour) {
+        openingTime.setHours(open, 0, 0, 0)
+        if (currentHour >= close) {
           openingTime.setDate(openingTime.getDate() + 1)
         }
         const timeDiff = openingTime.getTime() - now.getTime()
@@ -65,7 +72,7 @@ export function HomePage() {
         const minutesUntilOpen = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60))
         const secondsUntilOpen = Math.floor((timeDiff % (1000 * 60)) / 1000)
         setTimeUntilOpen(`${hoursUntilOpen}h ${minutesUntilOpen}m ${secondsUntilOpen}s`)
-        setNextOpeningTime(formatHour(storeConfig.openingHour))
+        setNextOpeningTime(formatHour(open))
       }
 
       setIsLoading(false)
@@ -75,7 +82,7 @@ export function HomePage() {
     const timer = setInterval(checkStoreStatus, 1000) // Update every second
 
     return () => clearInterval(timer)
-  }, [])
+  }, [currentDay])
 
   const removeFromCart = (id: string) => {
     updateCart(cartFromContext.filter(item => item.id !== id));
@@ -227,7 +234,7 @@ export function HomePage() {
               }
               removeFromCart={removeFromCart}
               getTotalPrice={getTotalPrice}
-              deliveryCharge={storeConfig.deliveryCharge}
+              deliveryCharge={storeConfig.serviceInfo.deliveryCharge}
             />
           </div>
         </div>

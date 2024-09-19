@@ -9,9 +9,15 @@ import { useCart } from '../context/CartContext'
 import React from 'react';
 
 const formatHour = (hour: number) => {
+  if (hour === 24 || hour === 0) return '12:00 AM';
   const period = hour >= 12 ? 'PM' : 'AM';
   const displayHour = hour % 12 || 12;
   return `${displayHour}:00 ${period}`;
+};
+
+const formatHours = (hours: { open: number; close: number } | undefined) => {
+  if (!hours) return 'Closed today';
+  return `${formatHour(hours.open)} - ${formatHour(hours.close)}`;
 };
 
 interface TopBarProps {
@@ -27,6 +33,15 @@ export default function TopBar({ currentPage, isCartOpen, setIsCartOpen }: TopBa
     return cart.reduce((total, item) => total + item.quantity, 0);
   }
 
+  const currentDate = new Date();
+  const currentDayFull = currentDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+  const currentDay = currentDayFull as keyof typeof storeConfig.hours;
+  const todayHours = storeConfig.hours[currentDay];
+
+  console.log('Current day:', currentDayFull);
+  console.log('Store hours:', storeConfig.hours);
+  console.log('Today\'s hours:', todayHours);
+
   return (
     <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
       <div className="max-w-7xl mx-auto px-4 py-2">
@@ -36,7 +51,7 @@ export default function TopBar({ currentPage, isCartOpen, setIsCartOpen }: TopBa
             <h1 className="text-xl font-bold ml-2">NightOwl</h1>
           </div>
           <p className="text-sm text-gray-600 w-1/3 text-center">
-            Open {formatHour(storeConfig.openingHour)} - {formatHour(storeConfig.closingHour)}
+            Open: {formatHours(todayHours)} (Day: {currentDayFull})
           </p>
           <div className="flex items-center space-x-4 w-1/3 justify-end">
             {currentPage === 'home' ? (

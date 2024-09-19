@@ -1,11 +1,18 @@
 export const storeConfig = {
-  openingHour: 8, // 7 AM
-  closingHour: 23, // 10 PM
-  deliveryCharge: 10, // $10 delivery charge
   serviceInfo: {
     deliveryTime: '30-45 minutes (usually quicker)',
     serviceArea: 'Akaroa Township',
     minOrderValue: 5,
+    deliveryCharge: 10
+  },
+  hours: {
+    monday: { open: 8, close: 23 },
+    tuesday: { open: 8, close: 23 },
+    wednesday: { open: 8, close: 23 },
+    thursday: { open: 14, close: 23 },
+    friday: { open: 8, close: 0 }, // Open until midnight
+    saturday: { open: 9, close: 0 }, // Open until midnight
+    sunday: { open: 9, close: 22 },
   },
 };
 
