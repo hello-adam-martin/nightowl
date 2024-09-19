@@ -100,14 +100,19 @@ const AddressForm: React.FC<AddressFormProps> = ({
                   onChange={handleAddressChange}
                   className={`sm:col-span-2 ${isVerified ? 'bg-gray-100' : 'bg-blue-50'}`}
                 />
-                <Button 
-                  type="submit" 
-                  disabled={isVerified || address.trim() === '' || phoneNumber.trim() === '' || customerName.trim() === ''}
-                  className={`lg:col-span-4 ${isVerified ? 'bg-gray-300 text-gray-600' : 'bg-blue-500 text-white'}`}
-                >
-                  {isVerified ? "Verified" : "Verify Details"}
-                </Button>
               </div>
+              <Button 
+                type="submit" 
+                disabled={isVerified || address.trim() === '' || phoneNumber.trim() === '' || customerName.trim() === ''}
+                className={`w-full ${isVerified ? (isServiceable ? 'bg-gray-300 text-gray-600' : 'bg-red-500 text-white') : 'bg-blue-500 text-white'}`}
+              >
+                {isVerified 
+                  ? (isServiceable 
+                    ? "Address Verified" 
+                    : "Not Serviceable")
+                  : "Check Details"
+                }
+              </Button>
             </div>
           </div>
         </form>
@@ -122,7 +127,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
             {isServiceable === false && (
               <div className="flex items-center text-red-600">
                 <X className="mr-2 h-5 w-5" />
-                <span className="font-medium">We&apos;re sorry, we can&apos;t deliver to your area at this time.</span>
+                <span className="font-medium">We are sorry but we can not deliver to your address at this time.</span>
               </div>
             )}
             {isServiceable === null && (
