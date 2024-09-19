@@ -15,10 +15,11 @@ import { useCart } from '../context/CartContext'; // Make sure this import is pr
 import ClosedStoreNotice from './ClosedStoreNotice'
 import TopBar from './TopBar'
 
-const formatHour = (hour: number) => {
-  const period = hour >= 12 ? 'PM' : 'AM';
-  const displayHour = hour % 12 || 12;
-  return `${displayHour}:00 ${period}`;
+const formatHour = (time: string) => {
+  const [hours, minutes] = time.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12;
+  return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
 };
 
 export function HomePage() {
@@ -53,18 +54,24 @@ export function HomePage() {
       const now = new Date()
       setCurrentDay(now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase() as keyof typeof storeConfig.hours)
       const currentHour = now.getHours()
+      const currentMinute = now.getMinutes()
       const { open, close } = storeConfig.hours[currentDay]
       
-      const isOpen = (open < close) 
-        ? (currentHour >= open && currentHour < close)
-        : (currentHour >= open || currentHour < close)
+      const [openHour, openMinute] = open.split(':').map(Number)
+      const [closeHour, closeMinute] = close.split(':').map(Number)
+      
+      const isOpen = (openHour < closeHour || (openHour === closeHour && openMinute < closeMinute)) 
+        ? (currentHour > openHour || (currentHour === openHour && currentMinute >= openMinute)) &&
+          (currentHour < closeHour || (currentHour === closeHour && currentMinute < closeMinute))
+        : (currentHour > openHour || (currentHour === openHour && currentMinute >= openMinute)) ||
+          (currentHour < closeHour || (currentHour === closeHour && currentMinute < closeMinute))
       
       setIsStoreOpen(isOpen)
 
       if (!isOpen) {
         const openingTime = new Date(now)
-        openingTime.setHours(open, 0, 0, 0)
-        if (currentHour >= close) {
+        openingTime.setHours(openHour, openMinute, 0, 0)
+        if (currentHour > closeHour || (currentHour === closeHour && currentMinute >= closeMinute)) {
           openingTime.setDate(openingTime.getDate() + 1)
         }
         const timeDiff = openingTime.getTime() - now.getTime()

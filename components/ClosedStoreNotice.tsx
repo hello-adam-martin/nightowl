@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Clock } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 type ClosedStoreNoticeProps = {
   timeUntilOpen: string;
@@ -7,18 +8,23 @@ type ClosedStoreNoticeProps = {
 }
 
 const ClosedStoreNotice: React.FC<ClosedStoreNoticeProps> = ({ timeUntilOpen, nextOpeningTime }) => {
-  const currentTime = new Date();
-  const [nextOpeningHour, nextOpeningPeriod] = nextOpeningTime.split(' ');
-  const [hour, minute] = nextOpeningHour.split(':').map(Number);
-  
-  const nextOpeningDate = new Date(currentTime);
-  nextOpeningDate.setHours(nextOpeningPeriod === 'PM' && hour !== 12 ? hour + 12 : hour, minute, 0, 0);
-  
-  if (nextOpeningDate < currentTime) {
-    nextOpeningDate.setDate(nextOpeningDate.getDate() + 1);
-  }
+  const [opensToday, setOpensToday] = useState(true)
 
-  const opensToday = nextOpeningDate.getDate() === currentTime.getDate();
+  useEffect(() => {
+    const currentTime = new Date();
+    const [hours, minutes] = nextOpeningTime.split(':').map(Number);
+    
+    const nextOpeningDate = new Date(currentTime);
+    nextOpeningDate.setHours(hours, minutes, 0, 0);
+    
+    // If the next opening time is earlier than the current time, it must be tomorrow
+    if (nextOpeningDate <= currentTime) {
+      nextOpeningDate.setDate(nextOpeningDate.getDate() + 1);
+      setOpensToday(false);
+    } else {
+      setOpensToday(true);
+    }
+  }, [nextOpeningTime]);
 
   return (
     <Card className="border-2 border-yellow-500 shadow-lg p-4 sm:p-6">

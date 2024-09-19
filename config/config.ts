@@ -6,13 +6,13 @@ export const storeConfig = {
     deliveryCharge: 10
   },
   hours: {
-    monday: { open: 8, close: 23 },
-    tuesday: { open: 8, close: 23 },
-    wednesday: { open: 8, close: 23 },
-    thursday: { open: 14, close: 23 },
-    friday: { open: 8, close: 0 }, // Open until midnight
-    saturday: { open: 9, close: 0 }, // Open until midnight
-    sunday: { open: 9, close: 22 },
+    monday: { open: '08:00', close: '23:00' },
+    tuesday: { open: '08:00', close: '23:00' },
+    wednesday: { open: '08:00', close: '23:00' },
+    thursday: { open: '15:30', close: '23:00' },
+    friday: { open: '08:00', close: '00:00' }, // Open until midnight
+    saturday: { open: '09:00', close: '00:00' }, // Open until midnight
+    sunday: { open: '09:00', close: '22:00' },
   },
 };
 
@@ -57,7 +57,7 @@ export const products = [
   { id: 13, name: 'All-purpose Cleaner', category: 'household', price: 4.99, image: null },
   { id: 14, name: 'Paper Towels', category: 'household', price: 3.99, image: null },
   { id: 15, name: 'Trash Bags', category: 'household', price: 5.99, image: null },
-  { id: 16, name: 'AA Batteries', category: 'household', price: 7.99, image: null },
+  { id: 16, name: 'AA Batteries', category: 'household', price: 7.99, image: 'aabatteries.jpeg' },
   { id: 17, name: 'Light Bulbs', category: 'household', price: 4.99, image: null },
   { id: 18, name: 'Multi-tool', category: 'household', price: 12.99, image: null },
   { id: 99, name: 'Lighter', category: 'household', price: 5.99, image: null },

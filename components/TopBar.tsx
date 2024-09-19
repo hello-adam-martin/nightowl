@@ -8,14 +8,14 @@ import { storeConfig } from '../config/config'
 import { useCart } from '../context/CartContext'
 import React from 'react';
 
-const formatHour = (hour: number) => {
-  if (hour === 24 || hour === 0) return '12:00 AM';
-  const period = hour >= 12 ? 'PM' : 'AM';
-  const displayHour = hour % 12 || 12;
-  return `${displayHour}:00 ${period}`;
+const formatHour = (time: string) => {
+  const [hours, minutes] = time.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12;
+  return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
 };
 
-const formatHours = (hours: { open: number; close: number } | undefined) => {
+const formatHours = (hours: { open: string; close: string } | undefined) => {
   if (!hours) return 'Closed today';
   return `${formatHour(hours.open)} - ${formatHour(hours.close)}`;
 };
@@ -51,7 +51,7 @@ export default function TopBar({ currentPage, isCartOpen, setIsCartOpen }: TopBa
             <h1 className="text-xl font-bold ml-2">NightOwl</h1>
           </div>
           <p className="text-sm text-gray-600 w-1/3 text-center">
-            Open: {formatHours(todayHours)} (Day: {currentDayFull})
+            Open: {formatHours(todayHours)}
           </p>
           <div className="flex items-center space-x-4 w-1/3 justify-end">
             {currentPage === 'home' ? (
