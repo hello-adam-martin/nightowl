@@ -238,6 +238,7 @@ export function HomePage() {
               removeFromCart={removeFromCart}
               getTotalPrice={getTotalPrice}
               deliveryCharge={storeConfig.serviceInfo.deliveryCharge}
+              isStoreOpen={isStoreOpen} // Add this line
             />
           </div>
         </div>

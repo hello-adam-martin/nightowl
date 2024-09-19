@@ -375,7 +375,7 @@ export default function Cart({
                 </div>
 
                 {/* Invalid address message or Minimum order message or Payment section */}
-                {!isStoreOpen && cart.length > 0 && (
+                {!isStoreOpen && cart.length > 0 ? (
                   <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded flex items-start">
                     <AlertCircle className="flex-shrink-0 mr-2 mt-1" size={20} />
                     <div>
@@ -390,8 +390,7 @@ export default function Cart({
                       </p>
                     </div>
                   </div>
-                )}
-                {isStoreOpen && (
+                ) : (
                   <>
                     {!isServiceable ? (
                       <InvalidAddressMessage />
