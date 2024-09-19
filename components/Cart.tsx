@@ -22,7 +22,17 @@ interface CartProps {
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
-function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid }: { total: number; onSuccess: () => void; isMinOrderMet: boolean; isAddressValid: boolean }) {
+function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, customerInfo }: { 
+  total: number; 
+  onSuccess: () => void; 
+  isMinOrderMet: boolean; 
+  isAddressValid: boolean;
+  customerInfo: {
+    name: string;
+    phone: string;
+    address: string;
+  };
+}) {
   const stripe = useStripe()
   const elements = useElements()
   const [error, setError] = useState<string | null>(null)
@@ -44,7 +54,10 @@ function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid }: { tot
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ amount: amountInCents }), // amount in cents
+      body: JSON.stringify({ 
+        amount: amountInCents,
+        customerInfo: customerInfo
+      }),
     }).then(res => res.json())
 
     if (backendError) {
@@ -411,6 +424,11 @@ export default function Cart({
                             onSuccess={handlePaymentSuccess} 
                             isMinOrderMet={isMinOrderMet}
                             isAddressValid={isServiceable}
+                            customerInfo={{
+                              name: customerName,
+                              phone: phoneNumber,
+                              address: address,
+                            }}
                           />
                         </Elements>
                       </div>

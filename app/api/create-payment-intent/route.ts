@@ -11,15 +11,68 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 export async function POST(req: Request) {
   try {
-    const { amount } = await req.json();
+    const { amount, customerInfo } = await req.json();
 
     if (!amount || typeof amount !== 'number') {
       return NextResponse.json({ error: 'Invalid amount' }, { status: 400 });
     }
 
+    // Create or update a customer
+    let customer;
+    const existingCustomers = await stripe.customers.search({
+      query: `phone:'${customerInfo.phone}'`,
+      limit: 1,
+    });
+
+    if (existingCustomers.data.length > 0) {
+      customer = existingCustomers.data[0];
+      // Update customer information
+      customer = await stripe.customers.update(customer.id, {
+        name: customerInfo.name,
+        phone: customerInfo.phone,
+        address: {
+          line1: customerInfo.address,
+        },
+        shipping: {
+          name: customerInfo.name,
+          address: {
+            line1: customerInfo.address,
+          },
+        },
+      });
+    } else {
+      // Create a new customer
+      customer = await stripe.customers.create({
+        name: customerInfo.name,
+        phone: customerInfo.phone,
+        address: {
+          line1: customerInfo.address,
+        },
+        shipping: {
+          name: customerInfo.name,
+          address: {
+            line1: customerInfo.address,
+          },
+        },
+      });
+    }
+
+    // Create a PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency: 'nzd',
+      customer: customer.id,
+      shipping: {
+        name: customerInfo.name,
+        address: {
+          line1: customerInfo.address,
+        },
+      },
+      metadata: {
+        customerName: customerInfo.name,
+        customerPhone: customerInfo.phone,
+        customerAddress: customerInfo.address,
+      },
     });
 
     return NextResponse.json({ clientSecret: paymentIntent.client_secret });
