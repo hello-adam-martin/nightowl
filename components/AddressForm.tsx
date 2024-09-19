@@ -79,7 +79,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
                 <Input
                   id="customerName"
-                  placeholder="Full Name"
+                  placeholder="Name"
                   value={customerName}
                   onChange={handleCustomerNameChange}
                   className={`${isVerified ? 'bg-gray-100' : 'bg-blue-50'}`}

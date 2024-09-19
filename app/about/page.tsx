@@ -79,7 +79,6 @@ export default function AboutPage() {
           <section className="mb-8">
             <h3 className="text-xl font-semibold mb-4">Contact Us</h3>
             <p className="text-gray-700">
-              Have questions or feedback? We would love to hear from you!<br />
               Email: {siteInfo.supportEmail}<br />
               Phone: {siteInfo.supportPhone}
             </p>
@@ -101,15 +100,15 @@ export default function AboutPage() {
               </div>
               <div>
                 <h4 className="font-medium">Q: How fast is your delivery?</h4>
-                <p className="text-gray-700">A: We aim to deliver within 30-45 minutes of order placement, depending on your location.</p>
+                <p className="text-gray-700">We aim to deliver within 30-45 minutes of order placement, depending on your location.</p>
               </div>
               <div>
                 <h4 className="font-medium">Q: Do you have a minimum order amount?</h4>
-                <p className="text-gray-700">A: Yes, our minimum order amount is ${storeConfig.serviceInfo.minOrderValue.toFixed(2)}.</p>
+                <p className="text-gray-700">Yes, our minimum order amount is ${storeConfig.serviceInfo.minOrderValue.toFixed(2)}.</p>
               </div>
               <div>
                 <h4 className="font-medium">Q: What payment methods do you accept?</h4>
-                <p className="text-gray-700">A: We accept all major credit cards, debit cards, and mobile payment options.</p>
+                <p className="text-gray-700">We accept all major credit cards, debit cards, and mobile payment options.</p>
               </div>
             </div>
           </section>
@@ -120,7 +119,7 @@ export default function AboutPage() {
         isCartOpen={isCartOpen}
         setIsCartOpen={setIsCartOpen}
         cart={cart}
-        isAddressValid={true} // You might want to handle this differently for the about page
+        isAddressValid={true} 
         updateQuantity={(id, increment) => updateQuantity(id, (cart.find(item => item.id === id)?.quantity ?? 0) + (increment ? 1 : -1))}
         removeFromCart={removeFromCart}
         getTotalPrice={getTotalPrice}
