@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { Search, X } from 'lucide-react'
+import { Search, X, Loader2 } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
@@ -33,6 +33,7 @@ export function HomePage() {
   const { isServiceable, setIsServiceable } = useAddress();
   const { cart: cartFromContext, updateCart } = useCart(); // Get updateCart function
   const [nextOpeningTime, setNextOpeningTime] = useState('')
+  const [isLoading, setIsLoading] = useState(true) // Add this state
 
   const checkServiceability = useCallback(async () => {
     setIsServiceable(null);
@@ -47,7 +48,7 @@ export function HomePage() {
   }, [setIsServiceable]);
 
   useEffect(() => {
-    const timer = setInterval(() => {
+    const checkStoreStatus = () => {
       const now = new Date()
       const currentHour = now.getHours()
       const isOpen = currentHour >= storeConfig.openingHour && currentHour < storeConfig.closingHour
@@ -66,7 +67,12 @@ export function HomePage() {
         setTimeUntilOpen(`${hoursUntilOpen}h ${minutesUntilOpen}m ${secondsUntilOpen}s`)
         setNextOpeningTime(formatHour(storeConfig.openingHour))
       }
-    }, 1000)
+
+      setIsLoading(false)
+    }
+
+    checkStoreStatus() // Check immediately on mount
+    const timer = setInterval(checkStoreStatus, 1000) // Update every second
 
     return () => clearInterval(timer)
   }, [])
@@ -139,7 +145,11 @@ export function HomePage() {
             </div>
           </div>
 
-          {isStoreOpen ? (
+          {isLoading ? (
+            <div className="flex justify-center items-center h-32">
+              <Loader2 className="w-8 h-8 animate-spin" />
+            </div>
+          ) : isStoreOpen ? (
             <AddressForm
               addressEntered={addressEntered}
               setAddressEntered={setAddressEntered}
