@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react'
-import { X, AlertCircle, ShoppingCart, Trash2, CheckCircle } from 'lucide-react'
+import React, { useState, useMemo, useEffect } from 'react'
+import { X, AlertCircle, ShoppingCart, Trash2, CheckCircle, Clock } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
@@ -17,6 +17,7 @@ interface CartProps {
   deliveryCharge: number;
   isAddressValid: boolean;
   getTotalPrice: () => number;
+  isStoreOpen: boolean;
 }
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
@@ -123,6 +124,7 @@ export default function Cart({
   isCartOpen,
   setIsCartOpen,
   deliveryCharge,
+  isStoreOpen,
 }: CartProps) {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
   
@@ -208,6 +210,52 @@ export default function Cart({
     const deliveryTime = new Date(now.getTime() + averageTime * 60000);
     return deliveryTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
   };
+
+  const [nextOpeningTime, setNextOpeningTime] = useState('')
+  const [timeUntilOpen, setTimeUntilOpen] = useState('')
+
+  useEffect(() => {
+    if (!isStoreOpen) {
+      const updateNextOpeningTime = () => {
+        const now = new Date()
+        const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()
+        const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+        
+        let daysToAdd = 0
+        let nextDay = currentDay
+        
+        while (daysToAdd < 7) {
+          const { open } = storeConfig.hours[nextDay]
+          const [openHour, openMinute] = open.split(':').map(Number)
+          
+          const nextOpenTime = new Date(now)
+          nextOpenTime.setDate(now.getDate() + daysToAdd)
+          nextOpenTime.setHours(openHour, openMinute, 0, 0)
+          
+          if (nextOpenTime > now) {
+            setNextOpeningTime(nextOpenTime.toLocaleString('en-US', { 
+              weekday: 'long', 
+              hour: 'numeric', 
+              minute: 'numeric', 
+              hour12: true 
+            }))
+            const timeDiff = nextOpenTime.getTime() - now.getTime()
+            const hours = Math.floor(timeDiff / (1000 * 60 * 60))
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60))
+            setTimeUntilOpen(`${hours}h ${minutes}m`)
+            break
+          }
+          
+          daysToAdd++
+          nextDay = daysOfWeek[(daysOfWeek.indexOf(nextDay) + 1) % 7]
+        }
+      }
+
+      updateNextOpeningTime()
+      const intervalId = setInterval(updateNextOpeningTime, 60000) // Update every minute
+      return () => clearInterval(intervalId)
+    }
+  }, [isStoreOpen])
 
   return (
     <>
@@ -327,25 +375,45 @@ export default function Cart({
                 </div>
 
                 {/* Invalid address message or Minimum order message or Payment section */}
-                {!isServiceable ? (
-                  <InvalidAddressMessage />
-                ) : !isMinOrderMet ? (
-                  <MinOrderMessage 
-                    minOrderValue={storeConfig.serviceInfo.minOrderValue} 
-                    currentSubtotal={subtotal}
-                  />
-                ) : (
-                  <div className="bg-white p-4 rounded-lg border">
-                    <h3 className="font-bold text-lg mb-4">Payment</h3>
-                    <Elements stripe={stripePromise}>
-                      <CheckoutForm 
-                        total={total} 
-                        onSuccess={handlePaymentSuccess} 
-                        isMinOrderMet={isMinOrderMet}
-                        isAddressValid={isServiceable}
-                      />
-                    </Elements>
+                {!isStoreOpen && cart.length > 0 && (
+                  <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded flex items-start">
+                    <AlertCircle className="flex-shrink-0 mr-2 mt-1" size={20} />
+                    <div>
+                      <p className="font-bold">Store is currently closed</p>
+                      <p>We're sorry, but we are not accepting orders at this time.</p>
+                      <div className="flex items-center mt-2 text-yellow-600">
+                        <Clock className="mr-2 h-5 w-5" />
+                        <span>Opens in: {timeUntilOpen}</span>
+                      </div>
+                      <p className="mt-1 text-sm text-gray-600">
+                        Next opening time: {nextOpeningTime}
+                      </p>
+                    </div>
                   </div>
+                )}
+                {isStoreOpen && (
+                  <>
+                    {!isServiceable ? (
+                      <InvalidAddressMessage />
+                    ) : !isMinOrderMet ? (
+                      <MinOrderMessage 
+                        minOrderValue={storeConfig.serviceInfo.minOrderValue} 
+                        currentSubtotal={subtotal}
+                      />
+                    ) : (
+                      <div className="bg-white p-4 rounded-lg border">
+                        <h3 className="font-bold text-lg mb-4">Payment</h3>
+                        <Elements stripe={stripePromise}>
+                          <CheckoutForm 
+                            total={total} 
+                            onSuccess={handlePaymentSuccess} 
+                            isMinOrderMet={isMinOrderMet}
+                            isAddressValid={isServiceable}
+                          />
+                        </Elements>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </>
