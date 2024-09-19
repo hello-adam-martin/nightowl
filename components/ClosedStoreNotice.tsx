@@ -98,7 +98,7 @@ const ClosedStoreNotice: React.FC = () => {
           <>
             <div className="flex items-center text-yellow-600 mb-4">
               <Clock className="mr-2 h-5 w-5" />
-              <span className="font-medium">Opens in: {timeUntilOpen}</span>
+              <span className="font-medium">Open again in: {timeUntilOpen}</span>
             </div>
             <p className="text-sm text-gray-600">
               We will open at <strong>{nextOpeningTimeFormatted}</strong> {nextOpeningDay}.
