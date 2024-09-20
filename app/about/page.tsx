@@ -67,7 +67,7 @@ export default function AboutPage() {
 
       {/* Main content */}
       <div className="pt-20 p-8">
-        <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-8">
+        <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-8">
           {/* Add logo here */}
           <div className="flex justify-center mb-6">
             <Image src="/NightOwl.png" alt="NightOwl Logo" width={120} height={120} />
