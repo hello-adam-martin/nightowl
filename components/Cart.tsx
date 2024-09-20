@@ -5,7 +5,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { CartItem } from '@/types/cart'
 import { useCart } from '../context/CartContext'
-import { storeConfig } from '@/config/config'
+import { storeConfig, products } from '@/config/config'
 import { useAddress } from '../context/AddressContext'; // Add this import
 
 interface CartProps {
@@ -212,10 +212,18 @@ export default function Cart({
     if (!isServiceable) return; // Prevent quantity updates if address is not serviceable
     const item = cart.find(item => item.id === id);
     if (item) {
-      const currentQuantity = item.quantity;
-      const newQuantity = increment ? currentQuantity + 1 : Math.max(1, currentQuantity - 1);
-      
-      updateQuantity(id, newQuantity);
+      const product = products.find(p => p.id.toString() === id);
+      if (product) {
+        const currentQuantity = item.quantity;
+        const newQuantity = increment ? currentQuantity + 1 : Math.max(1, currentQuantity - 1);
+        
+        if (increment && newQuantity > product.inventory) {
+          // Don't allow increasing quantity beyond available inventory
+          return;
+        }
+        
+        updateQuantity(id, newQuantity);
+      }
     } else {
       console.log(`Item with id ${id} not found in cart`);
     }

@@ -7,14 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Plus, Minus } from 'lucide-react'
 import Image from 'next/image'
 import { useCart } from '../context/CartContext'
-
-type Product = {
-  id: number;
-  name: string;
-  category: string;
-  price: number;
-  image: string | null;
-}
+import { Product } from '@/config/config'
 
 interface ProductGridProps {
   products: Product[];
@@ -37,6 +30,11 @@ export default React.memo(function ProductGrid({
     const currentQuantity = getItemQuantity(product.id);
     const newQuantity = increment ? currentQuantity + 1 : Math.max(0, currentQuantity - 1);
     
+    if (increment && newQuantity > product.inventory) {
+      // Don't allow increasing quantity beyond available inventory
+      return;
+    }
+    
     if (newQuantity === 0) {
       removeFromCart(product.id.toString());
     } else {
@@ -44,9 +42,14 @@ export default React.memo(function ProductGrid({
     }
   };
 
-  // Filter out products with empty categories
+  // Filter out products with empty categories, zero inventory, or not visible
   const validProducts = useMemo(() => 
-    products.filter(product => product.category && product.category.trim() !== ''),
+    products.filter(product => 
+      product.category && 
+      product.category.trim() !== '' && 
+      product.inventory > 0 && 
+      product.visible
+    ),
     [products]
   );
 
@@ -92,6 +95,7 @@ export default React.memo(function ProductGrid({
                       variant="outline"
                       size="icon"
                       onClick={() => handleUpdateQuantity(product, true)}
+                      disabled={getItemQuantity(product.id) >= product.inventory}
                     >
                       <Plus className="h-4 w-4" />
                     </Button>
