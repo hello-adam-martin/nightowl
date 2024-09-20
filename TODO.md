@@ -1,5 +1,4 @@
 - make sure we get categories from supabase
-- have a remember me option for the address input - making for repeat orders quicker and easier
 - create a footer
 - expand upon about page
 - think about how we can support different areas
@@ -10,3 +9,8 @@
 
 
 make sure product images are all the same size.. at the moment they are changing dependent on whether low stock / no stock message shows or not.
+
+
+SAAS
+1. set commission
+2. set delivery zones for operator

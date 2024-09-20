@@ -17,7 +17,7 @@ async function fetchProducts() {
     throw new Error('Network response was not ok');
   }
   const data = await response.json();
-  console.log('Fetched products:', data);
+  //console.log('Fetched products:', data);
   return data;
 }
 
@@ -41,9 +41,9 @@ function ProductGrid({ isStoreOpen }: ProductGridProps) {
     queryFn: fetchProducts
   });
 
-  console.log('Products from useQuery:', products);
-  console.log('isLoading:', isLoading);
-  console.log('error:', error);
+  //console.log('Products from useQuery:', products);
+  //console.log('isLoading:', isLoading);
+  //console.log('error:', error);
 
   const { cart, addToCart, removeFromCart, updateQuantity } = useCart();
   const { isServiceable, isVerified } = useAddress();
@@ -82,7 +82,7 @@ function ProductGrid({ isStoreOpen }: ProductGridProps) {
     (SHOW_OUT_OF_STOCK_ITEMS || product.inventory > 0)
   );
 
-  console.log('validProducts:', validProducts);
+  //console.log('validProducts:', validProducts);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

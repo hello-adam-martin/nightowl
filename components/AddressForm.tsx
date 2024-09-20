@@ -54,7 +54,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
       setIsVerified(true);
       checkServiceability();
     }
-  }, []);
+  }, [setAddress, setPhoneNumber, setCustomerName, setAddressEntered, setIsVerified, checkServiceability]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
