@@ -23,7 +23,7 @@ interface CartProps {
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
-function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, customerInfo, cartItems }: { 
+function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, customerInfo, cartItems, removeFromCart, updateQuantity }: { 
   total: number; 
   onSuccess: () => void; 
   isMinOrderMet: boolean; 
@@ -34,6 +34,8 @@ function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, custome
     address: string;
   };
   cartItems: CartItem[];
+  removeFromCart: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
 }) {
   const stripe = useStripe()
   const elements = useElements()
@@ -63,7 +65,20 @@ function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, custome
       }),
     });
 
-    const { clientSecret, error: backendError } = await response.json();
+    const data = await response.json();
+
+    if (!response.ok) {
+      if (data.error === 'Inventory changes detected') {
+        setError(data.message);
+        updateCartWithAvailableQuantities(data.outOfStockItems);
+      } else {
+        setError(data.error || 'An error occurred');
+      }
+      setProcessing(false);
+      return;
+    }
+
+    const { clientSecret, error: backendError } = data;
 
     if (backendError) {
       setError(backendError.message);
@@ -91,6 +106,16 @@ function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, custome
     }
 
     setProcessing(false)
+  }
+
+  const updateCartWithAvailableQuantities = (outOfStockItems: { id: string; availableQuantity: number }[]) => {
+    outOfStockItems.forEach(item => {
+      if (item.availableQuantity === 0) {
+        removeFromCart(item.id);
+      } else {
+        updateQuantity(item.id, item.availableQuantity);
+      }
+    });
   }
 
   return (
@@ -463,6 +488,8 @@ export default function Cart({
                               address: address,
                             }}
                             cartItems={cart}
+                            removeFromCart={removeFromCart}
+                            updateQuantity={updateQuantity}
                           />
                         </Elements>
                       </div>

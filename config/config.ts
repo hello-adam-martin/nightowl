@@ -1,4 +1,5 @@
 export const LOW_STOCK_THRESHOLD = 10;
+export const SHOW_OUT_OF_STOCK_ITEMS = true;
 
 export const storeConfig = {
   serviceInfo: {
@@ -13,7 +14,7 @@ export const storeConfig = {
     wednesday: { open: '08:00', close: '23:00' },
     thursday: { open: '16:00', close: '21:40' },
     friday: { open: '21:50', close: '00:00' }, // Open until midnight
-    saturday: { open: '09:00', close: '00:00' }, // Open until midnight
+    saturday: { open: '05:00', close: '00:00' }, // Open until midnight
     sunday: { open: '09:00', close: '22:00' },
   },
 };
@@ -54,7 +55,3 @@ export interface Product {
   inventory: number;
   visible: boolean;
 }
-
-// Remove the products array
-
-export const SHOW_OUT_OF_STOCK_ITEMS = true; // or false, depending on your preference

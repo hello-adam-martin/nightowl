@@ -15,13 +15,30 @@ export async function POST(req: Request) {
   const { amount, customerInfo, cartItems } = await req.json()
 
   try {
+    // Check inventory first
+    const { data: inventoryCheck, error: inventoryError } = await supabase.rpc('check_inventory', {
+      p_cart_items: cartItems
+    })
+
+    if (inventoryError) {
+      throw inventoryError
+    }
+
+    if (!inventoryCheck.success) {
+      return NextResponse.json({ 
+        error: 'Inventory changes detected',
+        message: 'Some items in your cart have limited availability. We\'ve adjusted your cart accordingly. Please review before proceeding.',
+        outOfStockItems: inventoryCheck.outOfStockItems 
+      }, { status: 400 })
+    }
+
     // Create Stripe PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency: 'nzd',
     })
 
-    // Create order and update inventory using a Supabase function
+    // Create order and update inventory
     const { data: orderData, error: orderError } = await supabase.rpc('create_order_and_items', {
       p_customer_name: customerInfo.name,
       p_phone: customerInfo.phone,
