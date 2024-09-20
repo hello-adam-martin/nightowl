@@ -5,8 +5,9 @@ import { loadStripe } from '@stripe/stripe-js'
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { CartItem } from '@/types/cart'
 import { useCart } from '../context/CartContext'
-import { storeConfig, products } from '@/config/config'
+import { storeConfig } from '@/config/config'
 import { useAddress } from '../context/AddressContext'; // Add this import
+import { useQuery } from '@tanstack/react-query'
 
 interface CartProps {
   isCartOpen: boolean;
@@ -140,6 +141,21 @@ const InvalidAddressMessage = () => (
 // Add this type definition at the top of your file
 type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
 
+// Add this type definition at the top of your file
+type Product = {
+  id: number;
+  inventory: number;
+  // Add other product properties as needed
+};
+
+async function fetchProducts() {
+  const response = await fetch('/api/products');
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+}
+
 export default function Cart({
   isCartOpen,
   setIsCartOpen,
@@ -164,6 +180,11 @@ export default function Cart({
 
   const { customerName, address, phoneNumber, isServiceable } = useAddress();
   const firstName = customerName.split(' ')[0];
+
+  const { data: products } = useQuery<Product[]>({
+    queryKey: ['products'],
+    queryFn: fetchProducts
+  });
 
   const handlePaymentSuccess = async () => {
     const expectedDeliveryTime = calculateExpectedDeliveryTime();
@@ -213,8 +234,8 @@ export default function Cart({
   const handleUpdateQuantity = (id: string, increment: boolean) => {
     if (!isServiceable) return; // Prevent quantity updates if address is not serviceable
     const item = cart.find(item => item.id === id);
-    if (item) {
-      const product = products.find(p => p.id.toString() === id);
+    if (item && products) {
+      const product = products.find((p: Product) => p.id.toString() === id);
       if (product) {
         const currentQuantity = item.quantity;
         const newQuantity = increment ? currentQuantity + 1 : Math.max(1, currentQuantity - 1);
@@ -227,7 +248,7 @@ export default function Cart({
         updateQuantity(id, newQuantity);
       }
     } else {
-      console.log(`Item with id ${id} not found in cart`);
+      console.log(`Item with id ${id} not found in cart or products not loaded`);
     }
   };
 
