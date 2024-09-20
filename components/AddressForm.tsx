@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Check, X } from 'lucide-react'
 import { useAddress } from '../context/AddressContext';
+import { useState, useEffect } from 'react';
 
 type ServiceInfo = {
   deliveryTime: string;
@@ -39,6 +40,22 @@ const AddressForm: React.FC<AddressFormProps> = ({
     setCustomerName
   } = useAddress();
 
+  const [rememberAddress, setRememberAddress] = useState(false);
+
+  useEffect(() => {
+    const savedAddress = localStorage.getItem('savedAddress');
+    if (savedAddress) {
+      const parsedAddress = JSON.parse(savedAddress);
+      setAddress(parsedAddress.address);
+      setPhoneNumber(parsedAddress.phoneNumber);
+      setCustomerName(parsedAddress.customerName);
+      setRememberAddress(true);
+      setAddressEntered(true);
+      setIsVerified(true);
+      checkServiceability();
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (address.trim() !== '' && phoneNumber.trim() !== '' && customerName.trim() !== '') {
@@ -46,11 +63,18 @@ const AddressForm: React.FC<AddressFormProps> = ({
       setIsServiceable(null);
       await checkServiceability();
       setIsVerified(true);
+
+      if (rememberAddress) {
+        localStorage.setItem('savedAddress', JSON.stringify({ address, phoneNumber, customerName }));
+      } else {
+        localStorage.removeItem('savedAddress');
+      }
     }
   }
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAddress(e.target.value);
+    const newAddress = e.target.value;
+    setAddress(newAddress);
     setIsServiceable(null);
     setAddressChanged(true);
     setIsVerified(false);
@@ -63,6 +87,17 @@ const AddressForm: React.FC<AddressFormProps> = ({
 
   const handleCustomerNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {  // Add this function
     setCustomerName(e.target.value);
+  }
+
+  const handleRememberAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newRememberAddress = e.target.checked;
+    setRememberAddress(newRememberAddress);
+    
+    if (newRememberAddress) {
+      localStorage.setItem('savedAddress', JSON.stringify({ address, phoneNumber, customerName }));
+    } else {
+      localStorage.removeItem('savedAddress');
+    }
   }
 
   return (
@@ -102,7 +137,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
               <Button 
                 type="submit" 
                 disabled={isVerified || address.trim() === '' || phoneNumber.trim() === '' || customerName.trim() === ''}
-                className={`w-full ${isVerified ? (isServiceable ? 'bg-gray-300 text-gray-600' : 'bg-red-500 text-white') : 'bg-blue-500 text-white'}`}
+                className={`w-full mt-4 ${isVerified ? (isServiceable ? 'bg-gray-300 text-gray-600' : 'bg-red-500 text-white') : 'bg-blue-500 text-white'}`}
               >
                 {isVerified 
                   ? (isServiceable 
@@ -117,9 +152,26 @@ const AddressForm: React.FC<AddressFormProps> = ({
         {isVerified && (
           <div className="mt-4 p-4 rounded-md border">
             {isServiceable === true && (
-              <div className="flex items-center text-green-600">
-                <Check className="mr-2 h-5 w-5" />
-                <span className="font-medium">Great news! We can deliver to you. Start shopping below.</span>
+              <div>
+                <div className="flex items-center text-green-600">
+                  <Check className="mr-2 h-5 w-5" />
+                  <span className="font-medium">Great news! We can deliver to you. Start shopping below.</span>
+                </div>
+                <div className="flex items-center space-x-2 mt-4">
+                  <input
+                    type="checkbox"
+                    id="rememberAddress"
+                    checked={rememberAddress}
+                    onChange={handleRememberAddressChange}
+                    className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  />
+                  <label
+                    htmlFor="rememberAddress"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Remember my address
+                  </label>
+                </div>
               </div>
             )}
             {isServiceable === false && (
