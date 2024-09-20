@@ -8,57 +8,59 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY! // Use the service role key for admin privileges
 )
 
 export async function POST(req: Request) {
   const { amount, customerInfo, cartItems } = await req.json()
 
-  // Get the user ID from the session (if authenticated)
-  const { data: { session } } = await supabase.auth.getSession()
-  const userId = session?.user?.id || null  // Will be null for guest checkouts
-
   try {
+    // Test function call
+    const { data: testData, error: testError } = await supabase.rpc('test_products_table');
+    if (testError) throw testError;
+    console.log('Test function result:', testData);
+
     // Create Stripe PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
-      currency: 'usd',
+      currency: 'nzd',
     })
 
-    // Insert order into database
-    const { data: order, error: orderError } = await supabase
-      .from('orders')
-      .insert({
-        customer_name: customerInfo.name,
-        phone: customerInfo.phone,
-        address: customerInfo.address,
-        total: amount / 100, // Convert cents to dollars
-        delivery_charge: 10, // Assuming fixed delivery charge
-        status: 'pending',
-        stripe_payment_intent_id: paymentIntent.id,
-        user_id: userId
+    // Create order and update inventory using a Supabase function
+    const { data: orderData, error: orderError } = await supabase.rpc('create_order_and_items', {
+      p_customer_name: customerInfo.name,
+      p_phone: customerInfo.phone,
+      p_address: customerInfo.address,
+      p_total: amount / 100, // Convert cents to dollars
+      p_delivery_charge: 10, // Assuming fixed delivery charge
+      p_status: 'pending',
+      p_stripe_payment_intent_id: paymentIntent.id,
+      p_cart_items: cartItems
+    })
+
+    if (orderError) {
+      console.error('Supabase RPC error:', orderError)
+      console.error('Function parameters:', {
+        p_customer_name: customerInfo.name,
+        p_phone: customerInfo.phone,
+        p_address: customerInfo.address,
+        p_total: amount / 100,
+        p_delivery_charge: 10,
+        p_status: 'pending',
+        p_stripe_payment_intent_id: paymentIntent.id,
+        p_cart_items: cartItems
       })
-      .select()
+      throw orderError
+    }
 
-    if (orderError) throw orderError
+    console.log('Order created:', orderData)
 
-    // Insert order items
-    const orderItems = cartItems.map((item: { id: string; quantity: number; price: number }) => ({
-      order_id: order![0].id,
-      product_id: parseInt(item.id),
-      quantity: item.quantity,
-      price: item.price,
-    }))
-
-    const { error: itemsError } = await supabase
-      .from('order_items')
-      .insert(orderItems)
-
-    if (itemsError) throw itemsError
-
-    return NextResponse.json({ clientSecret: paymentIntent.client_secret })
+    return NextResponse.json({ 
+      clientSecret: paymentIntent.client_secret,
+      orderId: orderData.order_id
+    })
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Detailed error:', error)
     return NextResponse.json({ error: 'An error occurred' }, { status: 500 })
   }
 }
