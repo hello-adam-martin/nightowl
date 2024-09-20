@@ -9,6 +9,7 @@ import { Plus, Minus } from 'lucide-react'
 import Image from 'next/image'
 import { useCart } from '../context/CartContext'
 import { LOW_STOCK_THRESHOLD } from '@/config/config'
+import { SHOW_OUT_OF_STOCK_ITEMS } from '@/config/config'
 
 async function fetchProducts() {
   const response = await fetch('/api/products');
@@ -77,7 +78,8 @@ function ProductGrid({ isStoreOpen }: ProductGridProps) {
   const validProducts = products.filter((product: Product) => 
     product.category_id && 
     product.category_id.trim() !== '' && 
-    product.visible
+    product.visible &&
+    (SHOW_OUT_OF_STOCK_ITEMS || product.inventory > 0)
   );
 
   console.log('validProducts:', validProducts);

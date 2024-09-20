@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import AddressForm from './AddressForm'
 import ProductGrid from './ProductGrid'
 import Cart from './Cart'
-import { storeConfig, products, siteInfo } from '../config/config'
+import { storeConfig, Product, siteInfo } from '../config/config'
 import Link from 'next/link'
 import { useAddress } from '../context/AddressContext';
 import { useCart } from '../context/CartContext'; // Make sure this import is present
@@ -25,6 +25,7 @@ export function HomePage() {
   const [addressChanged, setAddressChanged] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [phoneNumberEntered, setPhoneNumberEntered] = useState(false)
+  const [products, setProducts] = useState<Product[]>([])
   const { isServiceable, setIsServiceable } = useAddress();
   const { cart: cartFromContext, updateCart } = useCart(); // Get updateCart function
   const [isLoading, setIsLoading] = useState(true) // Add this state
@@ -119,6 +120,23 @@ export function HomePage() {
     setSearchTerm('')
     setSelectedCategory('all')
   }
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('/api/products')
+        if (!response.ok) {
+          throw new Error('Failed to fetch products')
+        }
+        const data = await response.json()
+        setProducts(data)
+      } catch (error) {
+        console.error('Error fetching products:', error)
+      }
+    }
+
+    fetchProducts()
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-100">
