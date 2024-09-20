@@ -1,23 +1,49 @@
 'use client';
 
-import React, { useMemo } from 'react'
+import React from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useAddress } from '../context/AddressContext'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Plus, Minus } from 'lucide-react'
 import Image from 'next/image'
 import { useCart } from '../context/CartContext'
-import { Product, LOW_STOCK_THRESHOLD } from '@/config/config'
+import { LOW_STOCK_THRESHOLD } from '@/config/config'
+
+async function fetchProducts() {
+  const response = await fetch('/api/products');
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  const data = await response.json();
+  console.log('Fetched products:', data);
+  return data;
+}
+
+interface Product {
+  id: number;
+  name: string;
+  category_id: string;
+  price: number;
+  image: string | null;
+  inventory: number;
+  visible: boolean;
+}
 
 interface ProductGridProps {
-  products: Product[];
   isStoreOpen: boolean;
 }
 
-export default React.memo(function ProductGrid({
-  products,
-  isStoreOpen,
-}: ProductGridProps) {
+function ProductGrid({ isStoreOpen }: ProductGridProps) {
+  const { data: products, isLoading, error } = useQuery({
+    queryKey: ['products'],
+    queryFn: fetchProducts
+  });
+
+  console.log('Products from useQuery:', products);
+  console.log('isLoading:', isLoading);
+  console.log('error:', error);
+
   const { cart, addToCart, removeFromCart, updateQuantity } = useCart();
   const { isServiceable, isVerified } = useAddress();
 
@@ -31,7 +57,6 @@ export default React.memo(function ProductGrid({
     const newQuantity = increment ? currentQuantity + 1 : Math.max(0, currentQuantity - 1);
     
     if (increment && newQuantity > product.inventory) {
-      // Don't allow increasing quantity beyond available inventory
       return;
     }
     
@@ -45,25 +70,27 @@ export default React.memo(function ProductGrid({
   const isLowStock = (inventory: number) => inventory <= LOW_STOCK_THRESHOLD && inventory > 0;
   const isOutOfStock = (inventory: number) => inventory === 0;
 
-  // Updated filter to include visible out-of-stock items
-  const validProducts = useMemo(() => 
-    products.filter(product => 
-      product.category && 
-      product.category.trim() !== '' && 
-      product.visible
-    ),
-    [products]
+  if (isLoading) return <div>Loading products...</div>;
+  if (error) return <div>Error loading products</div>;
+  if (!products || products.length === 0) return <div>No products available</div>;
+
+  const validProducts = products.filter((product: Product) => 
+    product.category_id && 
+    product.category_id.trim() !== '' && 
+    product.visible
   );
+
+  console.log('validProducts:', validProducts);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {validProducts.map((product) => (
+      {validProducts.map((product: Product) => (
         <Card key={product.id} className={isOutOfStock(product.inventory) ? "opacity-60" : ""}>
           <CardHeader>
             <div className="flex justify-between items-start">
               <CardTitle>{product.name}</CardTitle>
               <span className="px-2 py-1 bg-gray-200 text-gray-800 text-xs font-semibold rounded-full">
-                {product.category}
+                {product.category_id}
               </span>
             </div>
           </CardHeader>
@@ -128,4 +155,6 @@ export default React.memo(function ProductGrid({
       ))}
     </div>
   )
-})
+}
+
+export default ProductGrid;

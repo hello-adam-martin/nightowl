@@ -207,7 +207,6 @@ export function HomePage() {
               {availableCategories.map(category => (
                 <div key={category} className={selectedCategory === category ? '' : 'hidden'}>
                   <ProductGrid
-                    products={filteredProducts}
                     isStoreOpen={isStoreOpen}
                   />
                 </div>

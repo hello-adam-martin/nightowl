@@ -50,7 +50,7 @@ function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, custome
     // Convert total to cents and round to avoid floating point issues
     const amountInCents = Math.round(total * 100)
 
-    const { error: backendError, clientSecret } = await fetch('/api/create-payment-intent', {
+    const response = await fetch('/api/create-payment-intent', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -60,12 +60,14 @@ function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, custome
         customerInfo: customerInfo,
         cartItems: cartItems
       }),
-    }).then(res => res.json())
+    });
+
+    const { clientSecret, error: backendError } = await response.json();
 
     if (backendError) {
-      setError(backendError.message)
-      setProcessing(false)
-      return
+      setError(backendError.message);
+      setProcessing(false);
+      return;
     }
 
     const cardElement = elements.getElement(CardElement);

@@ -1,92 +1,64 @@
-import { NextResponse } from 'next/server';
-import Stripe from 'stripe';
+import { createClient } from '@supabase/supabase-js'
+import Stripe from 'stripe'
+import { NextResponse } from 'next/server'
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is not set in the environment variables');
-}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2024-06-20', // Use the latest available API version
+})
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2024-06-20',
-});
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 export async function POST(req: Request) {
+  const { amount, customerInfo, cartItems } = await req.json()
+
+  // Get the user ID from the session (if authenticated)
+  const { data: { session } } = await supabase.auth.getSession()
+  const userId = session?.user?.id || null  // Will be null for guest checkouts
+
   try {
-    const { amount, customerInfo, cartItems } = await req.json();
-
-    if (!amount || typeof amount !== 'number') {
-      return NextResponse.json({ error: 'Invalid amount' }, { status: 400 });
-    }
-
-    // Create or update a customer
-    let customer;
-    const existingCustomers = await stripe.customers.search({
-      query: `phone:'${customerInfo.phone}'`,
-      limit: 1,
-    });
-
-    if (existingCustomers.data.length > 0) {
-      customer = existingCustomers.data[0];
-      // Update customer information
-      customer = await stripe.customers.update(customer.id, {
-        name: customerInfo.name,
-        phone: customerInfo.phone,
-        address: {
-          line1: customerInfo.address,
-        },
-        shipping: {
-          name: customerInfo.name,
-          address: {
-            line1: customerInfo.address,
-          },
-        },
-      });
-    } else {
-      // Create a new customer
-      customer = await stripe.customers.create({
-        name: customerInfo.name,
-        phone: customerInfo.phone,
-        address: {
-          line1: customerInfo.address,
-        },
-        shipping: {
-          name: customerInfo.name,
-          address: {
-            line1: customerInfo.address,
-          },
-        },
-      });
-    }
-
-    // Format cart items for Stripe metadata
-    const formattedItems = cartItems.map((item: { name: string; quantity: number; price: number }, index: number) => 
-      `${index + 1}. ${item.name} x${item.quantity} ($${(item.price * item.quantity).toFixed(2)})`
-    ).join(', ');
-
-    // Create a PaymentIntent
+    // Create Stripe PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
-      currency: 'nzd',
-      customer: customer.id,
-      shipping: {
-        name: customerInfo.name,
-        address: {
-          line1: customerInfo.address,
-        },
-      },
-      metadata: {
-        customerName: customerInfo.name,
-        customerPhone: customerInfo.phone,
-        customerAddress: customerInfo.address,
-        orderItems: formattedItems, // Add this line to include order items
-      },
-    });
+      currency: 'usd',
+    })
 
-    return NextResponse.json({ clientSecret: paymentIntent.client_secret });
+    // Insert order into database
+    const { data: order, error: orderError } = await supabase
+      .from('orders')
+      .insert({
+        customer_name: customerInfo.name,
+        phone: customerInfo.phone,
+        address: customerInfo.address,
+        total: amount / 100, // Convert cents to dollars
+        delivery_charge: 10, // Assuming fixed delivery charge
+        status: 'pending',
+        stripe_payment_intent_id: paymentIntent.id,
+        user_id: userId
+      })
+      .select()
+
+    if (orderError) throw orderError
+
+    // Insert order items
+    const orderItems = cartItems.map((item: { id: string; quantity: number; price: number }) => ({
+      order_id: order![0].id,
+      product_id: parseInt(item.id),
+      quantity: item.quantity,
+      price: item.price,
+    }))
+
+    const { error: itemsError } = await supabase
+      .from('order_items')
+      .insert(orderItems)
+
+    if (itemsError) throw itemsError
+
+    return NextResponse.json({ clientSecret: paymentIntent.client_secret })
   } catch (error) {
-    console.error('Error creating payment intent:', error);
-    if (error instanceof Stripe.errors.StripeError) {
-      return NextResponse.json({ error: error.message }, { status: error.statusCode });
-    }
-    return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 });
+    console.error('Error:', error)
+    return NextResponse.json({ error: 'An error occurred' }, { status: 500 })
   }
 }
