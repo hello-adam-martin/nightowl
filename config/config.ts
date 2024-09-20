@@ -1,3 +1,5 @@
+export const LOW_STOCK_THRESHOLD = 10;
+
 export const storeConfig = {
   serviceInfo: {
     deliveryTime: '30-45 minutes (usually quicker)',
@@ -63,7 +65,7 @@ export const products: Product[] = [
 
   // Food & Beverages
   { id: 6, name: 'Ready-to-eat Sandwich', category: 'food', price: 4.99, image: null, inventory: 25, visible: true },
-  { id: 7, name: 'Microwaveable Meal', category: 'food', price: 5.99, image: null, inventory: 40, visible: true },
+  { id: 7, name: 'Microwaveable Meal', category: 'food', price: 5.99, image: null, inventory: 0, visible: true },
   { id: 8, name: 'Energy Drink', category: 'food', price: 2.99, image: null, inventory: 75, visible: true },
   { id: 9, name: 'Bottled Water', category: 'food', price: 1.99, image: null, inventory: 100, visible: true },
   { id: 10, name: 'Chips', category: 'food', price: 3.49, image: null, inventory: 60, visible: true },

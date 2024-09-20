@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Plus, Minus } from 'lucide-react'
 import Image from 'next/image'
 import { useCart } from '../context/CartContext'
-import { Product } from '@/config/config'
+import { Product, LOW_STOCK_THRESHOLD } from '@/config/config'
 
 interface ProductGridProps {
   products: Product[];
@@ -42,12 +42,14 @@ export default React.memo(function ProductGrid({
     }
   };
 
-  // Filter out products with empty categories, zero inventory, or not visible
+  const isLowStock = (inventory: number) => inventory <= LOW_STOCK_THRESHOLD && inventory > 0;
+  const isOutOfStock = (inventory: number) => inventory === 0;
+
+  // Updated filter to include visible out-of-stock items
   const validProducts = useMemo(() => 
     products.filter(product => 
       product.category && 
       product.category.trim() !== '' && 
-      product.inventory > 0 && 
       product.visible
     ),
     [products]
@@ -56,7 +58,7 @@ export default React.memo(function ProductGrid({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {validProducts.map((product) => (
-        <Card key={product.id}>
+        <Card key={product.id} className={isOutOfStock(product.inventory) ? "opacity-60" : ""}>
           <CardHeader>
             <div className="flex justify-between items-start">
               <CardTitle>{product.name}</CardTitle>
@@ -65,7 +67,7 @@ export default React.memo(function ProductGrid({
               </span>
             </div>
           </CardHeader>
-          <CardContent className="p-4">
+          <CardContent className="p-4 flex flex-col h-[calc(100%-130px)]">
             <div className="relative w-full aspect-square mb-2">
               <Image 
                 src={product.image ? `/product-images/${product.image}` : "/images/placeholder.png"}
@@ -76,7 +78,15 @@ export default React.memo(function ProductGrid({
                 style={{ objectFit: 'cover' }}
               />
             </div>
-            <p>Price: ${product.price.toFixed(2)}</p>
+            <div className="flex-grow">
+              <p>Price: ${product.price.toFixed(2)}</p>
+              {isLowStock(product.inventory) && (
+                <p className="text-yellow-600 text-sm mt-1">Low stock</p>
+              )}
+              {isOutOfStock(product.inventory) && (
+                <p className="text-red-600 text-sm mt-1 font-semibold">Out of stock</p>
+              )}
+            </div>
           </CardContent>
           <CardFooter>
             {isStoreOpen && isVerified && isServiceable ? (
@@ -87,6 +97,7 @@ export default React.memo(function ProductGrid({
                       variant="outline"
                       size="icon"
                       onClick={() => handleUpdateQuantity(product, false)}
+                      disabled={isOutOfStock(product.inventory)}
                     >
                       <Minus className="h-4 w-4" />
                     </Button>
@@ -95,16 +106,19 @@ export default React.memo(function ProductGrid({
                       variant="outline"
                       size="icon"
                       onClick={() => handleUpdateQuantity(product, true)}
-                      disabled={getItemQuantity(product.id) >= product.inventory}
+                      disabled={getItemQuantity(product.id) >= product.inventory || isOutOfStock(product.inventory)}
                     >
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
                 ) : (
-                  <Button onClick={() => {
-                    addToCart({ id: product.id.toString(), name: product.name, price: product.price, quantity: 1 });
-                  }}>
-                    Add to Cart
+                  <Button 
+                    onClick={() => {
+                      addToCart({ id: product.id.toString(), name: product.name, price: product.price, quantity: 1 });
+                    }}
+                    disabled={isOutOfStock(product.inventory)}
+                  >
+                    {isOutOfStock(product.inventory) ? 'Out of Stock' : 'Add to Cart'}
                   </Button>
                 )}
               </div>
