@@ -197,8 +197,20 @@ export default function Cart({
     }), { subtotal: 0, totalItems: 0 });
   }, [cart]);
 
-  const total = subtotal + deliveryCharge;
-  const isMinOrderMet = subtotal >= storeConfig.serviceInfo.minOrderValue;
+  const [topUpAmount, setTopUpAmount] = useState(0);
+
+  // Calculate top-up amount whenever the cart or subtotal changes
+  useEffect(() => {
+    if (subtotal < storeConfig.serviceInfo.minOrderValue) {
+      setTopUpAmount(storeConfig.serviceInfo.minOrderValue - subtotal);
+    } else {
+      setTopUpAmount(0);
+    }
+  }, [subtotal]);
+
+  // Recalculate total including top-up amount
+  const total = subtotal + deliveryCharge + topUpAmount;
+  const isMinOrderMet = subtotal + topUpAmount >= storeConfig.serviceInfo.minOrderValue;
 
   const [paymentSuccess, setPaymentSuccess] = useState(false)
   const [expectedDeliveryTime, setExpectedDeliveryTime] = useState<string | null>(null)
@@ -437,6 +449,12 @@ export default function Cart({
                       <span>Subtotal:</span>
                       <span className="font-semibold">${subtotal.toFixed(2)}</span>
                     </div>
+                    {topUpAmount > 0 && (
+                      <div className="flex justify-between">
+                        <span>Min Order Top-Up:</span>
+                        <span className="font-semibold">${topUpAmount.toFixed(2)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between">
                       <span>Delivery Charge:</span>
                       <span className="font-semibold">${deliveryCharge.toFixed(2)}</span>
@@ -448,7 +466,7 @@ export default function Cart({
                   </div>
                 </div>
 
-                {/* Invalid address message or Minimum order message or Payment section */}
+                {/* Invalid address message or Payment section */}
                 {!isStoreOpen && cart.length > 0 ? (
                   <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded flex items-start">
                     <AlertCircle className="flex-shrink-0 mr-2 mt-1" size={20} />
@@ -468,14 +486,14 @@ export default function Cart({
                   <>
                     {!isServiceable ? (
                       <InvalidAddressMessage />
-                    ) : !isMinOrderMet ? (
-                      <MinOrderMessage 
-                        minOrderValue={storeConfig.serviceInfo.minOrderValue} 
-                        currentSubtotal={subtotal}
-                      />
                     ) : (
                       <div className="bg-white p-4 rounded-lg border">
                         <h3 className="font-bold text-lg mb-4">Payment</h3>
+                        {topUpAmount > 0 && (
+                          <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded">
+                            <p>A top-up amount of ${topUpAmount.toFixed(2)} has been added to meet the minimum order value.</p>
+                          </div>
+                        )}
                         <Elements stripe={stripePromise}>
                           <CheckoutForm 
                             total={total} 
