@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react'
-import { X, AlertCircle, ShoppingCart, Trash2, CheckCircle, Clock } from 'lucide-react'
+import { X, AlertCircle, ShoppingCart, Trash2, CheckCircle, Clock, MapPin } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
@@ -343,7 +343,7 @@ export default function Cart({
       <div className={`fixed inset-y-0 right-0 w-full sm:w-[28rem] lg:w-[32rem] bg-white shadow-lg transform ${isCartOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out overflow-y-auto z-50`}>
         <div className="p-6 h-full flex flex-col">
           {/* Cart header */}
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold flex items-center">
               <ShoppingCart className="mr-2" size={24} />
               {totalItems > 0 ? `Your Cart (${totalItems} items)` : 'Your Cart'}
@@ -352,6 +352,17 @@ export default function Cart({
               <X size={24} />
             </button>
           </div>
+
+          {/* Delivery Address */}
+          {isServiceable && address && (
+            <div className="bg-gray-100 p-3 rounded-md mb-4 flex items-start">
+              <MapPin className="flex-shrink-0 text-gray-600 mr-2 mt-1" size={20} />
+              <div>
+                <p className="font-semibold text-sm text-gray-800">Delivery Address:</p>
+                <p className="text-sm text-gray-600">{address}</p>
+              </div>
+            </div>
+          )}
 
           {/* Divider */}
           <div className="border-b border-gray-200 mb-6"></div>
@@ -390,7 +401,7 @@ export default function Cart({
             </div>
           ) : (
             <>
-              <div className="flex-grow overflow-y-auto mb-6">
+              <div className="flex-grow overflow-y-auto mb-4">
                 {cart.map((item) => (
                   <div key={item.id} className="flex justify-between items-center mb-4 pb-4 border-b">
                     <div>
@@ -425,30 +436,26 @@ export default function Cart({
                 ))}
               </div>
 
-              {/* Order summary and payment section */}
+              {/* Compact Order summary */}
               <div className="mt-auto">
-                {/* Order summary */}
-                <div className="bg-gray-100 p-4 rounded-lg mb-4">
-                  <h3 className="font-bold text-lg mb-2">Order Summary</h3>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>Subtotal:</span>
-                      <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                <div className="bg-gray-100 p-3 rounded-lg mb-4 text-sm">
+                  <div className="flex justify-between items-center mb-2">
+                    <span>Subtotal:</span>
+                    <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                  </div>
+                  {topUpAmount > 0 && (
+                    <div className="flex justify-between items-center mb-2">
+                      <span>Min Order Top-Up:</span>
+                      <span className="font-semibold">${topUpAmount.toFixed(2)}</span>
                     </div>
-                    {topUpAmount > 0 && (
-                      <div className="flex justify-between">
-                        <span>Min Order Top-Up:</span>
-                        <span className="font-semibold">${topUpAmount.toFixed(2)}</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between">
-                      <span>Delivery Charge:</span>
-                      <span className="font-semibold">${deliveryCharge.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-lg font-bold border-t pt-2">
-                      <span>Total:</span>
-                      <span>${total.toFixed(2)}</span>
-                    </div>
+                  )}
+                  <div className="flex justify-between items-center mb-2">
+                    <span>Delivery:</span>
+                    <span className="font-semibold">${deliveryCharge.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-base font-bold pt-2 border-t border-gray-300">
+                    <span>Total:</span>
+                    <span>${total.toFixed(2)}</span>
                   </div>
                 </div>
 
