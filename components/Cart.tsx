@@ -285,7 +285,6 @@ export default function Cart({
   };
 
   const [nextOpeningTime, setNextOpeningTime] = useState('')
-  const [timeUntilOpen, setTimeUntilOpen] = useState('')
 
   useEffect(() => {
     if (!isStoreOpen) {
@@ -312,10 +311,10 @@ export default function Cart({
               minute: 'numeric', 
               hour12: true 
             }))
-            const timeDiff = nextOpenTime.getTime() - now.getTime()
-            const hours = Math.floor(timeDiff / (1000 * 60 * 60))
-            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60))
-            setTimeUntilOpen(`${hours}h ${minutes}m`)
+            //const timeDiff = nextOpenTime.getTime() - now.getTime()
+            //const hours = Math.floor(timeDiff / (1000 * 60 * 60))
+            //const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60))
+            //setTimeUntilOpen(`${hours}h ${minutes}m`)
             break
           }
           
@@ -471,11 +470,8 @@ export default function Cart({
                       <p>We&apos;re sorry, but we are not accepting orders at this time.</p>
                       <div className="flex items-center mt-2 text-gray-600">
                         <Clock className="mr-2 h-5 w-5" />
-                        <span>Open again in: {timeUntilOpen}</span>
+                        <span>Open again: {nextOpeningTime}</span>
                       </div>
-                      <p className="mt-1 text-sm text-gray-600">
-                        Next opening time: {nextOpeningTime}
-                      </p>
                     </div>
                   </div>
                 ) : (
