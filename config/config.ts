@@ -4,7 +4,17 @@ export const SHOW_OUT_OF_STOCK_ITEMS = true;
 export const storeConfig = {
   serviceInfo: {
     deliveryTime: '30-45 minutes (usually quicker)',
-    serviceArea: 'Akaroa Township',
+    serviceArea: [
+      { lat: -43.79766940765112, lng: 172.96398227508365 },
+      { lat: -43.817437006348506, lng: 172.94562088651645 },
+      { lat: -43.82053879407215, lng: 172.96333877661004 },
+      { lat: -43.81464260126724, lng: 172.98003006050743 },
+      { lat: -43.81050846182929, lng: 172.98443674119318 },
+      { lat: -43.803337709593436, lng: 172.98200671966424 },
+      { lat: -43.79742160076273, lng: 172.97797267730726 },
+      { lat: -43.79485054364922, lng: 172.9650980740346 },
+      { lat: -43.79766940765112, lng: 172.96398227508365 }
+    ],
     minOrderValue: 10,
     deliveryCharge: 10
   },

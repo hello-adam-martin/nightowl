@@ -6,18 +6,16 @@ import { Check, X } from 'lucide-react'
 import { useAddress } from '../context/AddressContext';
 import { useState, useEffect } from 'react';
 
-type ServiceInfo = {
-  deliveryTime: string;
-  serviceArea: string;
-  minOrderValue: number;
-}
-
-type AddressFormProps = {
-  setAddressEntered: (addressEntered: boolean) => void
-  checkServiceability: () => Promise<void>;
-  setAddressChanged: React.Dispatch<React.SetStateAction<boolean>>;
-  setPhoneNumberEntered: (phoneNumberEntered: boolean) => void;
-  serviceInfo: ServiceInfo;
+interface AddressFormProps {
+  setAddressEntered: (value: boolean) => void;
+  checkServiceability: (address: string) => Promise<void>;
+  setAddressChanged: (value: boolean) => void;
+  setPhoneNumberEntered: (value: boolean) => void;
+  serviceInfo: {
+    deliveryTime: string;
+    minOrderValue: number;
+    deliveryCharge: number;
+  };
 }
 
 const AddressForm: React.FC<AddressFormProps> = ({
@@ -52,24 +50,16 @@ const AddressForm: React.FC<AddressFormProps> = ({
       setRememberAddress(true);
       setAddressEntered(true);
       setIsVerified(true);
-      checkServiceability();
+      checkServiceability(parsedAddress.address);
     }
   }, [setAddress, setPhoneNumber, setCustomerName, setAddressEntered, setIsVerified, checkServiceability]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (address.trim() !== '' && phoneNumber.trim() !== '' && customerName.trim() !== '') {
-      setAddressEntered(true);
-      setIsServiceable(null);
-      await checkServiceability();
-      setIsVerified(true);
-
-      if (rememberAddress) {
-        localStorage.setItem('savedAddress', JSON.stringify({ address, phoneNumber, customerName }));
-      } else {
-        localStorage.removeItem('savedAddress');
-      }
-    }
+    setAddressEntered(true);
+    setAddressChanged(false);
+    setIsVerified(true);
+    await checkServiceability(address);
   }
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -177,7 +167,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
             {isServiceable === false && (
               <div className="flex items-center text-red-600">
                 <X className="mr-2 h-5 w-5" />
-                <span className="font-medium">We are sorry but we can not deliver to your address at this time.</span>
+                <span className="font-medium">We are sorry but we cannot deliver to your address at this time.</span>
               </div>
             )}
             {isServiceable === null && (
@@ -191,7 +181,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
           <h3 className="text-lg font-semibold mb-2">Service Information</h3>
           <ul className="list-disc list-inside text-sm">
             <li>Estimated delivery time: {serviceInfo.deliveryTime}</li>
-            <li>Service area: {serviceInfo.serviceArea}</li>
+            <li>Service area: Akaroa</li>
             <li>Minimum order value: ${serviceInfo.minOrderValue.toFixed(2)}</li>
           </ul>
         </div>

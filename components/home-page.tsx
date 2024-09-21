@@ -31,17 +31,45 @@ export function HomePage() {
   const [isLoading, setIsLoading] = useState(true) // Add this state
   const [currentDay, setCurrentDay] = useState<keyof typeof storeConfig.hours>('monday')
 
-  const checkServiceability = useCallback(async () => {
+  const checkServiceability = useCallback(async (address: string) => {
     setIsServiceable(null);
+    setIsLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      const isWithinServiceArea = Math.random() < 0.7;
+      const response = await fetch(`/api/geocode?address=${encodeURIComponent(address)}`);
+      const data = await response.json();
+
+      if (data.status !== 'OK' || !data.results || data.results.length === 0) {
+        throw new Error('Address not found');
+      }
+
+      const { lat, lng } = data.results[0].geometry.location;
+      const isWithinServiceArea = isPointInPolygon({ lat, lng }, storeConfig.serviceInfo.serviceArea);
+      console.log("isWithinServiceArea", isWithinServiceArea);
       setIsServiceable(isWithinServiceArea);
     } catch (error) {
+      console.error('Error checking serviceability:', error);
       setIsServiceable(false);
+    } finally {
+      setIsLoading(false);
     }
   }, [setIsServiceable]);
+
+  // Function to check if a point is inside a polygon
+  const isPointInPolygon = (point: { lat: number; lng: number }, polygon: { lat: number; lng: number }[]) => {
+    console.log("checking polygon");
+    let isInside = false;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const xi = polygon[i].lat, yi = polygon[i].lng;
+      const xj = polygon[j].lat, yj = polygon[j].lng;
+
+      const intersect = ((yi > point.lng) !== (yj > point.lng))
+          && (point.lat < (xj - xi) * (point.lng - yi) / (yj - yi) + xi);
+      if (intersect) isInside = !isInside;
+    }
+    console.log("result: ",isInside)
+    return isInside;
+  };
 
   useEffect(() => {
     const checkStoreStatus = () => {
