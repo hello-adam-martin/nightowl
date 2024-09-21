@@ -33,9 +33,10 @@ interface Product {
 
 interface ProductGridProps {
   isStoreOpen: boolean;
+  selectedCategory: string;
 }
 
-function ProductGrid({ isStoreOpen }: ProductGridProps) {
+function ProductGrid({ isStoreOpen, selectedCategory }: ProductGridProps) {
   const { data: products, isLoading, error } = useQuery({
     queryKey: ['products'],
     queryFn: fetchProducts
@@ -79,7 +80,8 @@ function ProductGrid({ isStoreOpen }: ProductGridProps) {
     product.category_id && 
     product.category_id.trim() !== '' && 
     product.visible &&
-    (SHOW_OUT_OF_STOCK_ITEMS || product.inventory > 0)
+    (SHOW_OUT_OF_STOCK_ITEMS || product.inventory > 0) &&
+    (selectedCategory === 'all' || product.category_id === selectedCategory)
   );
 
   //console.log('validProducts:', validProducts);

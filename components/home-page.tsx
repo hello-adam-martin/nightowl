@@ -138,15 +138,18 @@ export function HomePage() {
 
   const filteredProducts = products
     .filter(product => 
-      (selectedCategory === 'all' || product.category === selectedCategory) &&
+      (selectedCategory === 'all' || product.category_id === selectedCategory) &&
       product.name.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
-  // New: Get unique categories from filtered products
+    console.log(filteredProducts)
+  
   const availableCategories = useMemo(() => {
-    const categorySet = new Set(filteredProducts.map(product => product.category));
+    const categorySet = new Set(products.map(product => product.category_id));
     return ['all', ...Array.from(categorySet)];
-  }, [filteredProducts]);
+  }, [products]);
+
+  console.log(availableCategories);
 
   const isAddressValid = addressEntered && (isServiceable ?? false) && !addressChanged && phoneNumberEntered
 
@@ -260,6 +263,7 @@ export function HomePage() {
                 <div key={category} className={selectedCategory === category ? '' : 'hidden'}>
                   <ProductGrid
                     isStoreOpen={isStoreOpen}
+                    selectedCategory={selectedCategory}
                   />
                 </div>
               ))}

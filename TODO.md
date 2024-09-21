@@ -13,7 +13,7 @@ NICE TO HAVE
 ENHANCEMENTS
 - When checking address - can we put spinner on the button rather than loading the whole address component
 - Integrate analytics
-- Track top up amounts
+- Track top up amounts (in db)
 - move checkServicibility from home-page to be self contained in the addressForm ??
 
 

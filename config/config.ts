@@ -24,7 +24,7 @@ export const storeConfig = {
     wednesday: { open: '08:00', close: '23:00' },
     thursday: { open: '16:00', close: '21:40' },
     friday: { open: '21:50', close: '00:00' }, // Open until midnight
-    saturday: { open: '05:46', close: '20:30' }, // Open until midnight
+    saturday: { open: '05:46', close: '22:30' }, // Open until midnight
     sunday: { open: '09:00', close: '22:00' },
   },
 };
@@ -64,4 +64,5 @@ export interface Product {
   image: string | null;
   inventory: number;
   visible: boolean;
+  category_id: string;
 }
