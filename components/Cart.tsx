@@ -133,21 +133,6 @@ function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, custome
   )
 }
 
-// New component for the minimum order message
-const MinOrderMessage = ({ minOrderValue, currentSubtotal }: { minOrderValue: number, currentSubtotal: number }) => (
-  <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded">
-    <div className="flex items-center">
-      <AlertCircle className="flex-shrink-0 mr-2" size={20} />
-      <div>
-        <p className="font-bold">Minimum order not met</p>
-        <p>
-          Add ${(minOrderValue - currentSubtotal).toFixed(2)} more to your order to meet the ${minOrderValue.toFixed(2)} minimum.
-        </p>
-      </div>
-    </div>
-  </div>
-)
-
 // New component for the invalid address message
 const InvalidAddressMessage = () => (
   <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded">
