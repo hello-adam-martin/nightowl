@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label"
 import { Check, X } from 'lucide-react'
 import { useAddress } from '../context/AddressContext';
 import { useState, useEffect, useRef } from 'react';
+import { Loader } from '@googlemaps/js-api-loader';
 
 interface AddressFormProps {
   setAddressEntered: (value: boolean) => void;
@@ -40,6 +41,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
 
   const [rememberAddress, setRememberAddress] = useState(false);
   const lastCheckedAddress = useRef('');
+  const addressInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const savedAddress = localStorage.getItem('savedAddress');
@@ -59,6 +61,32 @@ const AddressForm: React.FC<AddressFormProps> = ({
       }
     }
   }, [setAddress, setPhoneNumber, setCustomerName, setAddressEntered, setIsVerified, checkServiceability]);
+
+  useEffect(() => {
+    const loader = new Loader({
+      apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string,
+      version: "weekly",
+      libraries: ["places"]
+    });
+
+    loader.load().then(() => {
+      if (addressInputRef.current) {
+        const autocompleteInstance = new google.maps.places.Autocomplete(addressInputRef.current, {
+          componentRestrictions: { country: "NZ" },
+          fields: ["address_components", "formatted_address"],
+        });
+
+        autocompleteInstance.addListener("place_changed", () => {
+          const place = autocompleteInstance.getPlace();
+          if (place.formatted_address) {
+            setAddress(place.formatted_address);
+            setAddressChanged(true);
+            setIsVerified(false);
+          }
+        });
+      }
+    });
+  }, [setAddress, setAddressChanged, setIsVerified]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -133,6 +161,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
                   value={address}
                   onChange={handleAddressChange}
                   className={`sm:col-span-2 ${isVerified ? 'bg-gray-100' : 'bg-blue-50'}`}
+                  ref={addressInputRef}
                 />
               </div>
               <Button 

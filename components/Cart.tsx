@@ -8,6 +8,7 @@ import { useCart } from '../context/CartContext'
 import { storeConfig } from '@/config/config'
 import { useAddress } from '../context/AddressContext'; // Add this import
 import { useQuery } from '@tanstack/react-query'
+import { formatAddress } from '@/utils/addressFormatter'; // Add this import
 
 interface CartProps {
   isCartOpen: boolean;
@@ -359,7 +360,9 @@ export default function Cart({
               <MapPin className="flex-shrink-0 text-gray-600 mr-2 mt-1" size={20} />
               <div>
                 <p className="font-semibold text-sm text-gray-800">Delivery Address:</p>
-                <p className="text-sm text-gray-600">{address}</p>
+                <p className="text-sm text-gray-600">
+                  {formatAddress(address)}
+                </p>
               </div>
             </div>
           )}
