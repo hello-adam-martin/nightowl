@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Check, X } from 'lucide-react'
 import { useAddress } from '../context/AddressContext';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface AddressFormProps {
   setAddressEntered: (value: boolean) => void;
@@ -39,6 +39,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
   } = useAddress();
 
   const [rememberAddress, setRememberAddress] = useState(false);
+  const lastCheckedAddress = useRef('');
 
   useEffect(() => {
     const savedAddress = localStorage.getItem('savedAddress');
@@ -50,7 +51,12 @@ const AddressForm: React.FC<AddressFormProps> = ({
       setRememberAddress(true);
       setAddressEntered(true);
       setIsVerified(true);
-      checkServiceability(parsedAddress.address);
+      
+      // Only check serviceability if the address has changed
+      if (parsedAddress.address !== lastCheckedAddress.current) {
+        checkServiceability(parsedAddress.address);
+        lastCheckedAddress.current = parsedAddress.address;
+      }
     }
   }, [setAddress, setPhoneNumber, setCustomerName, setAddressEntered, setIsVerified, checkServiceability]);
 
@@ -59,7 +65,12 @@ const AddressForm: React.FC<AddressFormProps> = ({
     setAddressEntered(true);
     setAddressChanged(false);
     setIsVerified(true);
-    await checkServiceability(address);
+    
+    // Only check serviceability if the address has changed
+    if (address !== lastCheckedAddress.current) {
+      await checkServiceability(address);
+      lastCheckedAddress.current = address;
+    }
   }
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,7 +178,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
             {isServiceable === false && (
               <div className="flex items-center text-red-600">
                 <X className="mr-2 h-5 w-5" />
-                <span className="font-medium">We are sorry but we cannot deliver to your address at this time.</span>
+                <span className="font-medium">We are sorry but your address is not within our delivery area.</span>
               </div>
             )}
             {isServiceable === null && (

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useRef } from 'react';
 import { Search, X, Loader2 } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -31,33 +32,38 @@ export function HomePage() {
   const [isLoading, setIsLoading] = useState(true) // Add this state
   const [currentDay, setCurrentDay] = useState<keyof typeof storeConfig.hours>('monday')
 
+  const lastCheckedAddress = useRef('');
+
   const checkServiceability = useCallback(async (address: string) => {
     setIsServiceable(null);
     setIsLoading(true);
 
-    try {
-      const response = await fetch(`/api/geocode?address=${encodeURIComponent(address)}`);
-      const data = await response.json();
+    // Only make the API call if the address has changed
+    if (address !== lastCheckedAddress.current) {
+      try {
+        const response = await fetch(`/api/geocode?address=${encodeURIComponent(address)}`);
+        const data = await response.json();
 
-      if (data.status !== 'OK' || !data.results || data.results.length === 0) {
-        throw new Error('Address not found');
+        if (data.status !== 'OK' || !data.results || data.results.length === 0) {
+          throw new Error('Address not found');
+        }
+
+        const { lat, lng } = data.results[0].geometry.location;
+        const isWithinServiceArea = isPointInPolygon({ lat, lng }, storeConfig.serviceInfo.serviceArea);
+        setIsServiceable(isWithinServiceArea);
+        lastCheckedAddress.current = address;
+      } catch (error) {
+        console.error('Error checking serviceability:', error);
+        setIsServiceable(false);
       }
-
-      const { lat, lng } = data.results[0].geometry.location;
-      const isWithinServiceArea = isPointInPolygon({ lat, lng }, storeConfig.serviceInfo.serviceArea);
-      console.log("isWithinServiceArea", isWithinServiceArea);
-      setIsServiceable(isWithinServiceArea);
-    } catch (error) {
-      console.error('Error checking serviceability:', error);
-      setIsServiceable(false);
-    } finally {
-      setIsLoading(false);
     }
+
+    setIsLoading(false);
   }, [setIsServiceable]);
 
   // Function to check if a point is inside a polygon
   const isPointInPolygon = (point: { lat: number; lng: number }, polygon: { lat: number; lng: number }[]) => {
-    console.log("checking polygon");
+    //console.log("checking polygon");
     let isInside = false;
     for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
       const xi = polygon[i].lat, yi = polygon[i].lng;
@@ -67,7 +73,7 @@ export function HomePage() {
           && (point.lat < (xj - xi) * (point.lng - yi) / (yj - yi) + xi);
       if (intersect) isInside = !isInside;
     }
-    console.log("result: ",isInside)
+    //console.log("result: ",isInside)
     return isInside;
   };
 
@@ -225,7 +231,7 @@ export function HomePage() {
                       {category === 'all' ? 'All' : category}
                     </TabsTrigger>
                   ))}
-                  <div className="relative ml-auto">
+                  <div key="search" className="relative ml-auto">
                     <Input
                       type="text"
                       placeholder="Search products..."

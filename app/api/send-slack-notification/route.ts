@@ -7,12 +7,13 @@ const slackChannel = process.env.SLACK_CHANNEL_ID
 const slack = new WebClient(slackToken)
 
 export async function POST(request: Request) {
-  const { orderId, customer, phone, address, items, total, deliveryCharge, specialInstructions } = await request.json()
+  const { orderId, customer, phone, address, items, subtotal, topUpAmount, deliveryCharge, specialInstructions } = await request.json()
 
   const formattedItems = items.map((item: { name: string; quantity: number; price: number }, index: number) => 
     `${index + 1}. ${item.name} x${item.quantity} ($${(item.price * item.quantity).toFixed(2)})`
   ).join('\n')
 
+  const total = subtotal + topUpAmount
   const grandTotal = total + deliveryCharge
 
   const message = {
@@ -43,7 +44,11 @@ export async function POST(request: Request) {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `:moneybag: Total: $${total.toFixed(2)}\n:truck: Delivery Charge: $${deliveryCharge.toFixed(2)}\n:money_with_wings: Grand Total: $${grandTotal.toFixed(2)}\n-----------------------`
+          text: `:moneybag: Subtotal: $${subtotal.toFixed(2)}
+${topUpAmount > 0 ? `:arrow_up: Top-up Amount: $${topUpAmount.toFixed(2)}` : ''}
+:truck: Delivery Charge: $${deliveryCharge.toFixed(2)}
+:money_with_wings: Grand Total: $${grandTotal.toFixed(2)}
+-----------------------`
         }
       },
       {

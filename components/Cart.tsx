@@ -228,7 +228,8 @@ export default function Cart({
         quantity: item.quantity,
         price: item.price
       })),
-      total: subtotal,
+      subtotal: subtotal,
+      topUpAmount: topUpAmount,
       deliveryCharge: deliveryCharge,
       specialInstructions: "" // You might want to add a field for special instructions in your AddressForm if needed
     }
