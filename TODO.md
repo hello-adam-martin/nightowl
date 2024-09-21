@@ -2,7 +2,6 @@ BUGS
 - when an address is saved and then another address is entered, the saved address is still being applied. Need to remove the saved address when address is changed
 
 MUST DO
-- make sure we get categories from supabase
 - expand upon about page
 
 

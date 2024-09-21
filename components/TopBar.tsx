@@ -21,7 +21,7 @@ const formatHours = (hours: { open: string; close: string } | undefined) => {
 };
 
 interface TopBarProps {
-  currentPage: 'home' | 'about';
+  currentPage: "home" | "about" | "delivery-area";
   isCartOpen: boolean;
   setIsCartOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -87,10 +87,10 @@ export default function TopBar({ currentPage, isCartOpen, setIsCartOpen }: TopBa
     <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
       <div className="max-w-7xl mx-auto px-4 py-2">
         <div className="flex justify-between items-center">
-          <div className="flex items-center w-1/3">
+          <Link href="/" className="flex items-center w-1/3">
             <Image src="/NightOwl.png" alt="NightOwl Logo" width={30} height={30} />
-            <h1 className="text-xl font-bold ml-2">NightOwl</h1>
-          </div>
+            <h1 className="text-xl font-bold ml-2 cursor-pointer">NightOwl</h1>
+          </Link>
           <div className="text-sm text-gray-600 w-1/3 text-center">
             <p className={`font-bold ${
               storeStatus === 'OPEN' ? 'text-green-600' : 
@@ -102,16 +102,10 @@ export default function TopBar({ currentPage, isCartOpen, setIsCartOpen }: TopBa
             <p>Hours: {formatHours(todayHours)}</p>
           </div>
           <div className="flex items-center space-x-4 w-1/3 justify-end">
-            {currentPage === 'home' ? (
+            {currentPage === 'home' && (
               <Link href="/about">
                 <Button variant="outline" size="sm">
                   Learn More
-                </Button>
-              </Link>
-            ) : (
-              <Link href="/">
-                <Button variant="outline" size="sm">
-                  Back to Home
                 </Button>
               </Link>
             )}

@@ -98,7 +98,7 @@ function ProductGrid({ isStoreOpen, selectedCategory }: ProductGridProps) {
               </span>
             </div>
           </CardHeader>
-          <CardContent className="p-4 flex flex-col h-[calc(100%-130px)]">
+          <CardContent className="p-4 flex flex-col">
             <div className="relative w-full aspect-square mb-2">
               <Image 
                 src={product.image ? `/product-images/${product.image}` : "/images/placeholder.png"}
@@ -109,14 +109,18 @@ function ProductGrid({ isStoreOpen, selectedCategory }: ProductGridProps) {
                 style={{ objectFit: 'cover' }}
               />
             </div>
-            <div className="flex-grow">
-              <p>Price: ${product.price.toFixed(2)}</p>
-              {isLowStock(product.inventory) && (
-                <p className="text-yellow-600 text-sm mt-1">Low stock</p>
-              )}
-              {isOutOfStock(product.inventory) && (
-                <p className="text-red-600 text-sm mt-1 font-semibold">Out of stock</p>
-              )}
+            <div className="h-16 flex flex-col justify-between">
+              <div className="flex justify-between items-center">
+                <p>Price: ${product.price.toFixed(2)}</p>
+                <div>
+                  {isLowStock(product.inventory) && (
+                    <p className="text-yellow-600 text-sm">Low stock</p>
+                  )}
+                  {isOutOfStock(product.inventory) && (
+                    <p className="text-red-600 text-sm font-semibold">Out of stock</p>
+                  )}
+                </div>
+              </div>
             </div>
           </CardContent>
           <CardFooter>

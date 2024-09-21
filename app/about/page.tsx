@@ -98,13 +98,6 @@ export default function AboutPage() {
                 </p>
               </section>
 
-              <section className="mb-8">
-                <h3 className="text-xl font-semibold mb-4">Our Service Area</h3>
-                <p className="text-gray-700">
-                  We currently serve Akaroa Township. You can enter your address on the home page to check if we can deliver to you.
-                </p>
-              </section>
-
               <section>
                 <h3 className="text-xl font-semibold mb-4">Frequently Asked Questions</h3>
                 <div className="space-y-4">
@@ -118,19 +111,26 @@ export default function AboutPage() {
                   </div>
                   <div>
                     <h4 className="font-medium">Q: What payment methods do you accept?</h4>
-                    <p className="text-gray-700">We accept all major credit cards, debit cards, and mobile payment options.</p>
+                    <p className="text-gray-700">We accept all major credit cards, debit cards, and mobile payment options. Online payments only.</p>
                   </div>
                 </div>
               </section>
             </div>
 
-            {/* Right column: Contact info and opening hours */}
+            {/* Right column: Contact info, service area, and opening hours */}
             <div className="md:w-1/3 md:pl-8">
               <section className="mb-8">
                 <h3 className="text-xl font-semibold mb-4">Contact Us</h3>
                 <p className="text-gray-700">
                   Email: {siteInfo.supportEmail}<br />
                   Phone: {siteInfo.supportPhone}
+                </p>
+              </section>
+
+              <section className="mb-8">
+                <h3 className="text-xl font-semibold mb-4">Our Service Area</h3>
+                <p className="text-gray-700">
+                  We currently serve Akaroa Township. You can enter your address on the home page to check if we can deliver to you.
                 </p>
               </section>
 
