@@ -3,7 +3,6 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { GoogleMap, useJsApiLoader, Polygon, Autocomplete, Marker } from '@react-google-maps/api';
 import { storeConfig } from '@/config/config';
-import TopBar from '@/components/TopBar';
 import Cart from '@/components/Cart';
 import { useCart } from '@/context/CartContext';
 import { useAddress } from '@/context/AddressContext';
@@ -128,11 +127,6 @@ const DeliveryAreaPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <TopBar 
-        currentPage="delivery-area" 
-        isCartOpen={isCartOpen} 
-        setIsCartOpen={setIsCartOpen}
-      />
 
       <div className="pt-20 p-8">
         <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-8">

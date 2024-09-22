@@ -14,12 +14,9 @@ import Link from 'next/link'
 import { useAddress } from '@/context/AddressContext';
 import { useCart } from '@/context/CartContext';
 import ClosedStoreNotice from '@/components/ClosedStoreNotice'
-import TopBar from '@/components/TopBar'
 
 export function HomePage() {
   const [isStoreOpen, setIsStoreOpen] = useState(false)
-  // Remove this line:
-  // const [timeUntilOpen, setTimeUntilOpen] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [addressEntered, setAddressEntered] = useState(false)
@@ -63,7 +60,6 @@ export function HomePage() {
 
   // Function to check if a point is inside a polygon
   const isPointInPolygon = (point: { lat: number; lng: number }, polygon: { lat: number; lng: number }[]) => {
-    //console.log("checking polygon");
     let isInside = false;
     for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
       const xi = polygon[i].lat, yi = polygon[i].lng;
@@ -73,7 +69,6 @@ export function HomePage() {
           && (point.lat < (xj - xi) * (point.lng - yi) / (yj - yi) + xi);
       if (intersect) isInside = !isInside;
     }
-    //console.log("result: ",isInside)
     return isInside;
   };
 
@@ -174,14 +169,8 @@ export function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <TopBar 
-        currentPage="home" 
-        isCartOpen={isCartOpen} 
-        setIsCartOpen={setIsCartOpen}
-      />
-
       {/* Main content */}
-      <div className="pt-20 p-8">
+      <div className="p-8">
         <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-8">
           {/* Welcome section */}
           <div className="mb-8 text-center">
@@ -263,8 +252,6 @@ export function HomePage() {
               <ProductGrid
                 products={filteredProducts}
                 isStoreOpen={isStoreOpen}
-                // Remove this line:
-                // selectedCategory={selectedCategory}
               />
             </div>
 
@@ -279,7 +266,7 @@ export function HomePage() {
               removeFromCart={removeFromCart}
               getTotalPrice={getTotalPrice}
               deliveryCharge={storeConfig.serviceInfo.deliveryCharge}
-              isStoreOpen={isStoreOpen} // Add this line
+              isStoreOpen={isStoreOpen}
             />
           </div>
         </div>

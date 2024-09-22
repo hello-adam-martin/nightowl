@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import CartButton from './CartButton'
 import { storeConfig } from '../config/config'
 import { useCart } from '../context/CartContext'
+import { usePathname } from 'next/navigation'
 
 const formatHour = (time: string) => {
   const [hours, minutes] = time.split(':').map(Number);
@@ -20,16 +21,11 @@ const formatHours = (hours: { open: string; close: string } | undefined) => {
   return `${formatHour(hours.open)} - ${formatHour(hours.close)}`;
 };
 
-interface TopBarProps {
-  currentPage: "home" | "about" | "delivery-area";
-  isCartOpen: boolean;
-  setIsCartOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-export default function TopBar({ currentPage, isCartOpen, setIsCartOpen }: TopBarProps) {
+export default function TopBar({ isCartOpen, setIsCartOpen }: { isCartOpen: boolean, setIsCartOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
   const { cart } = useCart()
   const [storeStatus, setStoreStatus] = useState('CLOSED')
   const [todayHours, setTodayHours] = useState<{ open: string; close: string } | undefined>(undefined)
+  const pathname = usePathname()
 
   const getTotalItems = () => {
     return cart.reduce((total, item) => total + item.quantity, 0);
@@ -102,7 +98,7 @@ export default function TopBar({ currentPage, isCartOpen, setIsCartOpen }: TopBa
             <p className="truncate">{formatHours(todayHours)}</p>
           </div>
           <div className="flex items-center space-x-4 flex-shrink-0">
-            {currentPage === 'home' && (
+            {pathname === '/' && (
               <Link href="/about" className="hidden sm:inline-block">
                 <Button variant="outline" size="sm">
                   Learn More
