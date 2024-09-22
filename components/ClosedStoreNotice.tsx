@@ -1,107 +1,70 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Clock } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { storeConfig } from '@/config/config'
+import { checkStoreStatus, StoreStatus } from '@/utils/storeStatus'
 
 const ClosedStoreNotice: React.FC = () => {
-  const [nextOpeningDay, setNextOpeningDay] = useState('')
-  const [nextOpeningTimeFormatted, setNextOpeningTimeFormatted] = useState('')
-  const [timeUntilOpen, setTimeUntilOpen] = useState('')
+  const [storeStatus, setStoreStatus] = useState<StoreStatus>({
+    isOpen: false,
+    nextOpeningDay: '',
+    nextOpeningTime: '',
+    timeUntilOpen: '',
+    secondsUntilOpen: 0
+  })
 
-  const formatTime = (time: string): string => {
-    const [hours, minutes] = time.split(':').map(Number);
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    const formattedHours = hours % 12 || 12;
-    return `${formattedHours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
-  };
+  const [countdown, setCountdown] = useState(0);
 
-  const calculateTimeUntilOpen = (openingTime: Date) => {
-    const diff = openingTime.getTime() - new Date().getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    return `${hours}h ${minutes}m ${seconds}s`;
+  const formatTimeUntilOpen = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+    return `${hours}h ${minutes}m ${remainingSeconds}s`;
   };
 
   useEffect(() => {
     const updateStoreStatus = () => {
-      const currentTime = new Date();
-      const currentDay = currentTime.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-      const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-      
-      let daysToAdd = 0;
-      let nextDay = currentDay;
-      let foundNextOpenDay = false;
-      let nextOpeningTime: Date | null = null;
-
-      while (!foundNextOpenDay && daysToAdd < 7) {
-        const { open, close } = storeConfig.hours[nextDay as keyof typeof storeConfig.hours];
-
-        const [openHour, openMinute] = open.split(':').map(Number);
-        const [closeHour, closeMinute] = close.split(':').map(Number);
-        
-        const openingTime = new Date(currentTime);
-        openingTime.setDate(currentTime.getDate() + daysToAdd);
-        openingTime.setHours(openHour, openMinute, 0, 0);
-
-        const closingTime = new Date(currentTime);
-        closingTime.setDate(currentTime.getDate() + daysToAdd);
-        closingTime.setHours(closeHour, closeMinute, 0, 0);
-
-        if (closeHour < openHour) {
-          closingTime.setDate(closingTime.getDate() + 1);
-        }
-
-        if (currentTime >= openingTime && currentTime < closingTime) {
-          // Store is currently open
-          foundNextOpenDay = true;
-          setNextOpeningDay('now');
-          setNextOpeningTimeFormatted('We are currently open');
-        } else if (currentTime < openingTime) {
-          // Store will open later today or in the future
-          foundNextOpenDay = true;
-          setNextOpeningDay(daysToAdd === 0 ? 'today' : daysToAdd === 1 ? 'tomorrow' : nextDay);
-          setNextOpeningTimeFormatted(formatTime(open));
-          nextOpeningTime = openingTime;
-        } else {
-          // Move to the next day
-          daysToAdd++;
-          nextDay = daysOfWeek[(daysOfWeek.indexOf(nextDay) + 1) % 7];
-        }
-      }
-
-      if (nextOpeningTime) {
-        setTimeUntilOpen(calculateTimeUntilOpen(nextOpeningTime));
-      }
+      const newStatus = checkStoreStatus();
+      setStoreStatus(newStatus);
+      setCountdown(newStatus.secondsUntilOpen);
     };
 
     updateStoreStatus();
-    const intervalId = setInterval(updateStoreStatus, 1000);
+    const statusInterval = setInterval(updateStoreStatus, 60000); // Update every minute
 
-    return () => clearInterval(intervalId);
+    return () => clearInterval(statusInterval);
   }, []);
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setInterval(() => {
+        setCountdown((prevCountdown) => prevCountdown - 1);
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [countdown]);
 
   return (
     <Card className="border-2 border-yellow-500 shadow-lg p-4 sm:p-6">
       <CardHeader>
         <CardTitle className="text-xl sm:text-2xl font-bold text-yellow-600">
-          {nextOpeningDay === 'now' ? 'Store is Open' : 'Store is Currently Closed'}
+          {storeStatus.isOpen ? 'Store is Open' : 'Store is Currently Closed'}
         </CardTitle>
         <CardDescription className="text-sm sm:text-base text-gray-700">
-          {nextOpeningDay === 'now' 
+          {storeStatus.isOpen 
             ? "We're accepting orders now!"
             : "We're sorry, but we're not accepting orders at this time."}
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {nextOpeningDay !== 'now' && (
+        {!storeStatus.isOpen && (
           <>
             <div className="flex items-center text-yellow-600 mb-4">
               <Clock className="mr-2 h-5 w-5" />
-              <span className="font-medium">Open again in: {timeUntilOpen}</span>
+              <span className="font-medium">Open again in: {formatTimeUntilOpen(countdown)}</span>
             </div>
             <p className="text-sm text-gray-600">
-              We will open at <strong>{nextOpeningTimeFormatted}</strong> {nextOpeningDay}.
+              We will open at <strong>{storeStatus.nextOpeningTime}</strong> {storeStatus.nextOpeningDay}.
             </p>
             <p className="mt-4 text-sm text-gray-600">
               Please check back during our operating hours to place an order. We appreciate your patience!

@@ -5,6 +5,7 @@ export interface StoreStatus {
   nextOpeningDay: string;
   nextOpeningTime: string;
   timeUntilOpen: string;
+  secondsUntilOpen: number; // Add this line
 }
 
 export function checkStoreStatus(): StoreStatus {
@@ -19,14 +20,15 @@ export function checkStoreStatus(): StoreStatus {
   let nextOpeningDay = '';
   let nextOpeningTime = '';
   let timeUntilOpen = '';
+  let openTime = 0;
 
   while (daysToAdd < 7) {
     const hours = storeConfig.hours[nextDay as keyof typeof storeConfig.hours];
     if (hours) {
       const [openHour, openMinute] = hours.open.split(':').map(Number);
+      openTime = openHour * 60 + openMinute;
       const [closeHour, closeMinute] = hours.close.split(':').map(Number);
       
-      const openTime = openHour * 60 + openMinute;
       let closeTime = closeHour * 60 + closeMinute;
       
       if (closeTime <= openTime) {
@@ -55,5 +57,13 @@ export function checkStoreStatus(): StoreStatus {
     nextDay = daysOfWeek[(daysOfWeek.indexOf(nextDay) + 1) % 7] as keyof typeof storeConfig.hours;
   }
 
-  return { isOpen, nextOpeningDay, nextOpeningTime, timeUntilOpen };
+  const secondsUntilOpen = Math.floor((daysToAdd * 24 * 60 * 60) + (openTime - currentTime) * 60);
+
+  return { 
+    isOpen, 
+    nextOpeningDay, 
+    nextOpeningTime, 
+    timeUntilOpen, 
+    secondsUntilOpen
+  };
 }
