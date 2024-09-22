@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Clock } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { checkStoreStatus, StoreStatus } from '@/utils/storeStatus'
+import { formatTime24to12 } from '@/utils/timeFormatting' // Add this import
 
 const ClosedStoreNotice: React.FC = () => {
   const [storeStatus, setStoreStatus] = useState<StoreStatus>({
@@ -64,7 +65,7 @@ const ClosedStoreNotice: React.FC = () => {
               <span className="font-medium">Open again in: {formatTimeUntilOpen(countdown)}</span>
             </div>
             <p className="text-sm text-gray-600">
-              We will open at <strong>{storeStatus.nextOpeningTime}</strong> {storeStatus.nextOpeningDay}.
+              We will open at <strong>{formatTime24to12(storeStatus.nextOpeningTime)}</strong> {storeStatus.nextOpeningDay}.
             </p>
             <p className="mt-4 text-sm text-gray-600">
               Please check back during our operating hours to place an order. We appreciate your patience!

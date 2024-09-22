@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import CartButton from './CartButton'
 import { useCart } from '../context/CartContext'
 import { checkStoreStatus, StoreStatus } from '@/utils/storeStatus';
+import { formatTime24to12 } from '@/utils/timeFormatting'; // Add this import
 
 interface TopBarProps {
   currentPage: "home" | "about" | "delivery-area";
@@ -50,6 +51,7 @@ export default function TopBar({ currentPage, isCartOpen, setIsCartOpen }: TopBa
   };
 
   const statusDisplay = getStatusDisplay();
+  const formattedNextOpeningTime = formatTime24to12(storeStatus.nextOpeningTime);
 
   return (
     <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
@@ -69,8 +71,8 @@ export default function TopBar({ currentPage, isCartOpen, setIsCartOpen }: TopBa
             </p>
             <p className="truncate">
               {storeStatus.isOpen 
-                ? `Closes at ${storeStatus.nextOpeningTime}` 
-                : `Opens ${storeStatus.nextOpeningDay} at ${storeStatus.nextOpeningTime}`}
+                ? `Closes at ${formattedNextOpeningTime}` 
+                : `Opens ${storeStatus.nextOpeningDay} at ${formattedNextOpeningTime}`}
             </p>
           </div>
           <div className="flex items-center space-x-4 flex-shrink-0">
