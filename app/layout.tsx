@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import ClientProviders from './ClientProviders'
 import Footer from '@/components/Footer'
+import { siteInfo } from "@/config/config";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -16,8 +17,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "NightOwl - Late Night Delivery Service",
-  description: "Your go-to late-night delivery service for groceries, household essentials, and more.",
+  title: siteInfo.title,
+  description: siteInfo.longDescription,
 };
 
 export default function RootLayout({

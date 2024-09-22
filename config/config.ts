@@ -48,7 +48,7 @@ export const storeConfig = {
     deliveryCharge: 10
   },
   hours: {
-    monday: { open: '08:00', close: '23:00' },
+    monday: { open: '06:11', close: '23:00' },
     tuesday: { open: '08:00', close: '23:00' },
     wednesday: { open: '08:00', close: '23:00' },
     thursday: { open: '16:00', close: '21:40' },
@@ -61,6 +61,7 @@ export const storeConfig = {
 // Add this new configuration object
 export const siteInfo = {
   name: 'NightOwl',
+  title: 'NightOwl - Late Night Delivery Service',
   shortDescription: 'NightOwl is a delivery only service.',
   longDescription: 'NightOwl is your convenient delivery service, offering groceries, household essentials, and more whenever you need them. With quick and reliable deliveries, we are here to make sure you have what you need, when you need it.',
   supportEmail: 'support@nightowl.com',
