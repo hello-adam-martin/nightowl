@@ -12,7 +12,7 @@ const supabase = createClient(
 )
 
 export async function POST(req: Request) {
-  const { amount, customerInfo, cartItems } = await req.json()
+  const { amount, customerInfo, cartItems, topUpAmount, expectedDeliveryTime } = await req.json()
 
   try {
     // Check inventory first
@@ -47,7 +47,9 @@ export async function POST(req: Request) {
       p_delivery_charge: 10, // Assuming fixed delivery charge
       p_status: 'pending',
       p_stripe_payment_intent_id: paymentIntent.id,
-      p_cart_items: cartItems
+      p_cart_items: cartItems,
+      p_top_up_amount: topUpAmount,
+      p_expected_delivery_time: expectedDeliveryTime
     })
 
     if (orderError) {

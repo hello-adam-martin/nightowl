@@ -9,6 +9,7 @@ import { storeConfig } from '@/config/config'
 import { useAddress } from '../context/AddressContext'; // Add this import
 import { useQuery } from '@tanstack/react-query'
 import { formatAddress } from '@/utils/addressFormatter'; // Add this import
+import { format } from 'date-fns';
 
 interface CartProps {
   isCartOpen: boolean;
@@ -24,7 +25,7 @@ interface CartProps {
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
-function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, customerInfo, cartItems, removeFromCart, updateQuantity }: { 
+function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, customerInfo, cartItems, removeFromCart, updateQuantity, topUpAmount }: { 
   total: number; 
   onSuccess: () => void; 
   isMinOrderMet: boolean; 
@@ -37,11 +38,20 @@ function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, custome
   cartItems: CartItem[];
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
+  topUpAmount: number;
 }) {
   const stripe = useStripe()
   const elements = useElements()
   const [error, setError] = useState<string | null>(null)
   const [processing, setProcessing] = useState(false)
+
+  const calculateExpectedDeliveryTime = () => {
+    const now = new Date();
+    const [minTime, maxTime] = storeConfig.serviceInfo.deliveryTime.split('-').map(t => parseInt(t));
+    const averageTime = (minTime + maxTime) / 2;
+    const deliveryTime = new Date(now.getTime() + averageTime * 60000);
+    return deliveryTime.toISOString(); // Return ISO 8601 format
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -54,6 +64,8 @@ function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, custome
     // Convert total to cents and round to avoid floating point issues
     const amountInCents = Math.round(total * 100)
 
+    const expectedDeliveryTime = calculateExpectedDeliveryTime();
+
     const response = await fetch('/api/create-payment-intent', {
       method: 'POST',
       headers: {
@@ -62,7 +74,9 @@ function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, custome
       body: JSON.stringify({ 
         amount: amountInCents,
         customerInfo: customerInfo,
-        cartItems: cartItems
+        cartItems: cartItems,
+        topUpAmount: topUpAmount,
+        expectedDeliveryTime: expectedDeliveryTime
       }),
     });
 
@@ -281,7 +295,7 @@ export default function Cart({
     const [minTime, maxTime] = storeConfig.serviceInfo.deliveryTime.split('-').map(t => parseInt(t));
     const averageTime = (minTime + maxTime) / 2;
     const deliveryTime = new Date(now.getTime() + averageTime * 60000);
-    return deliveryTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+    return deliveryTime.toISOString(); // Return ISO 8601 format
   };
 
   const [nextOpeningTime, setNextOpeningTime] = useState('')
@@ -328,6 +342,11 @@ export default function Cart({
       return () => clearInterval(intervalId)
     }
   }, [isStoreOpen])
+
+  const formatDeliveryTime = (isoString: string) => {
+    const date = new Date(isoString);
+    return format(date, "h:mm a");
+  };
 
   return (
     <>
@@ -380,7 +399,7 @@ export default function Cart({
                   <p className="text-center">Thank you for your order, {firstName}.</p>
                   <p className="text-center font-semibold">
                     We expect to deliver to you by:<br />
-                    <span className="text-xl">{expectedDeliveryTime}</span>
+                    <span className="text-xl">{expectedDeliveryTime ? formatDeliveryTime(expectedDeliveryTime) : 'N/A'}</span>
                   </p>
                   <p className="text-center text-sm text-gray-500 mt-2">
                     We&apos;ll do our best to meet this time, but please note that actual delivery time may vary due to unforeseen circumstances.
@@ -500,6 +519,7 @@ export default function Cart({
                             cartItems={cart}
                             removeFromCart={removeFromCart}
                             updateQuantity={updateQuantity}
+                            topUpAmount={topUpAmount}
                           />
                         </Elements>
                       </div>
