@@ -3,6 +3,7 @@ BUGS
 
 MUST DO
 - expand upon about page
+- Use hooks/useStoreStatus.ts for the different places that is checking if store is open etc
 
 NICE TO HAVE
 - email receipts - ask for email address after placing order.

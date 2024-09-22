@@ -6,15 +6,15 @@ import { Search, X, Loader2 } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
-import AddressForm from './AddressForm'
-import ProductGrid from './ProductGrid'
-import Cart from './Cart'
-import { storeConfig, Product, siteInfo } from '../config/config'
+import AddressForm from "@/components/AddressForm"
+import ProductGrid from '@/components/ProductGrid'
+import Cart from '@/components/Cart'
+import { storeConfig, Product, siteInfo } from '@/config/config'
 import Link from 'next/link'
-import { useAddress } from '../context/AddressContext';
-import { useCart } from '../context/CartContext'; // Make sure this import is present
-import ClosedStoreNotice from './ClosedStoreNotice'
-import TopBar from './TopBar'
+import { useAddress } from '@/context/AddressContext';
+import { useCart } from '@/context/CartContext';
+import ClosedStoreNotice from '@/components/ClosedStoreNotice'
+import TopBar from '@/components/TopBar'
 
 export function HomePage() {
   const [isStoreOpen, setIsStoreOpen] = useState(false)
