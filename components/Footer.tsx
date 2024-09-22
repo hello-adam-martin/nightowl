@@ -1,37 +1,33 @@
 import Link from 'next/link'
 import { siteInfo } from '@/config/config'
 import { Facebook, Twitter, Instagram } from 'lucide-react'
+import Image from 'next/image'
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-100 text-gray-800 py-8">
+    <footer className="bg-gray-100 text-gray-800 py-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 justify-items-center md:justify-items-stretch">
-          <div className="text-center md:text-left">
-            <h3 className="text-lg font-semibold mb-4">{siteInfo.name}</h3>
-            <p className="text-sm">{siteInfo.shortDescription}</p>
+        <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+          <div className="flex items-center">
+            <Image src="/NightOwl.png" alt="NightOwl Logo" width={40} height={40} className="mr-2" />
+            <h3 className="text-lg font-semibold">{siteInfo.name}</h3>
           </div>
-          <div className="text-center">
-            <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
-            <p className="text-sm">Email: {siteInfo.supportEmail}</p>
-            <p className="text-sm">Phone: {siteInfo.supportPhone}</p>
+          <div className="text-sm">
+            <p>{siteInfo.supportEmail} | {siteInfo.supportPhone}</p>
           </div>
-          <div className="text-center md:text-right">
-            <h3 className="text-lg font-semibold mb-4">Follow Us</h3>
-            <div className="flex justify-center md:justify-end space-x-4">
-              <Link href={siteInfo.socialMedia.facebook} className="text-gray-600 hover:text-blue-600">
-                <Facebook size={24} />
-              </Link>
-              <Link href={siteInfo.socialMedia.twitter} className="text-gray-600 hover:text-blue-400">
-                <Twitter size={24} />
-              </Link>
-              <Link href={siteInfo.socialMedia.instagram} className="text-gray-600 hover:text-pink-600">
-                <Instagram size={24} />
-              </Link>
-            </div>
+          <div className="flex space-x-4">
+            <Link href={siteInfo.socialMedia.facebook} className="text-gray-600 hover:text-blue-600">
+              <Facebook size={20} />
+            </Link>
+            <Link href={siteInfo.socialMedia.twitter} className="text-gray-600 hover:text-blue-400">
+              <Twitter size={20} />
+            </Link>
+            <Link href={siteInfo.socialMedia.instagram} className="text-gray-600 hover:text-pink-600">
+              <Instagram size={20} />
+            </Link>
           </div>
         </div>
-        <div className="mt-8 border-t border-gray-200 pt-8 text-center text-sm text-gray-600">
+        <div className="mt-4 pt-4 border-t border-gray-200 text-center text-xs text-gray-600">
           © {new Date().getFullYear()} {siteInfo.name}. All rights reserved.
         </div>
       </div>

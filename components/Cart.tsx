@@ -482,7 +482,7 @@ export default function Cart({
 
                 {/* Invalid address message or Payment section */}
                 {!isStoreOpen && cart.length > 0 ? (
-                  <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded flex items-start">
+                  <div className="bg-red-100 text-red-700 p-4 mb-4 rounded flex items-start">
                     <AlertCircle className="flex-shrink-0 mr-2 mt-1" size={20} />
                     <div>
                       <p className="font-bold">Store is currently closed</p>
@@ -501,7 +501,7 @@ export default function Cart({
                       <div className="bg-white p-4 rounded-lg border">
                         <h3 className="font-bold text-lg mb-4">Payment</h3>
                         {topUpAmount > 0 && (
-                          <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded">
+                          <div className="bg-yellow-100 text-yellow-700 p-4 mb-4 rounded">
                             <p>A top-up amount of ${topUpAmount.toFixed(2)} has been added to meet the minimum order value.</p>
                           </div>
                         )}

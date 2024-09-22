@@ -1,10 +1,8 @@
 BUGS
 - when an address is saved and then another address is entered, the saved address is still being applied. Need to remove the saved address when address is changed
-- topbar opening hrs is overlapping the "learn more" button - I think we can just remove it on small screens
 
 MUST DO
 - expand upon about page
-- mobile friendly categories
 
 NICE TO HAVE
 - email receipts - ask for email address after placing order.
