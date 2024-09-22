@@ -48,7 +48,7 @@ export const storeConfig = {
     deliveryCharge: 10
   },
   hours: {
-    monday: { open: '07:55', close: '23:00' },
+    monday: { open: '07:35', close: '23:00' },
     tuesday: { open: '08:00', close: '23:00' },
     wednesday: { open: '08:00', close: '23:00' },
     thursday: { open: '16:00', close: '21:40' },
