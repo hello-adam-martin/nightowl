@@ -10,6 +10,7 @@ import { useAddress } from '../context/AddressContext'; // Add this import
 import { useQuery } from '@tanstack/react-query'
 import { formatAddress } from '@/utils/addressFormatter'; // Add this import
 import { format } from 'date-fns';
+import { checkStoreStatus, StoreStatus } from '@/utils/storeStatus'; // Add this import
 
 interface CartProps {
   isCartOpen: boolean;
@@ -164,7 +165,7 @@ const InvalidAddressMessage = () => (
 )
 
 // Add this type definition at the top of your file
-type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
+//type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
 
 // Add this type definition at the top of your file
 type Product = {
@@ -185,7 +186,6 @@ export default function Cart({
   isCartOpen,
   setIsCartOpen,
   deliveryCharge,
-  isStoreOpen,
 }: CartProps) {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
   
@@ -222,6 +222,16 @@ export default function Cart({
     queryKey: ['products'],
     queryFn: fetchProducts
   });
+
+  const [storeStatus, setStoreStatus] = useState<StoreStatus>(() => checkStoreStatus());
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setStoreStatus(checkStoreStatus());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handlePaymentSuccess = async () => {
     const expectedDeliveryTime = calculateExpectedDeliveryTime();
@@ -297,51 +307,6 @@ export default function Cart({
     const deliveryTime = new Date(now.getTime() + averageTime * 60000);
     return deliveryTime.toISOString(); // Return ISO 8601 format
   };
-
-  const [nextOpeningTime, setNextOpeningTime] = useState('')
-
-  useEffect(() => {
-    if (!isStoreOpen) {
-      const updateNextOpeningTime = () => {
-        const now = new Date()
-        const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()
-        const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-        
-        let daysToAdd = 0
-        let nextDay = currentDay
-        
-        while (daysToAdd < 7) {
-          const { open } = storeConfig.hours[nextDay as DayOfWeek];
-          const [openHour, openMinute] = open.split(':').map(Number)
-          
-          const nextOpenTime = new Date(now)
-          nextOpenTime.setDate(now.getDate() + daysToAdd)
-          nextOpenTime.setHours(openHour, openMinute, 0, 0)
-          
-          if (nextOpenTime > now) {
-            setNextOpeningTime(nextOpenTime.toLocaleString('en-US', { 
-              weekday: 'long', 
-              hour: 'numeric', 
-              minute: 'numeric', 
-              hour12: true 
-            }))
-            //const timeDiff = nextOpenTime.getTime() - now.getTime()
-            //const hours = Math.floor(timeDiff / (1000 * 60 * 60))
-            //const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60))
-            //setTimeUntilOpen(`${hours}h ${minutes}m`)
-            break
-          }
-          
-          daysToAdd++
-          nextDay = daysOfWeek[(daysOfWeek.indexOf(nextDay) + 1) % 7]
-        }
-      }
-
-      updateNextOpeningTime()
-      const intervalId = setInterval(updateNextOpeningTime, 60000) // Update every minute
-      return () => clearInterval(intervalId)
-    }
-  }, [isStoreOpen])
 
   const formatDeliveryTime = (isoString: string) => {
     const date = new Date(isoString);
@@ -481,7 +446,7 @@ export default function Cart({
                 </div>
 
                 {/* Invalid address message or Payment section */}
-                {!isStoreOpen && cart.length > 0 ? (
+                {!storeStatus.isOpen && cart.length > 0 ? (
                   <div className="bg-red-100 text-red-700 p-4 mb-4 rounded flex items-start">
                     <AlertCircle className="flex-shrink-0 mr-2 mt-1" size={20} />
                     <div>
@@ -489,7 +454,10 @@ export default function Cart({
                       <p>We&apos;re sorry, but we are not accepting orders at this time.</p>
                       <div className="flex items-center mt-2 text-gray-600">
                         <Clock className="mr-2 h-5 w-5" />
-                        <span>Open again: {nextOpeningTime}</span>
+                        <span>
+                          Open {storeStatus.nextOpeningDay} at {storeStatus.nextOpeningTime}
+                          {storeStatus.timeUntilOpen && ` (in ${storeStatus.timeUntilOpen})`}
+                        </span>
                       </div>
                     </div>
                   </div>
