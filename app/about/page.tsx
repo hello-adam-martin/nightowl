@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react'
+import TopBar from '@/components/TopBar'
 import Image from 'next/image'
 import { storeConfig } from '@/config/config'
 import Cart from '@/components/Cart'
@@ -59,6 +60,11 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
+      <TopBar 
+        currentPage="about" 
+        isCartOpen={isCartOpen} 
+        setIsCartOpen={setIsCartOpen}
+      />
 
       {/* Main content */}
       <div className="pt-20 p-8">
