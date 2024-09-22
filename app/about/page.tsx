@@ -6,7 +6,8 @@ import Image from 'next/image'
 import { storeConfig } from '@/config/config'
 import Cart from '@/components/Cart'
 import { useCart } from '@/context/CartContext'
-import { siteInfo } from '@/config/config';
+import { siteInfo } from '@/config/config'
+import Link from 'next/link'; // Make sure this import is present
 
 const formatHour = (time: string) => {
   const [hours, minutes] = time.split(':').map(Number);
@@ -132,6 +133,9 @@ export default function AboutPage() {
                 <p className="text-gray-700">
                   We currently serve Akaroa Township. You can enter your address on the home page to check if we can deliver to you.
                 </p>
+                <Link href="/delivery-area" className="text-blue-600 hover:text-blue-800 mt-2 inline-block">
+                  View Delivery Area Map
+                </Link>
               </section>
 
               <section>

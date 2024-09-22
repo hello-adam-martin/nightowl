@@ -3,11 +3,11 @@ BUGS
 
 MUST DO
 - expand upon about page
+- link to delivery-address page
 
 
 NICE TO HAVE
 - email receipts
-- map with delivery area showing
 
 ENHANCEMENTS
 - When checking address - can we put spinner on the button rather than loading the whole address component
