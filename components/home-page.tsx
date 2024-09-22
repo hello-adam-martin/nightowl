@@ -136,20 +136,17 @@ export function HomePage() {
     return cartFromContext.reduce((total, item) => total + item.price * item.quantity, 0);
   }
 
-  const filteredProducts = products
-    .filter(product => 
+  const filteredProducts = useMemo(() => {
+    return products.filter(product => 
       (selectedCategory === 'all' || product.category_id === selectedCategory) &&
       product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    );
+  }, [products, selectedCategory, searchTerm]);
 
-    console.log(filteredProducts)
-  
   const availableCategories = useMemo(() => {
     const categorySet = new Set(products.map(product => product.category_id));
     return ['all', ...Array.from(categorySet)];
   }, [products]);
-
-  console.log(availableCategories);
 
   const isAddressValid = addressEntered && (isServiceable ?? false) && !addressChanged && phoneNumberEntered
 
@@ -222,51 +219,53 @@ export function HomePage() {
             
             <div className="mb-6">
               <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-                <TabsList className="bg-gray-100 p-1 rounded-lg h-10 flex items-center">
-                  {availableCategories.map(category => (
-                    <TabsTrigger 
-                      key={category} 
-                      value={category}
-                      className="px-3 py-1 text-sm font-medium transition-colors
-                                 data-[state=active]:bg-white data-[state=active]:text-blue-600
-                                 data-[state=active]:shadow-sm hover:bg-gray-200"
-                    >
-                      {category === 'all' ? 'All' : category}
-                    </TabsTrigger>
-                  ))}
-                  <div key="search" className="relative ml-auto">
-                    <Input
-                      type="text"
-                      placeholder="Search products..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-8 pr-8 py-1 w-48 h-8 text-sm bg-white"
-                    />
-                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                    {searchTerm && (
-                      <Button 
-                        onClick={clearSearch}
-                        variant="ghost" 
-                        className="absolute right-1 top-1/2 transform -translate-y-1/2 p-1 h-6 w-6"
-                        aria-label="Clear search"
-                      >
-                        <X size={12} />
-                      </Button>
-                    )}
+                <div className="bg-gray-100 p-2 rounded-lg">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
+                    <TabsList className="h-10 flex items-center flex-wrap mb-4 sm:mb-0 sm:flex-nowrap sm:mr-4 w-full sm:w-auto overflow-x-auto">
+                      {availableCategories.map(category => (
+                        <TabsTrigger 
+                          key={category} 
+                          value={category}
+                          className="px-3 py-1 text-sm font-medium transition-colors whitespace-nowrap
+                                     data-[state=active]:bg-white data-[state=active]:text-blue-600
+                                     data-[state=active]:shadow-sm hover:bg-gray-200 rounded"
+                        >
+                          {category === 'all' ? 'All' : category}
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
+                    <div className="relative w-full sm:w-64 mt-4 sm:mt-0">
+                      <Input
+                        type="text"
+                        placeholder="Search products..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-8 pr-8 py-1 w-full h-10 text-sm bg-white rounded"
+                      />
+                      <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                      {searchTerm && (
+                        <Button 
+                          onClick={clearSearch}
+                          variant="ghost" 
+                          className="absolute right-1 top-1/2 transform -translate-y-1/2 p-1 h-6 w-6"
+                          aria-label="Clear search"
+                        >
+                          <X size={12} />
+                        </Button>
+                      )}
+                    </div>
                   </div>
-                </TabsList>
+                </div>
               </Tabs>
             </div>
 
             <div>
-              {availableCategories.map(category => (
-                <div key={category} className={selectedCategory === category ? '' : 'hidden'}>
-                  <ProductGrid
-                    isStoreOpen={isStoreOpen}
-                    selectedCategory={selectedCategory}
-                  />
-                </div>
-              ))}
+              <ProductGrid
+                products={filteredProducts}
+                isStoreOpen={isStoreOpen}
+                // Remove this line:
+                // selectedCategory={selectedCategory}
+              />
             </div>
 
             <Cart

@@ -131,7 +131,7 @@ export default function AboutPage() {
               <section className="mb-8">
                 <h3 className="text-xl font-semibold mb-4">Our Service Area</h3>
                 <p className="text-gray-700">
-                  We currently serve Akaroa Township. You can enter your address on the home page to check if we can deliver to you.
+                  We currently serve Akaroa Township. You can enter your address on the home page or on our delivery area map to check if we can deliver to you.
                 </p>
                 <Link href="/delivery-area" className="text-blue-600 hover:text-blue-800 mt-2 inline-block">
                   View Delivery Area Map

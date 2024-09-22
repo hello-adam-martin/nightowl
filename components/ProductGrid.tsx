@@ -1,53 +1,27 @@
 'use client';
 
-import React from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useCart } from '../context/CartContext'
 import { useAddress } from '../context/AddressContext'
+import { LOW_STOCK_THRESHOLD, SHOW_OUT_OF_STOCK_ITEMS } from '@/config/config'
+import { Product } from '../config/config';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Plus, Minus } from 'lucide-react'
 import Image from 'next/image'
-import { useCart } from '../context/CartContext'
-import { LOW_STOCK_THRESHOLD } from '@/config/config'
-import { SHOW_OUT_OF_STOCK_ITEMS } from '@/config/config'
-
-async function fetchProducts() {
-  const response = await fetch('/api/products');
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-  const data = await response.json();
-  //console.log('Fetched products:', data);
-  return data;
-}
-
-interface Product {
-  id: number;
-  name: string;
-  category_id: string;
-  price: number;
-  image: string | null;
-  inventory: number;
-  visible: boolean;
-}
 
 interface ProductGridProps {
+  products: Product[];
   isStoreOpen: boolean;
-  selectedCategory: string;
+  // Remove selectedCategory from the interface
 }
 
-function ProductGrid({ isStoreOpen, selectedCategory }: ProductGridProps) {
-  const { data: products, isLoading, error } = useQuery({
-    queryKey: ['products'],
-    queryFn: fetchProducts
-  });
-
-  //console.log('Products from useQuery:', products);
-  //console.log('isLoading:', isLoading);
-  //console.log('error:', error);
-
+const ProductGrid: React.FC<ProductGridProps> = ({ products, isStoreOpen }) => {
   const { cart, addToCart, removeFromCart, updateQuantity } = useCart();
   const { isServiceable, isVerified } = useAddress();
+
+  const filteredProducts = products.filter((product: Product) => 
+    SHOW_OUT_OF_STOCK_ITEMS || product.inventory > 0
+  );
 
   const getItemQuantity = (id: number) => {
     const item = cart.find(item => item.id === id.toString());
@@ -72,23 +46,20 @@ function ProductGrid({ isStoreOpen, selectedCategory }: ProductGridProps) {
   const isLowStock = (inventory: number) => inventory <= LOW_STOCK_THRESHOLD && inventory > 0;
   const isOutOfStock = (inventory: number) => inventory === 0;
 
-  if (isLoading) return <div>Loading products...</div>;
-  if (error) return <div>Error loading products</div>;
-  if (!products || products.length === 0) return <div>No products available</div>;
+  // Remove this useEffect block
+  // useEffect(() => {
+  //   console.log('ProductGrid - selectedCategory:', selectedCategory);
+  //   console.log('ProductGrid - products:', filteredProducts);
+  // }, [selectedCategory, filteredProducts]);
 
-  const validProducts = products.filter((product: Product) => 
-    product.category_id && 
-    product.category_id.trim() !== '' && 
-    product.visible &&
-    (SHOW_OUT_OF_STOCK_ITEMS || product.inventory > 0) &&
-    (selectedCategory === 'all' || product.category_id === selectedCategory)
-  );
+  if (!filteredProducts || filteredProducts.length === 0) return <div>No products available</div>;
 
-  //console.log('validProducts:', validProducts);
+  // Remove this console.log
+  // console.log('ProductGrid - Rendering with products:', filteredProducts);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {validProducts.map((product: Product) => (
+      {filteredProducts.map((product: Product) => (
         <Card key={product.id} className={isOutOfStock(product.inventory) ? "opacity-60" : ""}>
           <CardHeader>
             <div className="flex justify-between items-start">

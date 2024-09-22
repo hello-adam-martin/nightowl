@@ -3,16 +3,14 @@ BUGS
 
 MUST DO
 - expand upon about page
-- link to delivery-address page
-
+- mobile friendly categories
 
 NICE TO HAVE
-- email receipts
+- email receipts - ask for email address after placing order.
 
 ENHANCEMENTS
 - When checking address - can we put spinner on the button rather than loading the whole address component
 - Integrate analytics
-- Track top up amounts (in db)
 - move checkServicibility from home-page to be self contained in the addressForm ??
 
 
