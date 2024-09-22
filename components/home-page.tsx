@@ -221,7 +221,7 @@ export function HomePage() {
               <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
                 <div className="bg-gray-100 p-2 rounded-lg">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-                    <TabsList className="h-10 flex items-center flex-wrap mb-4 sm:mb-0 sm:flex-nowrap sm:mr-4 w-full sm:w-auto overflow-x-auto">
+                    <TabsList className="h-10 flex items-center flex-wrap mb-2 sm:mb-0 sm:flex-nowrap sm:mr-4 w-full sm:w-auto overflow-x-auto">
                       {availableCategories.map(category => (
                         <TabsTrigger 
                           key={category} 
@@ -234,7 +234,7 @@ export function HomePage() {
                         </TabsTrigger>
                       ))}
                     </TabsList>
-                    <div className="relative w-full sm:w-64 mt-4 sm:mt-0">
+                    <div className="relative w-full sm:w-64 mt-2 sm:mt-0">
                       <Input
                         type="text"
                         placeholder="Search products..."
