@@ -59,11 +59,13 @@ export default function TopBar({ currentPage, isCartOpen, setIsCartOpen }: TopBa
     <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
       <div className="max-w-7xl mx-auto px-4 py-2">
         <div className="flex justify-between items-center">
-          <Link href="/" className="flex items-center flex-shrink-0">
-            <Image src="/NightOwl.png" alt="NightOwl Logo" width={30} height={30} />
-            <h1 className="text-xl font-bold ml-2 cursor-pointer">NightOwl</h1>
-          </Link>
-          <div className="text-xs sm:text-sm text-gray-600 flex-grow text-center mx-2">
+          <div className="flex-1">
+            <Link href="/" className="flex items-center flex-shrink-0">
+              <Image src="/NightOwl.png" alt="NightOwl Logo" width={30} height={30} />
+              <h1 className="text-xl font-bold ml-2 cursor-pointer">NightOwl</h1>
+            </Link>
+          </div>
+          <div className="flex-1 text-xs sm:text-sm text-gray-600 text-center">
             <p className={`font-bold ${
               statusDisplay === 'OPEN' ? 'text-green-600' : 
               statusDisplay === 'OPENING LATER TODAY' ? 'text-yellow-600' :
@@ -77,7 +79,7 @@ export default function TopBar({ currentPage, isCartOpen, setIsCartOpen }: TopBa
                 : `Opens ${storeStatus.nextOpeningDay} at ${formattedNextOpeningTime}`}
             </p>
           </div>
-          <div className="flex items-center space-x-4 flex-shrink-0">
+          <div className="flex-1 flex items-center justify-end space-x-4">
             {currentPage === 'home' && (
               <Link href="/about" className="hidden sm:inline-block">
                 <Button variant="outline" size="sm">
