@@ -48,8 +48,8 @@ export const storeConfig = {
     deliveryCharge: 10
   },
   hours: {
-    monday: { open: '07:30', close: '23:00' },
-    tuesday: { open: '08:00', close: '23:00' },
+    monday: { open: '07:30', close: '17:40' },
+    tuesday: { open: '13:00', close: '23:00' },
     wednesday: { open: '08:00', close: '23:00' },
     thursday: { open: '16:00', close: '21:40' },
     friday: { open: '21:50', close: '00:00' },
@@ -72,19 +72,6 @@ export const siteInfo = {
     instagram: 'https://instagram.com/nightowl',
   },
 };
-
-export const categories = [
-  { id: 'all', name: 'All Items' },
-  { id: 'health', name: 'Health & Wellness' },
-  { id: 'food', name: 'Food & Beverages' },
-  { id: 'household', name: 'Household Essentials' },
-  { id: 'personal', name: 'Personal Care' },
-  { id: 'pet', name: 'Pet Supplies' },
-  { id: 'tech', name: 'Tech Accessories' },
-  { id: 'tobacco', name: 'Tobacco & Alcohol' },
-  { id: 'seasonal', name: 'Seasonal Items' },
-  { id: 'convenience', name: 'Convenience Items' }
-];
 
 export interface Product {
   id: number;

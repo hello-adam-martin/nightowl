@@ -66,7 +66,7 @@ export function checkStoreStatus(): StoreStatus {
   return { 
     isOpen, 
     nextOpeningDay, 
-    nextOpeningTime: formatTime24to12(nextOpeningTime),
+    nextOpeningTime, // Remove formatting here
     closingTime,
     timeUntilOpen, 
     secondsUntilOpen

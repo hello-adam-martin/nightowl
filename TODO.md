@@ -1,4 +1,5 @@
 BUGS
+- Closed info is adding extra AM (or PM) after the time.
 - when an address is saved and then another address is entered, the saved address is still being applied. Need to remove the saved address when address is changed
 
 MUST DO
@@ -11,7 +12,6 @@ NICE TO HAVE
 ENHANCEMENTS
 - When checking address - can we put spinner on the button rather than loading the whole address component
 - Integrate analytics
-- move checkServicibility from home-page to be self contained in the addressForm ??
 
 
 

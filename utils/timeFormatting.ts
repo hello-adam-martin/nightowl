@@ -4,5 +4,6 @@ export function formatTime24to12(time24: string): string {
     const ampm = hour >= 12 ? 'PM' : 'AM';
     hour = hour % 12;
     hour = hour ? hour : 12; // the hour '0' should be '12'
-    return `${hour}:${minutes} ${ampm}`;
-  }
+    const result = `${hour}:${minutes} ${ampm}`;
+    return result;
+}

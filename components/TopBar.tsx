@@ -53,6 +53,7 @@ export default function TopBar({ currentPage, isCartOpen, setIsCartOpen }: TopBa
 
   const statusDisplay = getStatusDisplay();
   const formattedNextOpeningTime = formatTime24to12(storeStatus.nextOpeningTime);
+  const formattedClosingTime = formatTime24to12(storeStatus.closingTime);
 
   return (
     <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
@@ -72,7 +73,7 @@ export default function TopBar({ currentPage, isCartOpen, setIsCartOpen }: TopBa
             </p>
             <p className="truncate">
               {storeStatus.isOpen 
-                ? `Closes at ${storeStatus.closingTime}` 
+                ? `Closes at ${formattedClosingTime}` 
                 : `Opens ${storeStatus.nextOpeningDay} at ${formattedNextOpeningTime}`}
             </p>
           </div>
