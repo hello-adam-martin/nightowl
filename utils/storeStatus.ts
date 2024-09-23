@@ -1,11 +1,13 @@
 import { storeConfig } from '@/config/config';
+import { formatTime24to12 } from '@/utils/timeFormatting';
 
 export interface StoreStatus {
   isOpen: boolean;
   nextOpeningDay: string;
   nextOpeningTime: string;
+  closingTime: string; // Add this line
   timeUntilOpen: string;
-  secondsUntilOpen: number; // Add this line
+  secondsUntilOpen: number;
 }
 
 export function checkStoreStatus(): StoreStatus {
@@ -21,6 +23,7 @@ export function checkStoreStatus(): StoreStatus {
   let nextOpeningTime = '';
   let timeUntilOpen = '';
   let openTime = 0;
+  let closingTime = '';
 
   while (daysToAdd < 7) {
     const hours = storeConfig.hours[nextDay as keyof typeof storeConfig.hours];
@@ -37,6 +40,7 @@ export function checkStoreStatus(): StoreStatus {
 
       if (daysToAdd === 0 && currentTime >= openTime && currentTime < closeTime) {
         isOpen = true;
+        closingTime = formatTime24to12(hours.close); // Set closing time
         break;
       } else if (daysToAdd === 0 && currentTime < openTime) {
         nextOpeningDay = 'today';
@@ -62,7 +66,8 @@ export function checkStoreStatus(): StoreStatus {
   return { 
     isOpen, 
     nextOpeningDay, 
-    nextOpeningTime, 
+    nextOpeningTime: formatTime24to12(nextOpeningTime),
+    closingTime,
     timeUntilOpen, 
     secondsUntilOpen
   };

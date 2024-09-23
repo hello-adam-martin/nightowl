@@ -21,6 +21,7 @@ export default function TopBar({ currentPage, isCartOpen, setIsCartOpen }: TopBa
     isOpen: false,
     nextOpeningDay: '',
     nextOpeningTime: '',
+    closingTime: '', // Add this line
     timeUntilOpen: '',
     secondsUntilOpen: 0
   })
@@ -71,7 +72,7 @@ export default function TopBar({ currentPage, isCartOpen, setIsCartOpen }: TopBa
             </p>
             <p className="truncate">
               {storeStatus.isOpen 
-                ? `Closes at ${formattedNextOpeningTime}` 
+                ? `Closes at ${storeStatus.closingTime}` 
                 : `Opens ${storeStatus.nextOpeningDay} at ${formattedNextOpeningTime}`}
             </p>
           </div>

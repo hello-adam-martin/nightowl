@@ -10,7 +10,8 @@ const ClosedStoreNotice: React.FC = () => {
     nextOpeningDay: '',
     nextOpeningTime: '',
     timeUntilOpen: '',
-    secondsUntilOpen: 0
+    secondsUntilOpen: 0,
+    closingTime: ''
   })
 
   const [countdown, setCountdown] = useState(0);
