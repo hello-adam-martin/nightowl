@@ -49,7 +49,7 @@ export const storeConfig = {
   },
   hours: {
     monday: { open: '07:30', close: '17:40' },
-    tuesday: { open: '13:00', close: '23:00' },
+    tuesday: { open: '15:08', close: '23:00' },
     wednesday: { open: '08:00', close: '23:00' },
     thursday: { open: '16:00', close: '21:40' },
     friday: { open: '21:50', close: '00:00' },
@@ -63,7 +63,7 @@ export const siteInfo = {
   name: 'NightOwl',
   title: 'NightOwl - Late Night Delivery Service',
   shortDescription: 'NightOwl is a delivery only service.',
-  longDescription: 'NightOwl is your convenient delivery service, offering groceries, household essentials, and more whenever you need them. With quick and reliable deliveries, we are here to make sure you have what you need, when you need it.',
+  longDescription: 'NightOwl is your 24/7 delivery service for groceries, household essentials, and more. We partner with local shops to bring you the best products from your community whenever you need them.<br>Our app lets you browse and order from various local businesses. Our drivers quickly collect your items and deliver them to your doorstep. With NightOwl, you get convenient service while supporting local businesses.<br>Experience fast, reliable delivery that strengthens your community. NightOwl - delivering local support, one order at a time.',
   supportEmail: 'support@nightowl.com',
   supportPhone: '(0800) 123-4567',
   socialMedia: {

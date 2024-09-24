@@ -1,5 +1,4 @@
 import { storeConfig } from '@/config/config';
-import { formatTime24to12 } from '@/utils/timeFormatting';
 
 export interface StoreStatus {
   isOpen: boolean;
@@ -40,7 +39,7 @@ export function checkStoreStatus(): StoreStatus {
 
       if (daysToAdd === 0 && currentTime >= openTime && currentTime < closeTime) {
         isOpen = true;
-        closingTime = formatTime24to12(hours.close); // Set closing time
+        closingTime = hours.close; // Change this line
         break;
       } else if (daysToAdd === 0 && currentTime < openTime) {
         nextOpeningDay = 'today';

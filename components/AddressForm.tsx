@@ -24,7 +24,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
   checkServiceability,
   setAddressChanged,
   setPhoneNumberEntered,
-  serviceInfo,
 }) => {
   const { 
     address, 
@@ -138,9 +137,9 @@ const AddressForm: React.FC<AddressFormProps> = ({
       <CardContent>
         <form onSubmit={handleSubmit}>
           <div className="grid w-full items-center gap-4">
-            <div className="flex flex-col space-y-1.5">
+            <div className="flex flex-col space-y-4">
               <Label htmlFor="customerDetails">Name, Address, and Phone Number</Label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <Input
                   id="customerName"
                   placeholder="Name"
@@ -155,19 +154,19 @@ const AddressForm: React.FC<AddressFormProps> = ({
                   onChange={handlePhoneNumberChange}
                   className={`${isVerified ? 'bg-gray-100' : 'bg-blue-50'}`}
                 />
-                <Input
-                  id="address"
-                  placeholder="Full Address"
-                  value={address}
-                  onChange={handleAddressChange}
-                  className={`sm:col-span-2 ${isVerified ? 'bg-gray-100' : 'bg-blue-50'}`}
-                  ref={addressInputRef}
-                />
               </div>
+              <Input
+                id="address"
+                placeholder="Full Address"
+                value={address}
+                onChange={handleAddressChange}
+                className={`sm:col-span-2 ${isVerified ? 'bg-gray-100' : 'bg-blue-50'}`}
+                ref={addressInputRef}
+              />
               <Button 
                 type="submit" 
                 disabled={isVerified || address.trim() === '' || phoneNumber.trim() === '' || customerName.trim() === ''}
-                className={`w-full mt-4 ${isVerified ? (isServiceable ? 'bg-gray-300 text-gray-600' : 'bg-red-500 text-white') : 'bg-blue-500 text-white'}`}
+                className={`w-full ${isVerified ? (isServiceable ? 'bg-gray-300 text-gray-600' : 'bg-red-500 text-white') : 'bg-blue-500 text-white'}`}
               >
                 {isVerified 
                   ? (isServiceable 
@@ -217,14 +216,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
             )}
           </div>
         )}
-        <div className="mt-4 p-4 bg-blue-50 rounded-md">
-          <h3 className="text-lg font-semibold mb-2">Service Information</h3>
-          <ul className="list-disc list-inside text-sm">
-            <li>Estimated delivery time: {serviceInfo.deliveryTime}</li>
-            <li>Service area: Akaroa</li>
-            <li>Minimum order value: ${serviceInfo.minOrderValue.toFixed(2)}</li>
-          </ul>
-        </div>
       </CardContent>
     </Card>
   )
