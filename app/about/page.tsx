@@ -73,30 +73,83 @@ export default function AboutPage() {
             <Image src="/NightOwl.png" alt="NightOwl Logo" width={120} height={120} />
           </div>
           
-          <h2 className="text-2xl font-bold text-center mb-6">About NightOwl</h2>
-          
           <div className="flex flex-col md:flex-row gap-8">
             {/* Left column: Main content */}
             <div className="md:w-2/3 md:border-r md:pr-8">
               <section className="mb-8">
-                <h3 className="text-xl font-semibold mb-4">Our Story</h3>
+                <h3 className="text-xl font-semibold mb-4">NightOwl: Essentials On Demand</h3>
                 <p className="text-gray-700">
-                NightOwl was founded with a simple mission: to provide convenient service to our community. We understand that life doesn’t stop at certain hours, and neither should your access to essential items.
-                </p>
+                NightOwl was born from a simple idea: essential services shouldn&apos;t be unavailable just because it&apos;s outside regular business hours. 
+                Our goal is to be open for longer hours as we grow. Currently, we operate during peak off-hours demand periods, gradually expanding our availability as 
+                our customer base increases. This approach allows us to provide essential services when they&apos;re most needed while ensuring sustainable operations 
+                as a new business.</p>
               </section>
 
               <section className="mb-8">
                 <h3 className="text-xl font-semibold mb-4">What We Offer</h3>
                 <p className="text-gray-700">
-                  We specialize in delivering a wide range of products, from snacks and beverages to household essentials, right to your doorstep during the late hours when most stores are closed.
+                  From midnight snacks to early morning necessities, we deliver a wide array of products when traditional stores have long since closed their doors.
                 </p>
               </section>
 
               <section className="mb-8">
                 <h3 className="text-xl font-semibold mb-4">Our Commitment</h3>
                 <p className="text-gray-700">
-                  At NightOwl, we&apos;re committed to providing fast, reliable service with a focus on customer satisfaction. Our team works tirelessly to ensure that your late-night needs are met with efficiency and care.
+                  Speed, reliability, and customer satisfaction are the pillars of our service. Our dedicated team ensures your late-night orders are handled with care and efficiency.
                 </p>
+              </section>
+
+              <section className="mb-8">
+                <h3 className="text-xl font-semibold mb-4">Supporting Local Businesses</h3>
+                <p className="text-gray-700 mb-4">
+                  At NightOwl, we believe in supporting our community. That&apos;s why we&apos;ve partnered with local businesses to bring you the products you want and need:
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
+                    <div className="flex items-center mb-2">
+                      <svg className="w-6 h-6 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                      <h4 className="text-lg font-medium">Local Grocers</h4>
+                    </div>
+                    <p className="text-gray-700">
+                      We partner with local supermarkets and specialty food stores to bring you fresh produce, artisanal goods, and pantry staples.
+                    </p>
+                  </div>
+                  <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
+                    <div className="flex items-center mb-2">
+                      <svg className="w-6 h-6 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                      <h4 className="text-lg font-medium">Neighborhood Pharmacies</h4>
+                    </div>
+                    <p className="text-gray-700">
+                      For your health and personal care needs, we work with trusted local pharmacies.
+                    </p>
+                  </div>
+                  <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
+                    <div className="flex items-center mb-2">
+                      <svg className="w-6 h-6 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                      </svg>
+                      <h4 className="text-lg font-medium">Community Favorites</h4>
+                    </div>
+                    <p className="text-gray-700">
+                      From corner bakeries to popular delis, we&apos;ve teamed up with beloved local establishments.
+                    </p>
+                  </div>
+                  <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
+                    <div className="flex items-center mb-2">
+                      <svg className="w-6 h-6 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                      </svg>
+                      <h4 className="text-lg font-medium">Area Retailers</h4>
+                    </div>
+                    <p className="text-gray-700">
+                      Local hardware stores, bookshops, and gift boutiques are part of our network, offering a diverse range of products.
+                    </p>
+                  </div>
+                </div>
               </section>
 
               <section>
@@ -104,15 +157,15 @@ export default function AboutPage() {
                 <div className="space-y-4">
                   <div>
                     <h4 className="font-medium">Q: How fast is your delivery?</h4>
-                    <p className="text-gray-700">We aim to deliver within 30-45 minutes of order placement, depending on your location.</p>
+                    <p className="text-gray-500">We aim to deliver within 30-45 minutes of order placement, depending on your location.</p>
                   </div>
                   <div>
                     <h4 className="font-medium">Q: Do you have a minimum order amount?</h4>
-                    <p className="text-gray-700">Yes, our minimum order amount is ${storeConfig.serviceInfo.minOrderValue.toFixed(2)}.</p>
+                    <p className="text-gray-500">Yes, our minimum order amount is ${storeConfig.serviceInfo.minOrderValue.toFixed(2)}.</p>
                   </div>
                   <div>
                     <h4 className="font-medium">Q: What payment methods do you accept?</h4>
-                    <p className="text-gray-700">We accept all major credit cards, debit cards, and mobile payment options. Online payments only.</p>
+                    <p className="text-gray-500">We accept all major credit cards, debit cards, and mobile payment options. Online payments only.</p>
                   </div>
                 </div>
               </section>
