@@ -1,11 +1,11 @@
 BUGS
-- category display is not displaying the actual name... but rather the "key"
+- when doing a search, we should be hiding the categories that do not have any matching products
 - AM / PM extra is showing in topbar when we are open
 - Our countdown is slightly out - it is calculating 60 secs for the last minute rather than checking actual seconds remaining (not a biggie)
 
 MUST DO
+- Show the suppliers of each product
 - expand upon about page
-- Use hooks/useStoreStatus.ts for the different places that is checking if store is open etc
 
 NICE TO HAVE
 - email receipts - ask for email address after placing order.
@@ -13,6 +13,8 @@ NICE TO HAVE
 ENHANCEMENTS
 - When checking address - can we put spinner on the button rather than loading the whole address component
 - Integrate analytics
+- change the placeholder image - maybe we can use the logo and greyscale it
+
 
 
 

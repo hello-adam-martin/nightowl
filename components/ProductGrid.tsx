@@ -70,14 +70,13 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, isStoreOpen }) => {
             </div>
           </CardHeader>
           <CardContent className="p-4 flex flex-col">
-            <div className="relative w-full aspect-square mb-2">
+            <div className="relative w-full mb-2 h-[200px] sm:h-auto sm:aspect-square">
               <Image 
-                src={product.image ? `/product-images/${product.image}` : "/images/placeholder.png"}
+                src={product.image ? `/product-images/${product.image}` : "/NightOwl.png"}
                 alt={product.name} 
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                className="rounded-md" 
-                style={{ objectFit: 'cover' }}
+                className={`rounded-md object-cover ${!product.image ? 'placeholder-image' : ''}`}
               />
             </div>
             <div className="h-16 flex flex-col justify-between">
