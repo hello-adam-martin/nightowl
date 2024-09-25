@@ -139,13 +139,13 @@ export function HomePage() {
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => 
-      (selectedCategory === 'all' || product.category_id === selectedCategory) &&
+      (selectedCategory === 'all' || product.category_name === selectedCategory) &&
       product.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [products, selectedCategory, searchTerm]);
 
   const availableCategories = useMemo(() => {
-    const categorySet = new Set(products.map(product => product.category_id));
+    const categorySet = new Set(products.map(product => product.category_name));
     return ['all', ...Array.from(categorySet)];
   }, [products]);
 

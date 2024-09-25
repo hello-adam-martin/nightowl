@@ -63,7 +63,7 @@ export const siteInfo = {
   name: 'NightOwl',
   title: 'NightOwl - Late Night Delivery Service',
   shortDescription: 'NightOwl is a delivery only service.',
-  longDescription: 'NightOwl is your 24/7 delivery service for groceries, household essentials, and more. We partner with local shops to bring you the best products from your community whenever you need them.<br>Our app lets you browse and order from various local businesses. Our drivers quickly collect your items and deliver them to your doorstep. With NightOwl, you get convenient service while supporting local businesses.<br>Experience fast, reliable delivery that strengthens your community. NightOwl - delivering local support, one order at a time.',
+  longDescription: 'NightOwl is your reliable solution for groceries, household essentials, and more when traditional stores are closed. We partner with local shops to provide you access to the products you need outside regular business hours. Our service operates during peak demand periods, expanding as we grow to meet your needs.<br>Getting started is easy. Simply add your details (name, address, and phone number) to check if we can service your area. With NightOwl, you are just a few steps away from having essential items delivered when you need them most,',
   supportEmail: 'support@nightowl.com',
   supportPhone: '(0800) 123-4567',
   socialMedia: {
@@ -82,4 +82,5 @@ export interface Product {
   inventory: number;
   visible: boolean;
   category_id: string;
+  category_name: string;
 }

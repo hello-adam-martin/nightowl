@@ -10,12 +10,22 @@ export async function GET() {
   try {
     const { data, error } = await supabase
       .from('products')
-      .select('*')
+      .select(`
+        *,
+        categories(id, name)
+      `)
       .order('id')
 
     if (error) throw error
 
-    return NextResponse.json(data)
+    // Transform the data to include category name directly in the product object
+    const transformedData = data.map(product => ({
+      ...product,
+      category_name: product.categories.name,
+      category_id: product.categories.id
+    }))
+
+    return NextResponse.json(transformedData)
   } catch (error) {
     console.error('Error fetching products:', error)
     return NextResponse.json({ error: 'An error occurred while fetching products' }, { status: 500 })

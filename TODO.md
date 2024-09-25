@@ -1,6 +1,6 @@
 BUGS
+- category display is not displaying the actual name... but rather the "key"
 - AM / PM extra is showing in topbar when we are open
-- when an address is saved and then another address is entered, the saved address is still being applied. Need to remove the saved address when address is changed
 - Our countdown is slightly out - it is calculating 60 secs for the last minute rather than checking actual seconds remaining (not a biggie)
 
 MUST DO
