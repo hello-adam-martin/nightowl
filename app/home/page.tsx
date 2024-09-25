@@ -1,11 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRef } from 'react';
-import { Search, X, Loader2, Info, MapPin } from 'lucide-react'
+import { Loader2, Info, MapPin } from 'lucide-react'
 import { Button } from "@/components/ui/button"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
 import AddressForm from "@/components/AddressForm"
 import ProductGrid from '@/components/ProductGrid'
 import Cart from '@/components/Cart'
@@ -21,11 +19,9 @@ export function HomePage() {
   const [isStoreOpen, setIsStoreOpen] = useState(false)
   // Remove this line:
   // const [timeUntilOpen, setTimeUntilOpen] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('all')
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [addressEntered, setAddressEntered] = useState(false)
   const [addressChanged, setAddressChanged] = useState(false)
-  const [searchTerm, setSearchTerm] = useState('')
   const [phoneNumberEntered, setPhoneNumberEntered] = useState(false)
   const [products, setProducts] = useState<Product[]>([])
   const { isServiceable, setIsServiceable } = useAddress();
@@ -137,24 +133,7 @@ export function HomePage() {
     return cartFromContext.reduce((total, item) => total + item.price * item.quantity, 0);
   }
 
-  const filteredProducts = useMemo(() => {
-    return products.filter(product => 
-      (selectedCategory === 'all' || product.category_name === selectedCategory) &&
-      product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [products, selectedCategory, searchTerm]);
-
-  const availableCategories = useMemo(() => {
-    const categorySet = new Set(products.map(product => product.category_name));
-    return ['all', ...Array.from(categorySet)];
-  }, [products]);
-
   const isAddressValid = addressEntered && (isServiceable ?? false) && !addressChanged && phoneNumberEntered
-
-  const clearSearch = () => {
-    setSearchTerm('')
-    setSelectedCategory('all')
-  }
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -252,71 +231,25 @@ export function HomePage() {
           <div className="relative">
             <h2 className="text-xl font-semibold mb-4 text-center">Products</h2>
             
-            <div className="mb-6">
-              <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-                <div className="bg-gray-100 p-2 rounded-lg">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-                    <TabsList className="h-10 flex items-center flex-wrap mb-2 sm:mb-0 sm:flex-nowrap sm:mr-4 w-full sm:w-auto overflow-x-auto">
-                      {availableCategories.map(category => (
-                        <TabsTrigger 
-                          key={category} 
-                          value={category}
-                          className="px-3 py-1 text-sm font-medium transition-colors whitespace-nowrap
-                                     data-[state=active]:bg-white data-[state=active]:text-blue-600
-                                     data-[state=active]:shadow-sm hover:bg-gray-200 rounded"
-                        >
-                          {category === 'all' ? 'All' : category}
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
-                    <div className="relative w-full sm:w-64 mt-2 sm:mt-0">
-                      <Input
-                        type="text"
-                        placeholder="Search products..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-8 pr-8 py-1 w-full h-10 text-sm bg-white rounded"
-                      />
-                      <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                      {searchTerm && (
-                        <Button 
-                          onClick={clearSearch}
-                          variant="ghost" 
-                          className="absolute right-1 top-1/2 transform -translate-y-1/2 p-1 h-6 w-6"
-                          aria-label="Clear search"
-                        >
-                          <X size={12} />
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </Tabs>
-            </div>
-
-            <div>
-              <ProductGrid
-                products={filteredProducts}
-                isStoreOpen={isStoreOpen}
-                // Remove this line:
-                // selectedCategory={selectedCategory}
-              />
-            </div>
-
-            <Cart
-              isCartOpen={isCartOpen}
-              setIsCartOpen={setIsCartOpen}
-              cart={cartFromContext}
-              isAddressValid={isAddressValid}
-              updateQuantity={(id: string, increment: boolean) => 
-                updateQuantity(id, getItemQuantity(id) + (increment ? 1 : -1))
-              }
-              removeFromCart={removeFromCart}
-              getTotalPrice={getTotalPrice}
-              deliveryCharge={storeConfig.serviceInfo.deliveryCharge}
-              isStoreOpen={isStoreOpen} // Add this line
+            <ProductGrid
+              products={products}
+              isStoreOpen={isStoreOpen}
             />
           </div>
+
+          <Cart
+            isCartOpen={isCartOpen}
+            setIsCartOpen={setIsCartOpen}
+            cart={cartFromContext}
+            isAddressValid={isAddressValid}
+            updateQuantity={(id: string, increment: boolean) => 
+              updateQuantity(id, getItemQuantity(id) + (increment ? 1 : -1))
+            }
+            removeFromCart={removeFromCart}
+            getTotalPrice={getTotalPrice}
+            deliveryCharge={storeConfig.serviceInfo.deliveryCharge}
+            isStoreOpen={isStoreOpen} // Add this line
+          />
         </div>
       </div>
     </div>
