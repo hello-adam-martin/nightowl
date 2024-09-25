@@ -83,4 +83,5 @@ export interface Product {
   visible: boolean;
   category_id: string;
   category_name: string;
+  supplier: string | null;
 }

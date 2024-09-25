@@ -134,17 +134,22 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, isStoreOpen }) => {
                   className={`rounded-md object-cover ${!product.image ? 'placeholder-image' : ''}`}
                 />
               </div>
-              <div className="h-16 flex flex-col justify-between">
-                <div className="flex justify-between items-center">
-                  <p>Price: ${product.price.toFixed(2)}</p>
-                  <div>
-                    {isLowStock(product.inventory) && (
-                      <p className="text-yellow-600 text-sm">Low stock</p>
-                    )}
-                    {isOutOfStock(product.inventory) && (
-                      <p className="text-red-600 text-sm font-semibold">Out of stock</p>
-                    )}
+              <div className="flex flex-col justify-between flex-grow">
+                <div>
+                  <div className="flex justify-between items-center">
+                    <p>Price: ${product.price.toFixed(2)}</p>
+                    <div>
+                      {isLowStock(product.inventory) && (
+                        <p className="text-yellow-600 text-sm">Low stock</p>
+                      )}
+                      {isOutOfStock(product.inventory) && (
+                        <p className="text-red-600 text-sm font-semibold">Out of stock</p>
+                      )}
+                    </div>
                   </div>
+                  {product.supplier && (
+                    <p className="text-sm text-gray-600">Supplied By: {product.supplier}</p>
+                  )}
                 </div>
               </div>
             </CardContent>
