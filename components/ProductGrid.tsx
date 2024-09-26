@@ -1,27 +1,48 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useCart } from '../context/CartContext'
 import { useAddress } from '../context/AddressContext'
 import { LOW_STOCK_THRESHOLD, SHOW_OUT_OF_STOCK_ITEMS } from '@/config/config'
-import { Product } from '../config/config';
+import { Product } from '@/types/product'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus, Minus, Search, X } from 'lucide-react'
+import { Plus, Minus, Search, X, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 
 interface ProductGridProps {
-  products: Product[];
   isStoreOpen: boolean;
 }
 
-const ProductGrid: React.FC<ProductGridProps> = ({ products, isStoreOpen }) => {
+const ProductGrid: React.FC<ProductGridProps> = ({ isStoreOpen }) => {
   const { cart, addToCart, removeFromCart, updateQuantity } = useCart();
   const { isServiceable, isVerified } = useAddress();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('/api/products');
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => 
@@ -67,7 +88,18 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, isStoreOpen }) => {
     setSelectedCategory('all');
   };
 
-  if (!filteredProducts || filteredProducts.length === 0) return <div>No products available</div>;
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+        <span className="ml-2 text-lg text-gray-600">Loading products...</span>
+      </div>
+    );
+  }
+
+  if (!filteredProducts || filteredProducts.length === 0) {
+    return <div>No products available</div>;
+  }
 
   return (
     <div>

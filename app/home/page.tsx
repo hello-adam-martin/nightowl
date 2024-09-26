@@ -6,14 +6,13 @@ import { Button } from "@/components/ui/button"
 import AddressForm from "@/components/AddressForm"
 import ProductGrid from '@/components/ProductGrid'
 import Cart from '@/components/Cart'
-import { storeConfig, Product, siteInfo } from '@/config/config'
+import { storeConfig, siteInfo } from '@/config/config'
 import Link from 'next/link'
 import ClosedStoreNotice from '@/components/ClosedStoreNotice'
 import Image from 'next/image'
 import { checkStoreStatus, StoreStatus } from '@/utils/storeStatus';
 
 export function HomePage() {
-  const [products, setProducts] = useState<Product[]>([])
   const [storeStatus, setStoreStatus] = useState<StoreStatus>({
     isOpen: false,
     nextOpeningDay: '',
@@ -36,23 +35,6 @@ export function HomePage() {
 
     return () => clearInterval(timer);
   }, []);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch('/api/products')
-        if (!response.ok) {
-          throw new Error('Failed to fetch products')
-        }
-        const data = await response.json()
-        setProducts(data)
-      } catch (error) {
-        console.error('Error fetching products:', error)
-      }
-    }
-
-    fetchProducts()
-  }, [])
 
   // Split the description into paragraphs
   const descriptionParagraphs = siteInfo.longDescription.split('<br>')
@@ -120,10 +102,7 @@ export function HomePage() {
           <div className="relative">
             <h2 className="text-xl font-semibold mb-4 text-center">Products</h2>
             
-            <ProductGrid
-              products={products}
-              isStoreOpen={storeStatus.isOpen}
-            />
+            <ProductGrid isStoreOpen={storeStatus.isOpen} />
           </div>
 
           <Cart
