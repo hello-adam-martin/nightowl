@@ -7,52 +7,18 @@ import { storeConfig } from '@/config/config'
 import Cart from '@/components/Cart'
 import { useCart } from '@/context/CartContext'
 import { siteInfo } from '@/config/config'
-import Link from 'next/link'; // Make sure this import is present
-
-const formatHour = (time: string) => {
-  const [hours, minutes] = time.split(':').map(Number);
-  const period = hours >= 12 ? 'PM' : 'AM';
-  const displayHour = hours % 12 || 12;
-  return `${displayHour}:${minutes.toString().padStart(2, '0')} ${period}`;
-};
+import Link from 'next/link'
+import { formatTime24to12 } from '@/utils/timeFormatting'
 
 export default function AboutPage() {
   const [isCartOpen, setIsCartOpen] = useState(false)
-  const [currentDay, setCurrentDay] = useState('');
-  const [isStoreOpen, setIsStoreOpen] = useState(false)
-
-  useEffect(() => {
-    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    setCurrentDay(days[new Date().getDay()]);
-  }, []);
-
-  useEffect(() => {
-    const checkStoreStatus = () => {
-      const now = new Date()
-      const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase() as keyof typeof storeConfig.hours
-      const currentHour = now.getHours()
-      const currentMinute = now.getMinutes()
-      const { open, close } = storeConfig.hours[currentDay]
-      
-      const [openHour, openMinute] = open.split(':').map(Number)
-      const [closeHour, closeMinute] = close.split(':').map(Number)
-      
-      const isOpen = (openHour < closeHour || (openHour === closeHour && openMinute < closeMinute)) 
-        ? (currentHour > openHour || (currentHour === openHour && currentMinute >= openMinute)) &&
-          (currentHour < closeHour || (currentHour === closeHour && currentMinute < closeMinute))
-        : (currentHour > openHour || (currentHour === openHour && currentMinute >= openMinute)) ||
-          (currentHour < closeHour || (currentHour === closeHour && currentMinute < closeMinute))
-      
-      setIsStoreOpen(isOpen)
-    }
-
-    checkStoreStatus() // Check immediately on mount
-    const timer = setInterval(checkStoreStatus, 60000) // Update every minute
-
-    return () => clearInterval(timer)
-  }, []);
-
+  const [currentDay, setCurrentDay] = useState('')
   const { cart, updateQuantity, removeFromCart } = useCart()
+
+  useEffect(() => {
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+    setCurrentDay(days[new Date().getDay()])
+  }, [])
 
   const getTotalPrice = () => {
     return cart.reduce((total, item) => total + item.price * item.quantity, 0)
@@ -171,7 +137,7 @@ export default function AboutPage() {
               </section>
             </div>
 
-            {/* Right column: Contact info, service area, and opening hours */}
+            {/* Right column: Contact info, service area, and operating hours */}
             <div className="md:w-1/3 md:pl-8">
               <section className="mb-8">
                 <h3 className="text-xl font-semibold mb-4">Contact Us</h3>
@@ -197,7 +163,7 @@ export default function AboutPage() {
                   {Object.entries(storeConfig.hours).map(([day, hours]) => (
                     <div key={day} className={`flex ${day === currentDay ? 'font-bold text-blue-600' : ''}`}>
                       <span className="w-24">{day.charAt(0).toUpperCase() + day.slice(1)}:</span>
-                      <span>{formatHour(hours.open)} - {formatHour(hours.close)}</span>
+                      <span>{formatTime24to12(hours.open)} - {formatTime24to12(hours.close)}</span>
                     </div>
                   ))}
                 </div>
@@ -210,7 +176,7 @@ export default function AboutPage() {
       <Cart
         isCartOpen={isCartOpen}
         setIsCartOpen={setIsCartOpen}
-        isStoreOpen={isStoreOpen}
+        isStoreOpen={true} // This prop is not used in the Cart component for the About page
         cart={cart}
         isAddressValid={true} 
         updateQuantity={(id, increment) => updateQuantity(id, (cart.find(item => item.id === id)?.quantity ?? 0) + (increment ? 1 : -1))}
