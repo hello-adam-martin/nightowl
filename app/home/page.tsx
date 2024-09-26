@@ -14,11 +14,9 @@ import { useCart } from '@/context/CartContext';
 import ClosedStoreNotice from '@/components/ClosedStoreNotice'
 import TopBar from '@/components/TopBar'
 import Image from 'next/image'
+import { checkStoreStatus, StoreStatus } from '@/utils/storeStatus';
 
 export function HomePage() {
-  const [isStoreOpen, setIsStoreOpen] = useState(false)
-  // Remove this line:
-  // const [timeUntilOpen, setTimeUntilOpen] = useState('')
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [addressEntered, setAddressEntered] = useState(false)
   const [addressChanged, setAddressChanged] = useState(false)
@@ -26,8 +24,15 @@ export function HomePage() {
   const [products, setProducts] = useState<Product[]>([])
   const { isServiceable, setIsServiceable } = useAddress();
   const { cart: cartFromContext, updateCart } = useCart(); // Get updateCart function
-  const [isLoading, setIsLoading] = useState(true) // Add this state
-  const [currentDay, setCurrentDay] = useState<keyof typeof storeConfig.hours>('monday')
+  const [storeStatus, setStoreStatus] = useState<StoreStatus>({
+    isOpen: false,
+    nextOpeningDay: '',
+    nextOpeningTime: '',
+    closingTime: '',
+    timeUntilOpen: '',
+    secondsUntilOpen: 0
+  });
+  const [isLoading, setIsLoading] = useState(true)
 
   const lastCheckedAddress = useRef('');
 
@@ -75,40 +80,17 @@ export function HomePage() {
   };
 
   useEffect(() => {
-    const checkStoreStatus = () => {
-      const now = new Date()
-      setCurrentDay(now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase() as keyof typeof storeConfig.hours)
-      const currentHour = now.getHours()
-      const currentMinute = now.getMinutes()
-      const { open, close } = storeConfig.hours[currentDay]
-      
-      const [openHour, openMinute] = open.split(':').map(Number)
-      const [closeHour, closeMinute] = close.split(':').map(Number)
-      
-      const isOpen = (openHour < closeHour || (openHour === closeHour && openMinute < closeMinute)) 
-        ? (currentHour > openHour || (currentHour === openHour && currentMinute >= openMinute)) &&
-          (currentHour < closeHour || (currentHour === closeHour && currentMinute < closeMinute))
-        : (currentHour > openHour || (currentHour === openHour && currentMinute >= openMinute)) ||
-          (currentHour < closeHour || (currentHour === closeHour && currentMinute < closeMinute))
-      
-      setIsStoreOpen(isOpen)
+    const updateStoreStatus = () => {
+      const status = checkStoreStatus();
+      setStoreStatus(status);
+      setIsLoading(false);
+    };
 
-      if (!isOpen) {
-        const openingTime = new Date(now)
-        openingTime.setHours(openHour, openMinute, 0, 0)
-        if (currentHour > closeHour || (currentHour === closeHour && currentMinute >= closeMinute)) {
-          openingTime.setDate(openingTime.getDate() + 1)
-        }
-      }
+    updateStoreStatus(); // Check immediately on mount
+    const timer = setInterval(updateStoreStatus, 1000); // Update every second
 
-      setIsLoading(false)
-    }
-
-    checkStoreStatus() // Check immediately on mount
-    const timer = setInterval(checkStoreStatus, 1000) // Update every second
-
-    return () => clearInterval(timer)
-  }, [currentDay])
+    return () => clearInterval(timer);
+  }, []);
 
   const removeFromCart = (id: string) => {
     updateCart(cartFromContext.filter(item => item.id !== id));
@@ -213,7 +195,7 @@ export function HomePage() {
                 <div className="flex justify-center items-center h-32">
                   <Loader2 className="w-8 h-8 animate-spin" />
                 </div>
-              ) : isStoreOpen ? (
+              ) : storeStatus.isOpen ? (
                 <AddressForm
                   setAddressEntered={setAddressEntered}
                   checkServiceability={checkServiceability}
@@ -233,7 +215,7 @@ export function HomePage() {
             
             <ProductGrid
               products={products}
-              isStoreOpen={isStoreOpen}
+              isStoreOpen={storeStatus.isOpen}
             />
           </div>
 
@@ -248,7 +230,7 @@ export function HomePage() {
             removeFromCart={removeFromCart}
             getTotalPrice={getTotalPrice}
             deliveryCharge={storeConfig.serviceInfo.deliveryCharge}
-            isStoreOpen={isStoreOpen} // Add this line
+            isStoreOpen={storeStatus.isOpen}
           />
         </div>
       </div>

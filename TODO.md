@@ -1,9 +1,9 @@
 BUGS
-- AM / PM extra is showing in topbar when we are open
 - Our countdown is slightly out - it is calculating 60 secs for the last minute rather than checking actual seconds remaining (not a biggie)
 
 MUST DO
 - expand upon about page
+- need to remove a lot of the logic in home page to be encapsulated in the component itself.
 
 NICE TO HAVE
 - email receipts - ask for email address after placing order.
