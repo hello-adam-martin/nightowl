@@ -204,7 +204,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, isStoreOpen }) => {
       {isStoreOpen && !isVerified && (
         <div className="mt-6 p-4 bg-yellow-100 border border-yellow-400 rounded-md">
           <p className="text-center text-yellow-700">
-            Address required to add items to cart
+            Please provide your address to start shoppping.
           </p>
         </div>
       )}
