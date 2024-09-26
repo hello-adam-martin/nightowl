@@ -124,8 +124,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, isStoreOpen }) => {
                     {product.category_id}
                   </span>
                 </div>
-                {/* Add the product description here */}
-                <p className="text-sm text-gray-600 mt-1">{product.description}</p>
+                <p className="text-sm text-gray-600 mt-1">
+                  {product.description?.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                </p>
               </div>
             </CardHeader>
             <CardContent className="p-4 flex flex-col">
