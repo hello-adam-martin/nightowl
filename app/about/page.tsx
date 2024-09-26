@@ -76,7 +76,7 @@ export default function AboutPage() {
                       <svg className="w-6 h-6 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
-                      <h4 className="text-lg font-medium">Local Grocers</h4>
+                      <h4 className="text-lg font-medium">Local Supermarkets</h4>
                     </div>
                     <p className="text-gray-700">
                       We partner with local supermarkets and specialty food stores to bring you fresh produce, artisanal goods, and pantry staples.
@@ -98,7 +98,7 @@ export default function AboutPage() {
                       <svg className="w-6 h-6 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                       </svg>
-                      <h4 className="text-lg font-medium">Community Favorites</h4>
+                      <h4 className="text-lg font-medium">Community Favourites</h4>
                     </div>
                     <p className="text-gray-700">
                       From corner bakeries to popular delis, we&apos;ve teamed up with beloved local establishments.
@@ -109,7 +109,7 @@ export default function AboutPage() {
                       <svg className="w-6 h-6 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                       </svg>
-                      <h4 className="text-lg font-medium">Area Retailers</h4>
+                      <h4 className="text-lg font-medium">Other Retailers</h4>
                     </div>
                     <p className="text-gray-700">
                       Local hardware stores, bookshops, and gift boutiques are part of our network, offering a diverse range of products.

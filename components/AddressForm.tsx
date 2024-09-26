@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Edit } from 'lucide-react'
 import { useAddress } from '../context/AddressContext';
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -193,7 +192,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
           <form onSubmit={handleSubmit}>
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-4">
-                <Label htmlFor="customerDetails">Name, Address, and Phone Number</Label>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   <Input
                     id="customerName"
