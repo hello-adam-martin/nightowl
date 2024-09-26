@@ -134,9 +134,19 @@ const AddressForm: React.FC<AddressFormProps> = ({
     setIsVerified(false);
   }
 
+  const formatPhoneNumber = (number: string): string => {
+    const digits = number.replace(/\D/g, '');
+    if (digits.startsWith('02')) {
+      return digits.replace(/(\d{3})(\d{4})(\d*)/, '$1 $2 $3').trim();
+    } else {
+      return digits.replace(/(\d{2})(\d{3})(\d*)/, '$1 $2 $3').trim();
+    }
+  };
+
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPhoneNumber(e.target.value)
-    setPhoneNumberEntered(e.target.value.trim() !== '')
+    const formattedNumber = formatPhoneNumber(e.target.value);
+    setPhoneNumber(formattedNumber);
+    setPhoneNumberEntered(formattedNumber.trim() !== '');
   }
 
   const handleCustomerNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {  // Add this function

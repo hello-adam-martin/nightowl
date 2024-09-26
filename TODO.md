@@ -1,10 +1,8 @@
 BUGS
-- when doing a search, we should be hiding the categories that do not have any matching products
 - AM / PM extra is showing in topbar when we are open
 - Our countdown is slightly out - it is calculating 60 secs for the last minute rather than checking actual seconds remaining (not a biggie)
 
 MUST DO
-- Show the suppliers of each product
 - expand upon about page
 
 NICE TO HAVE

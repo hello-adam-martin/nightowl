@@ -45,6 +45,7 @@ function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, custome
   const elements = useElements()
   const [error, setError] = useState<string | null>(null)
   const [processing, setProcessing] = useState(false)
+  const [cardComplete, setCardComplete] = useState(false)  // Add this line
 
   const calculateExpectedDeliveryTime = () => {
     const now = new Date();
@@ -136,12 +137,12 @@ function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, custome
 
   return (
     <form onSubmit={handleSubmit}>
-      <CardElement />
+      <CardElement onChange={(e) => setCardComplete(e.complete)} />
       {error && <div className="text-red-500 mt-2">{error}</div>}
       <Button 
         className="w-full mt-4" 
         type="submit"
-        disabled={!stripe || processing || !isMinOrderMet || !isAddressValid}
+        disabled={!stripe || processing || !isMinOrderMet || !isAddressValid || !cardComplete}  // Add !cardComplete
       >
         {processing ? 'Processing...' : `Pay $${total.toFixed(2)}`}
       </Button>
@@ -245,9 +246,9 @@ export default function Cart({
     // Prepare order information with real customer data
     const orderInfo = {
       orderId: orderId,
-      customer: customerName, // Use real customer name
-      phone: phoneNumber, // Use real phone number
-      address: address, // Use real address
+      customer: customerName,
+      phone: phoneNumber,
+      address: address,
       items: cart.map(item => ({
         name: item.name,
         quantity: item.quantity,
