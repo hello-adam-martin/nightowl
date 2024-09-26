@@ -84,4 +84,5 @@ export interface Product {
   category_id: string;
   category_name: string;
   supplier: string | null;
+  description?: string;
 }

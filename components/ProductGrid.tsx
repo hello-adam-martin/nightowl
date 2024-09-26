@@ -117,11 +117,15 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, isStoreOpen }) => {
         {filteredProducts.map((product: Product) => (
           <Card key={product.id} className={isOutOfStock(product.inventory) ? "opacity-60" : ""}>
             <CardHeader>
-              <div className="flex justify-between items-start">
-                <CardTitle>{product.name}</CardTitle>
-                <span className="px-2 py-1 bg-gray-200 text-gray-800 text-xs font-semibold rounded-full">
-                  {product.category_id}
-                </span>
+              <div className="flex flex-col">
+                <div className="flex justify-between items-start">
+                  <CardTitle>{product.name}</CardTitle>
+                  <span className="px-2 py-1 bg-gray-200 text-gray-800 text-xs font-semibold rounded-full">
+                    {product.category_id}
+                  </span>
+                </div>
+                {/* Add the product description here */}
+                <p className="text-sm text-gray-600 mt-1">{product.description}</p>
               </div>
             </CardHeader>
             <CardContent className="p-4 flex flex-col">
