@@ -235,12 +235,10 @@ const AddressForm: React.FC<AddressFormProps> = ({ serviceInfo }) => {
                   placeholder="Full Address"
                   value={address}
                   onChange={handleAddressChange}
-                  className={`sm:col-span-2 bg-blue-50 ${!isAddressValid ? 'border-red-500' : ''}`}
+                  className={`sm:col-span-2 bg-blue-50 ${!isAddressValid ? 'border-red-400 bg-red-100 ' : ''}`}
                   ref={addressInputRef}
                 />
-                {!isAddressValid && (
-                  <p className="text-red-500 text-sm">Please enter a valid address within our delivery area.</p>
-                )}
+                
                 <Button 
                   type="submit" 
                   disabled={address.trim() === '' || phoneNumber.trim() === '' || customerName.trim() === '' || isChecking}
