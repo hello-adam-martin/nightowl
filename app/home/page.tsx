@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { useRef } from 'react';
+import { useState, useEffect } from 'react'
 import { Loader2, Info, MapPin } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import AddressForm from "@/components/AddressForm"
@@ -18,12 +17,9 @@ import { checkStoreStatus, StoreStatus } from '@/utils/storeStatus';
 
 export function HomePage() {
   const [isCartOpen, setIsCartOpen] = useState(false)
-  const [addressEntered, setAddressEntered] = useState(false)
-  const [addressChanged, setAddressChanged] = useState(false)
-  const [phoneNumberEntered, setPhoneNumberEntered] = useState(false)
   const [products, setProducts] = useState<Product[]>([])
-  const { isServiceable, setIsServiceable } = useAddress();
-  const { cart: cartFromContext, updateCart } = useCart(); // Get updateCart function
+  const { isServiceable } = useAddress();
+  const { cart: cartFromContext, updateCart } = useCart();
   const [storeStatus, setStoreStatus] = useState<StoreStatus>({
     isOpen: false,
     nextOpeningDay: '',
@@ -34,51 +30,6 @@ export function HomePage() {
   });
   const [isLoading, setIsLoading] = useState(true)
 
-  const lastCheckedAddress = useRef('');
-
-  const checkServiceability = useCallback(async (address: string) => {
-    setIsServiceable(null);
-    setIsLoading(true);
-
-    // Only make the API call if the address has changed
-    if (address !== lastCheckedAddress.current) {
-      try {
-        const response = await fetch(`/api/geocode?address=${encodeURIComponent(address)}`);
-        const data = await response.json();
-
-        if (data.status !== 'OK' || !data.results || data.results.length === 0) {
-          throw new Error('Address not found');
-        }
-
-        const { lat, lng } = data.results[0].geometry.location;
-        const isWithinServiceArea = isPointInPolygon({ lat, lng }, storeConfig.serviceInfo.serviceArea);
-        setIsServiceable(isWithinServiceArea);
-        lastCheckedAddress.current = address;
-      } catch (error) {
-        console.error('Error checking serviceability:', error);
-        setIsServiceable(false);
-      }
-    }
-
-    setIsLoading(false);
-  }, [setIsServiceable]);
-
-  // Function to check if a point is inside a polygon
-  const isPointInPolygon = (point: { lat: number; lng: number }, polygon: { lat: number; lng: number }[]) => {
-    //console.log("checking polygon");
-    let isInside = false;
-    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-      const xi = polygon[i].lat, yi = polygon[i].lng;
-      const xj = polygon[j].lat, yj = polygon[j].lng;
-
-      const intersect = ((yi > point.lng) !== (yj > point.lng))
-          && (point.lat < (xj - xi) * (point.lng - yi) / (yj - yi) + xi);
-      if (intersect) isInside = !isInside;
-    }
-    //console.log("result: ",isInside)
-    return isInside;
-  };
-
   useEffect(() => {
     const updateStoreStatus = () => {
       const status = checkStoreStatus();
@@ -86,12 +37,30 @@ export function HomePage() {
       setIsLoading(false);
     };
 
-    updateStoreStatus(); // Check immediately on mount
-    const timer = setInterval(updateStoreStatus, 1000); // Update every second
+    updateStoreStatus();
+    const timer = setInterval(updateStoreStatus, 1000);
 
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('/api/products')
+        if (!response.ok) {
+          throw new Error('Failed to fetch products')
+        }
+        const data = await response.json()
+        setProducts(data)
+      } catch (error) {
+        console.error('Error fetching products:', error)
+      }
+    }
+
+    fetchProducts()
+  }, [])
+
+  // Cart functions
   const removeFromCart = (id: string) => {
     updateCart(cartFromContext.filter(item => item.id !== id));
   }
@@ -114,25 +83,6 @@ export function HomePage() {
   const getTotalPrice = () => {
     return cartFromContext.reduce((total, item) => total + item.price * item.quantity, 0);
   }
-
-  const isAddressValid = addressEntered && (isServiceable ?? false) && !addressChanged && phoneNumberEntered
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch('/api/products')
-        if (!response.ok) {
-          throw new Error('Failed to fetch products')
-        }
-        const data = await response.json()
-        setProducts(data)
-      } catch (error) {
-        console.error('Error fetching products:', error)
-      }
-    }
-
-    fetchProducts()
-  }, [])
 
   // Split the description into paragraphs
   const descriptionParagraphs = siteInfo.longDescription.split('<br>')
@@ -196,13 +146,7 @@ export function HomePage() {
                   <Loader2 className="w-8 h-8 animate-spin" />
                 </div>
               ) : storeStatus.isOpen ? (
-                <AddressForm
-                  setAddressEntered={setAddressEntered}
-                  checkServiceability={checkServiceability}
-                  setAddressChanged={setAddressChanged}
-                  setPhoneNumberEntered={setPhoneNumberEntered}
-                  serviceInfo={storeConfig.serviceInfo}
-                />
+                <AddressForm serviceInfo={storeConfig.serviceInfo} />
               ) : (
                 <ClosedStoreNotice />
               )}
@@ -223,7 +167,7 @@ export function HomePage() {
             isCartOpen={isCartOpen}
             setIsCartOpen={setIsCartOpen}
             cart={cartFromContext}
-            isAddressValid={isAddressValid}
+            isAddressValid={isServiceable ?? false}
             updateQuantity={(id: string, increment: boolean) => 
               updateQuantity(id, getItemQuantity(id) + (increment ? 1 : -1))
             }

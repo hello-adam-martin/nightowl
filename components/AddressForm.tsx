@@ -1,30 +1,21 @@
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Edit } from 'lucide-react'
+import { Edit, Loader2, User, Phone, MapPin } from 'lucide-react'
 import { useAddress } from '../context/AddressContext';
-import { useState, useEffect, useRef, useCallback } from 'react';
 import { Loader } from '@googlemaps/js-api-loader';
-import { User, Phone, MapPin } from 'lucide-react'
 
 interface AddressFormProps {
-  setAddressEntered: (value: boolean) => void;
-  checkServiceability: (address: string) => Promise<void>;
-  setAddressChanged: (value: boolean) => void;
-  setPhoneNumberEntered: (value: boolean) => void;
   serviceInfo: {
     deliveryTime: string;
     minOrderValue: number;
     deliveryCharge: number;
+    serviceArea: { lat: number; lng: number }[];
   };
 }
 
-const AddressForm: React.FC<AddressFormProps> = ({
-  setAddressEntered,
-  checkServiceability,
-  setAddressChanged,
-  setPhoneNumberEntered,
-}) => {
+const AddressForm: React.FC<AddressFormProps> = ({ serviceInfo }) => {
   const { 
     address, 
     setAddress, 
@@ -39,9 +30,49 @@ const AddressForm: React.FC<AddressFormProps> = ({
   } = useAddress();
 
   const [isEditing, setIsEditing] = useState(!isVerified);
+  const [isAddressValid, setIsAddressValid] = useState(true);
+  const [isChecking, setIsChecking] = useState(false);
   const lastCheckedAddress = useRef('');
   const addressInputRef = useRef<HTMLInputElement>(null);
-  const [isAddressValid, setIsAddressValid] = useState(true);
+
+  const checkServiceability = useCallback(async (address: string) => {
+    setIsChecking(true);
+    setIsServiceable(null);
+
+    if (address !== lastCheckedAddress.current) {
+      try {
+        const response = await fetch(`/api/geocode?address=${encodeURIComponent(address)}`);
+        const data = await response.json();
+
+        if (data.status !== 'OK' || !data.results || data.results.length === 0) {
+          throw new Error('Address not found');
+        }
+
+        const { lat, lng } = data.results[0].geometry.location;
+        const isWithinServiceArea = isPointInPolygon({ lat, lng }, serviceInfo.serviceArea);
+        setIsServiceable(isWithinServiceArea);
+        lastCheckedAddress.current = address;
+      } catch (error) {
+        console.error('Error checking serviceability:', error);
+        setIsServiceable(false);
+      }
+    }
+
+    setIsChecking(false);
+  }, [setIsServiceable, serviceInfo.serviceArea]);
+
+  const isPointInPolygon = (point: { lat: number; lng: number }, polygon: { lat: number; lng: number }[]) => {
+    let isInside = false;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const xi = polygon[i].lat, yi = polygon[i].lng;
+      const xj = polygon[j].lat, yj = polygon[j].lng;
+
+      const intersect = ((yi > point.lng) !== (yj > point.lng))
+          && (point.lat < (xj - xi) * (point.lng - yi) / (yj - yi) + xi);
+      if (intersect) isInside = !isInside;
+    }
+    return isInside;
+  };
 
   const initializeAutocomplete = useCallback(() => {
     console.log('Initializing autocomplete');
@@ -61,7 +92,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
         if (place.formatted_address) {
           console.log('Place selected:', place.formatted_address);
           setAddress(place.formatted_address);
-          setAddressChanged(true);
           setIsVerified(false);
         }
       });
@@ -70,7 +100,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
     } else {
       console.error('Address input ref not available');
     }
-  }, [setAddress, setAddressChanged, setIsVerified]);
+  }, [setAddress, setIsVerified]);
 
   useEffect(() => {
     console.log('Effect running, isEditing:', isEditing);
@@ -115,22 +145,15 @@ const AddressForm: React.FC<AddressFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setAddressEntered(true);
-    setAddressChanged(false);
+    await checkServiceability(address);
     setIsVerified(true);
-    
-    // Only check serviceability if the address has changed
-    if (address !== lastCheckedAddress.current) {
-      await checkServiceability(address);
-      lastCheckedAddress.current = address;
-    }
+    setIsEditing(false);
   }
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newAddress = e.target.value;
     setAddress(newAddress);
     setIsServiceable(null);
-    setAddressChanged(true);
     setIsVerified(false);
   }
 
@@ -146,7 +169,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formattedNumber = formatPhoneNumber(e.target.value);
     setPhoneNumber(formattedNumber);
-    setPhoneNumberEntered(formattedNumber.trim() !== '');
   }
 
   const handleCustomerNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {  // Add this function
@@ -221,10 +243,17 @@ const AddressForm: React.FC<AddressFormProps> = ({
                 )}
                 <Button 
                   type="submit" 
-                  disabled={address.trim() === '' || phoneNumber.trim() === '' || customerName.trim() === ''}
+                  disabled={address.trim() === '' || phoneNumber.trim() === '' || customerName.trim() === '' || isChecking}
                   className="w-full bg-blue-500 text-white"
                 >
-                  Check Details
+                  {isChecking ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Checking Details...
+                    </>
+                  ) : (
+                    'Check Details'
+                  )}
                 </Button>
               </div>
             </div>
