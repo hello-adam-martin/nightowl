@@ -4,7 +4,6 @@ BUGS
 MUST DO
 - expand upon about page
 - need to remove a lot of the logic in home page to be encapsulated in the component itself.
-- need to have a short product description.
 
 NICE TO HAVE
 - email receipts - ask for email address after placing order.

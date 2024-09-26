@@ -42,6 +42,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
   const [isEditing, setIsEditing] = useState(!isVerified);
   const lastCheckedAddress = useRef('');
   const addressInputRef = useRef<HTMLInputElement>(null);
+  const [isAddressValid, setIsAddressValid] = useState(true);
 
   const initializeAutocomplete = useCallback(() => {
     console.log('Initializing autocomplete');
@@ -105,13 +106,13 @@ const AddressForm: React.FC<AddressFormProps> = ({
 
   useEffect(() => {
     if (isServiceable === false) {
-      setAddress('');
-      setPhoneNumber('');
-      setCustomerName('');
+      setIsAddressValid(false);
       setIsEditing(true);
       setIsVerified(false);
+    } else {
+      setIsAddressValid(true);
     }
-  }, [isServiceable, setAddress, setPhoneNumber, setCustomerName, setIsVerified]);
+  }, [isServiceable, setIsVerified]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -214,9 +215,12 @@ const AddressForm: React.FC<AddressFormProps> = ({
                   placeholder="Full Address"
                   value={address}
                   onChange={handleAddressChange}
-                  className="sm:col-span-2 bg-blue-50"
+                  className={`sm:col-span-2 bg-blue-50 ${!isAddressValid ? 'border-red-500' : ''}`}
                   ref={addressInputRef}
                 />
+                {!isAddressValid && (
+                  <p className="text-red-500 text-sm">Please enter a valid address within our delivery area.</p>
+                )}
                 <Button 
                   type="submit" 
                   disabled={address.trim() === '' || phoneNumber.trim() === '' || customerName.trim() === ''}

@@ -158,44 +158,56 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, isStoreOpen }) => {
               </div>
             </CardContent>
             <CardFooter>
-              {isStoreOpen && isVerified && isServiceable ? (
-                <div className="w-full flex justify-end">
-                  {getItemQuantity(product.id) > 0 ? (
-                    <div className="flex items-center">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleUpdateQuantity(product, false)}
+              {isStoreOpen ? (
+                isVerified && isServiceable ? (
+                  <div className="w-full flex justify-end">
+                    {getItemQuantity(product.id) > 0 ? (
+                      <div className="flex items-center">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handleUpdateQuantity(product, false)}
+                          disabled={isOutOfStock(product.inventory)}
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                        <span className="mx-2">{getItemQuantity(product.id)}</span>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handleUpdateQuantity(product, true)}
+                          disabled={getItemQuantity(product.id) >= product.inventory || isOutOfStock(product.inventory)}
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button 
+                        onClick={() => {
+                          addToCart({ id: product.id.toString(), name: product.name, price: product.price, quantity: 1 });
+                        }}
                         disabled={isOutOfStock(product.inventory)}
                       >
-                        <Minus className="h-4 w-4" />
+                        {isOutOfStock(product.inventory) ? 'Out of Stock' : 'Add to Cart'}
                       </Button>
-                      <span className="mx-2">{getItemQuantity(product.id)}</span>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleUpdateQuantity(product, true)}
-                        disabled={getItemQuantity(product.id) >= product.inventory || isOutOfStock(product.inventory)}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button 
-                      onClick={() => {
-                        addToCart({ id: product.id.toString(), name: product.name, price: product.price, quantity: 1 });
-                      }}
-                      disabled={isOutOfStock(product.inventory)}
-                    >
-                      {isOutOfStock(product.inventory) ? 'Out of Stock' : 'Add to Cart'}
-                    </Button>
-                  )}
-                </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-sm text-yellow-600 italic">Address required for ordering.</p>
+                )
               ) : null}
             </CardFooter>
           </Card>
         ))}
       </div>
+
+      {isStoreOpen && !isVerified && (
+        <div className="mt-6 p-4 bg-yellow-100 border border-yellow-400 rounded-md">
+          <p className="text-center text-yellow-700">
+            Address required to add items to cart
+          </p>
+        </div>
+      )}
     </div>
   )
 }
