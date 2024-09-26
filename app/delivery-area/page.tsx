@@ -1,12 +1,9 @@
 'use client';
 
-import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import { GoogleMap, useJsApiLoader, Polygon, Autocomplete, Marker } from '@react-google-maps/api';
 import { storeConfig } from '@/config/config';
-import TopBar from '@/components/TopBar';
 import Cart from '@/components/Cart';
-import { useCart } from '@/context/CartContext';
-import { useAddress } from '@/context/AddressContext';
 import { Libraries } from '@react-google-maps/api';
 import { Check, X } from 'lucide-react';
 
@@ -21,15 +18,9 @@ const DeliveryAreaPage = () => {
   const [address, setAddress] = useState('');
   const [markerPosition, setMarkerPosition] = useState<LatLng | null>(null);
   const [isServiceable, setIsServiceable] = useState<boolean | null>(null);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isStoreOpen, setIsStoreOpen] = useState(false);
   const [map, setMap] = useState<google.maps.Map | null>(null);
 
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
-
-  const { cart, updateQuantity: contextUpdateQuantity, removeFromCart } = useCart();
-
-  const { isServiceable: isAddressValid } = useAddress();
 
   const center = useMemo(() => ({
     lat: -43.8031,
@@ -80,61 +71,11 @@ const DeliveryAreaPage = () => {
     types: ["address"],
   }), []);
 
-  useEffect(() => {
-    const checkStoreStatus = () => {
-      const now = new Date();
-      const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase() as keyof typeof storeConfig.hours;
-      const currentHour = now.getHours();
-      const currentMinute = now.getMinutes();
-      const hours = storeConfig.hours[currentDay];
-      
-      if (!hours) {
-        setIsStoreOpen(false);
-        return;
-      }
-
-      const [openHour, openMinute] = hours.open.split(':').map(Number);
-      const [closeHour, closeMinute] = hours.close.split(':').map(Number);
-      
-      const currentTime = currentHour * 60 + currentMinute;
-      const openTime = openHour * 60 + openMinute;
-      let closeTime = closeHour * 60 + closeMinute;
-      
-      if (closeTime <= openTime) {
-        closeTime += 24 * 60;
-      }
-
-      setIsStoreOpen(currentTime >= openTime && currentTime < closeTime);
-    };
-
-    checkStoreStatus();
-    const timer = setInterval(checkStoreStatus, 60000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const updateQuantity = useCallback((id: string, increment: boolean) => {
-    const item = cart.find(item => item.id === id);
-    if (item) {
-      contextUpdateQuantity(id, increment ? item.quantity + 1 : item.quantity - 1);
-    }
-  }, [cart, contextUpdateQuantity]);
-
-  const getTotalPrice = useCallback(() => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
-  }, [cart]);
-
   if (!isLoaded) return <div>Loading...</div>;
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <TopBar 
-        currentPage="delivery-area" 
-        isCartOpen={isCartOpen} 
-        setIsCartOpen={setIsCartOpen}
-      />
-
-      <div className="pt-20 p-8">
+      <div className="p-8">
         <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-8">
           <h2 className="text-2xl font-bold text-center mb-6">Delivery Area</h2>
           
@@ -201,14 +142,6 @@ const DeliveryAreaPage = () => {
       </div>
 
       <Cart
-        isCartOpen={isCartOpen}
-        setIsCartOpen={setIsCartOpen}
-        isStoreOpen={isStoreOpen}
-        cart={cart}
-        isAddressValid={isAddressValid ?? false}
-        updateQuantity={updateQuantity}
-        removeFromCart={removeFromCart}
-        getTotalPrice={getTotalPrice}
         deliveryCharge={storeConfig.serviceInfo.deliveryCharge}
       />
     </div>

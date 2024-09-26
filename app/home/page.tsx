@@ -8,18 +8,12 @@ import ProductGrid from '@/components/ProductGrid'
 import Cart from '@/components/Cart'
 import { storeConfig, Product, siteInfo } from '@/config/config'
 import Link from 'next/link'
-import { useAddress } from '@/context/AddressContext';
-import { useCart } from '@/context/CartContext';
 import ClosedStoreNotice from '@/components/ClosedStoreNotice'
-import TopBar from '@/components/TopBar'
 import Image from 'next/image'
 import { checkStoreStatus, StoreStatus } from '@/utils/storeStatus';
 
 export function HomePage() {
-  const [isCartOpen, setIsCartOpen] = useState(false)
   const [products, setProducts] = useState<Product[]>([])
-  const { isServiceable } = useAddress();
-  const { cart: cartFromContext, updateCart } = useCart();
   const [storeStatus, setStoreStatus] = useState<StoreStatus>({
     isOpen: false,
     nextOpeningDay: '',
@@ -60,43 +54,12 @@ export function HomePage() {
     fetchProducts()
   }, [])
 
-  // Cart functions
-  const removeFromCart = (id: string) => {
-    updateCart(cartFromContext.filter(item => item.id !== id));
-  }
-
-  const updateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity < 1) {
-      removeFromCart(id);
-    } else {
-      updateCart(cartFromContext.map(item =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      ));
-    }
-  }
-
-  const getItemQuantity = (id: string) => {
-    const item = cartFromContext.find(item => item.id === id);
-    return item ? item.quantity : 0;
-  }
-
-  const getTotalPrice = () => {
-    return cartFromContext.reduce((total, item) => total + item.price * item.quantity, 0);
-  }
-
   // Split the description into paragraphs
   const descriptionParagraphs = siteInfo.longDescription.split('<br>')
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <TopBar 
-        currentPage="home" 
-        isCartOpen={isCartOpen} 
-        setIsCartOpen={setIsCartOpen}
-      />
-
-      {/* Main content */}
-      <div className="pt-20 p-8">
+      <div className="p-8">
         <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-8">
           {/* Welcome section and Address Form / Closed Store Notice */}
           <div className="flex flex-col md:flex-row gap-8 mb-12">
@@ -164,17 +127,7 @@ export function HomePage() {
           </div>
 
           <Cart
-            isCartOpen={isCartOpen}
-            setIsCartOpen={setIsCartOpen}
-            cart={cartFromContext}
-            isAddressValid={isServiceable ?? false}
-            updateQuantity={(id: string, increment: boolean) => 
-              updateQuantity(id, getItemQuantity(id) + (increment ? 1 : -1))
-            }
-            removeFromCart={removeFromCart}
-            getTotalPrice={getTotalPrice}
             deliveryCharge={storeConfig.serviceInfo.deliveryCharge}
-            isStoreOpen={storeStatus.isOpen}
           />
         </div>
       </div>

@@ -1,30 +1,27 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
+import { useCart } from '@/context/CartContext';
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import CartButton from './CartButton'
-import { useCart } from '../context/CartContext'
 import { checkStoreStatus, StoreStatus } from '@/utils/storeStatus';
-import { formatTime24to12 } from '@/utils/timeFormatting'; // Add this import
+import { formatTime24to12 } from '@/utils/timeFormatting';
+import { usePathname } from 'next/navigation'
 
-interface TopBarProps {
-  currentPage: "home" | "about" | "delivery-area";
-  isCartOpen: boolean;
-  setIsCartOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-export default function TopBar({ currentPage, isCartOpen, setIsCartOpen }: TopBarProps) {
-  const { cart } = useCart()
+export default function TopBar() {
+  const { cart, isCartOpen, setIsCartOpen } = useCart();
   const [storeStatus, setStoreStatus] = useState<StoreStatus>({
     isOpen: false,
     nextOpeningDay: '',
     nextOpeningTime: '',
-    closingTime: '', // Add this line
+    closingTime: '',
     timeUntilOpen: '',
     secondsUntilOpen: 0
   })
+
+  const pathname = usePathname()
 
   const getTotalItems = () => {
     return cart.reduce((total, item) => total + item.quantity, 0);
@@ -35,9 +32,7 @@ export default function TopBar({ currentPage, isCartOpen, setIsCartOpen }: TopBa
       setStoreStatus(checkStoreStatus());
     }
 
-    updateStoreStatus(); // Check immediately on mount
-    
-    // Update every second
+    updateStoreStatus();
     const timer = setInterval(updateStoreStatus, 1000);
 
     return () => clearInterval(timer);
@@ -80,7 +75,7 @@ export default function TopBar({ currentPage, isCartOpen, setIsCartOpen }: TopBa
             </p>
           </div>
           <div className="flex-1 flex items-center justify-end space-x-4">
-            {currentPage === 'home' && (
+            {pathname === '/' && (
               <Link href="/about" className="hidden sm:inline-block">
                 <Button variant="outline" size="sm">
                   Learn More

@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import ClientProviders from './ClientProviders'
 import Footer from '@/components/Footer'
+import TopBar from '@/components/TopBar'
 import { siteInfo } from "@/config/config";
 
 const geistSans = localFont({
@@ -31,7 +32,8 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ClientProviders>
           <div className="flex flex-col min-h-screen">
-            <main className="flex-grow">
+            <TopBar />
+            <main className="flex-grow pt-16"> {/* Add padding-top to account for fixed TopBar */}
               {children}
             </main>
             <Footer />

@@ -52,7 +52,7 @@ export const storeConfig = {
     tuesday: { open: '15:08', close: '23:00' },
     wednesday: { open: '08:00', close: '23:00' },
     thursday: { open: '14:37', close: '21:40' },
-    friday: { open: '14:34', close: '00:00' },
+    friday: { open: '08:08', close: '00:00' },
     saturday: { open: '05:46', close: '22:30' },
     sunday: { open: '14:00', close: '20:12' },
   },

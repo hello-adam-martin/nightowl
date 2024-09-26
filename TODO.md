@@ -10,5 +10,7 @@ NICE TO HAVE
 - email receipts - ask for email address after placing order.
 
 ENHANCEMENTS
+- Move TopBar to layout
+- Move Cart to layout
 - When checking address - can we put spinner on the button rather than loading the whole address component
 - Integrate analytics

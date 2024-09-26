@@ -16,12 +16,15 @@ export type CartContextType = {
   removeFromCart: (id: string) => void;
   clearCart: () => void;
   updateQuantity: (id: string, newQuantity: number) => void;
+  isCartOpen: boolean;
+  setIsCartOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   useEffect(() => {
     // Load cart from localStorage on initial render
@@ -71,7 +74,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <CartContext.Provider value={{ cart, updateCart, addToCart, removeFromCart, clearCart, updateQuantity }}>
+    <CartContext.Provider value={{ 
+      cart, 
+      updateCart, 
+      addToCart, 
+      removeFromCart, 
+      clearCart, 
+      updateQuantity,
+      isCartOpen,
+      setIsCartOpen
+    }}>
       {children}
     </CartContext.Provider>
   );

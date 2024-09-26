@@ -13,15 +13,7 @@ import { format } from 'date-fns';
 import { checkStoreStatus, StoreStatus } from '@/utils/storeStatus'; // Add this import
 
 interface CartProps {
-  isCartOpen: boolean;
-  setIsCartOpen: (isOpen: boolean) => void;
-  cart: CartItem[];
-  updateQuantity: (id: string, increment: boolean) => void;
-  removeFromCart: (id: string) => void;
   deliveryCharge: number;
-  isAddressValid: boolean;
-  getTotalPrice: () => number;
-  isStoreOpen: boolean;
 }
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
@@ -184,11 +176,9 @@ async function fetchProducts() {
 }
 
 export default function Cart({
-  isCartOpen,
-  setIsCartOpen,
   deliveryCharge,
 }: CartProps) {
-  const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
+  const { cart, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, clearCart } = useCart();
   
   // Calculate subtotal and total number of items
   const { subtotal, totalItems } = useMemo(() => {

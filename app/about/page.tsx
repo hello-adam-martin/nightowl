@@ -1,39 +1,25 @@
 'use client';
 
 import { useState, useEffect } from 'react'
-import TopBar from '@/components/TopBar'
 import Image from 'next/image'
 import { storeConfig } from '@/config/config'
 import Cart from '@/components/Cart'
-import { useCart } from '@/context/CartContext'
 import { siteInfo } from '@/config/config'
 import Link from 'next/link'
 import { formatTime24to12 } from '@/utils/timeFormatting'
 
 export default function AboutPage() {
-  const [isCartOpen, setIsCartOpen] = useState(false)
   const [currentDay, setCurrentDay] = useState('')
-  const { cart, updateQuantity, removeFromCart } = useCart()
 
   useEffect(() => {
     const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
     setCurrentDay(days[new Date().getDay()])
   }, [])
 
-  const getTotalPrice = () => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0)
-  }
-
   return (
     <div className="min-h-screen bg-gray-100">
-      <TopBar 
-        currentPage="about" 
-        isCartOpen={isCartOpen} 
-        setIsCartOpen={setIsCartOpen}
-      />
-
       {/* Main content */}
-      <div className="pt-20 p-8">
+      <div className="p-8">
         <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-8">
           <div className="flex justify-center mb-6">
             <Image src="/NightOwl.png" alt="NightOwl Logo" width={120} height={120} />
@@ -174,14 +160,6 @@ export default function AboutPage() {
       </div>
 
       <Cart
-        isCartOpen={isCartOpen}
-        setIsCartOpen={setIsCartOpen}
-        isStoreOpen={true} // This prop is not used in the Cart component for the About page
-        cart={cart}
-        isAddressValid={true} 
-        updateQuantity={(id, increment) => updateQuantity(id, (cart.find(item => item.id === id)?.quantity ?? 0) + (increment ? 1 : -1))}
-        removeFromCart={removeFromCart}
-        getTotalPrice={getTotalPrice}
         deliveryCharge={storeConfig.serviceInfo.deliveryCharge}
       />
     </div>
