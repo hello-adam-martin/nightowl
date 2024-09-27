@@ -5,7 +5,7 @@ import { ShoppingCart } from 'lucide-react'
 interface CartButtonProps {
   isCartOpen: boolean;
   setIsCartOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  itemCount: number;  // Change this from totalItems to itemCount
+  itemCount: number; 
 }
 
 const CartButton: React.FC<CartButtonProps> = React.memo(({ isCartOpen, setIsCartOpen, itemCount }) => {

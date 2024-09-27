@@ -8,11 +8,12 @@ import { Elements, CardElement, useStripe, useElements } from '@stripe/react-str
 import { CartItem } from '@/types/cart'
 import { useCart } from '../context/CartContext'
 import { storeConfig } from '@/config/config'
-import { useAddress } from '../context/AddressContext'; // Add this import
+import { useAddress } from '../context/AddressContext';
 import { useQuery } from '@tanstack/react-query'
-import { formatAddress } from '@/utils/addressFormatter'; // Add this import
+import { formatAddress } from '@/utils/addressFormatter';
 import { format } from 'date-fns';
-import { checkStoreStatus, StoreStatus } from '@/utils/storeStatus'; // Add this import
+import { checkStoreStatus, StoreStatus } from '@/utils/storeStatus';
+import { Product } from '@/types/product';
 
 interface CartProps {
   deliveryCharge: number;
@@ -39,7 +40,7 @@ function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, custome
   const elements = useElements()
   const [error, setError] = useState<string | null>(null)
   const [processing, setProcessing] = useState(false)
-  const [cardComplete, setCardComplete] = useState(false)  // Add this line
+  const [cardComplete, setCardComplete] = useState(false)
 
   const calculateExpectedDeliveryTime = () => {
     const now = new Date();
@@ -144,7 +145,7 @@ function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, custome
   )
 }
 
-// New component for the invalid address message
+// Invalid address message
 const InvalidAddressMessage = () => (
   <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded">
     <div className="flex items-center">
@@ -159,17 +160,7 @@ const InvalidAddressMessage = () => (
   </div>
 )
 
-// Add this type definition at the top of your file
-//type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
-
-// Add this type definition at the top of your file
-type Product = {
-  id: number;
-  inventory: number;
-  // Add other product properties as needed
-};
-
-async function fetchProducts() {
+async function fetchProducts(): Promise<Product[]> {
   const response = await fetch('/api/products');
   if (!response.ok) {
     throw new Error('Network response was not ok');
