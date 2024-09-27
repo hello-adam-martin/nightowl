@@ -75,7 +75,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ serviceInfo }) => {
   };
 
   const initializeAutocomplete = useCallback(() => {
-    console.log('Initializing autocomplete');
+    //console.log('Initializing autocomplete');
     if (!window.google) {
       console.error('Google Maps JavaScript API not loaded');
       return;
@@ -90,24 +90,24 @@ const AddressForm: React.FC<AddressFormProps> = ({ serviceInfo }) => {
       autocompleteInstance.addListener("place_changed", () => {
         const place = autocompleteInstance.getPlace();
         if (place.formatted_address) {
-          console.log('Place selected:', place.formatted_address);
+          //console.log('Place selected:', place.formatted_address);
           setAddress(place.formatted_address);
           setIsVerified(false);
         }
       });
 
-      console.log('Autocomplete initialized');
+      //console.log('Autocomplete initialized');
     } else {
       console.error('Address input ref not available');
     }
   }, [setAddress, setIsVerified]);
 
   useEffect(() => {
-    console.log('Effect running, isEditing:', isEditing);
+    //console.log('Effect running, isEditing:', isEditing);
 
     if (!isEditing) return; // Only initialize when editing
 
-    console.log('Loading Google Maps API');
+    //console.log('Loading Google Maps API');
     const loader = new Loader({
       apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string,
       version: "weekly",
@@ -115,7 +115,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ serviceInfo }) => {
     });
 
     loader.load().then(() => {
-      console.log('Google Maps API loaded');
+      //console.log('Google Maps API loaded');
       initializeAutocomplete();
     }).catch(error => {
       console.error('Error loading Google Maps API:', error);
@@ -127,7 +127,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ serviceInfo }) => {
     // Cleanup function
     return () => {
       if (window.google && window.google.maps && window.google.maps.event && currentInputRef) {
-        console.log('Cleaning up autocomplete');
+        //console.log('Cleaning up autocomplete');
         window.google.maps.event.clearInstanceListeners(currentInputRef);
       }
     };
@@ -176,13 +176,13 @@ const AddressForm: React.FC<AddressFormProps> = ({ serviceInfo }) => {
   }
 
   const handleEdit = () => {
-    console.log('Edit button clicked, current isEditing:', isEditing);
+    //console.log('Edit button clicked, current isEditing:', isEditing);
     setIsEditing(true);
-    console.log('setIsEditing(true) called');
+    //console.log('setIsEditing(true) called');
     setIsVerified(false);
   };
 
-  console.log('Rendering AddressForm, isEditing:', isEditing);
+  //console.log('Rendering AddressForm, isEditing:', isEditing);
 
   return (
     <Card className={`border-2 ${isVerified ? 'border-gray-300' : 'border-blue-500'} shadow-lg p-4 sm:p-6`}>

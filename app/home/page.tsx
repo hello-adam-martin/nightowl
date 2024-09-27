@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Loader2, Info, MapPin } from 'lucide-react'
+import { Info, MapPin } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import AddressForm from "@/components/AddressForm"
 import ProductGrid from '@/components/ProductGrid'
@@ -13,25 +13,12 @@ import Image from 'next/image'
 import { checkStoreStatus, StoreStatus } from '@/utils/storeStatus';
 
 export function HomePage() {
-  const [storeStatus, setStoreStatus] = useState<StoreStatus>({
-    isOpen: false,
-    nextOpeningDay: '',
-    nextOpeningTime: '',
-    closingTime: '',
-    timeUntilOpen: '',
-    secondsUntilOpen: 0
-  });
-  const [isLoading, setIsLoading] = useState(true)
+  const [storeStatus, setStoreStatus] = useState<StoreStatus>(() => checkStoreStatus());
 
   useEffect(() => {
-    const updateStoreStatus = () => {
-      const status = checkStoreStatus();
-      setStoreStatus(status);
-      setIsLoading(false);
-    };
-
-    updateStoreStatus();
-    const timer = setInterval(updateStoreStatus, 1000);
+    const timer = setInterval(() => {
+      setStoreStatus(checkStoreStatus());
+    }, 1000);
 
     return () => clearInterval(timer);
   }, []);
@@ -86,11 +73,7 @@ export function HomePage() {
 
             {/* Address Form / Closed Store Notice */}
             <div className="md:w-1/2">
-              {isLoading ? (
-                <div className="flex justify-center items-center h-32">
-                  <Loader2 className="w-8 h-8 animate-spin" />
-                </div>
-              ) : storeStatus.isOpen ? (
+              {storeStatus.isOpen ? (
                 <AddressForm serviceInfo={storeConfig.serviceInfo} />
               ) : (
                 <ClosedStoreNotice />
