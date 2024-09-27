@@ -11,7 +11,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { checkStoreStatus, StoreStatus } from '@/utils/storeStatus';
 
-export function HomePage() {
+export default function HomePage() {
   const [storeStatus, setStoreStatus] = useState<StoreStatus>(() => checkStoreStatus());
 
   useEffect(() => {
