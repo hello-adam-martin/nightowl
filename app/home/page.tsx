@@ -84,7 +84,6 @@ export function HomePage() {
           {/* Products section */}
           <div className="relative">
             <h2 className="text-xl font-semibold mb-4 text-center">Products</h2>
-            
             <ProductGrid isStoreOpen={storeStatus.isOpen} />
           </div>
 
