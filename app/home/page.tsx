@@ -1,15 +1,18 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { Info, MapPin } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import AddressForm from "@/components/AddressForm"
-import ProductGrid from '@/components/ProductGrid'
 import ClosedStoreNotice from '@/components/ClosedStoreNotice'
 import { storeConfig, siteInfo } from '@/config/config'
 import Link from 'next/link'
 import Image from 'next/image'
-import { checkStoreStatus, StoreStatus } from '@/utils/storeStatus';
+import dynamic from 'next/dynamic'
+import { checkStoreStatus, type StoreStatus } from '@/utils/storeStatus';
+
+// Dynamically import ProductGrid with no SSR
+const ProductGrid = dynamic(() => import('@/components/ProductGrid'), { ssr: false })
 
 export default function HomePage() {
   const [storeStatus, setStoreStatus] = useState<StoreStatus>(() => checkStoreStatus());
@@ -83,10 +86,15 @@ export default function HomePage() {
           {/* Products section */}
           <div className="relative">
             <h2 className="text-xl font-semibold mb-4 text-center">Products</h2>
-            <ProductGrid isStoreOpen={storeStatus.isOpen} />
+            <Suspense fallback={<div>Loading products...</div>}>
+              <ProductGrid isStoreOpen={storeStatus.isOpen} />
+            </Suspense>
           </div>
         </div>
       </div>
     </div>
   )
 }
+
+export const runtime = 'edge'
+export const revalidate = 0

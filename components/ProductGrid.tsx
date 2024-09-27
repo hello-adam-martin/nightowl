@@ -11,6 +11,7 @@ import { Plus, Minus, Search, X, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
+import { useRouter } from 'next/navigation';
 
 interface ProductGridProps {
   isStoreOpen: boolean;
@@ -23,12 +24,20 @@ const ProductGrid: React.FC<ProductGridProps> = ({ isStoreOpen }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchProducts = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch('/api/products', { cache: 'no-store'});
+        const response = await fetch('/api/products', { 
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+          }
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch products');
         }
@@ -42,7 +51,10 @@ const ProductGrid: React.FC<ProductGridProps> = ({ isStoreOpen }) => {
     };
 
     fetchProducts();
-  }, []);
+    
+    // Add this line to force a refresh of the component
+    router.refresh();
+  }, [router]);
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => 
