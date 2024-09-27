@@ -1,11 +1,8 @@
 BUGS
 - Our countdown is slightly out - it is calculating 60 secs for the last minute rather than checking actual seconds remaining (not a biggie)
+- If we display inentory change message along with top up message... then you can't see the items in the cart (no space)
 
 NOTES
-- check the cart is still checking inventory before submitting order:
- - need to check if inventory has reduced
- - need to check if item is now out of stock
- BUG - if only 1 product in cart that is now out of stock... don't see the message about the item being removed..
 
 NICE TO HAVE
 - email receipts - ask for email address after placing order.
