@@ -21,7 +21,7 @@ interface CartProps {
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
-function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, customerInfo, cartItems, removeFromCart, updateQuantity, topUpAmount }: { 
+function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, customerInfo, cartItems, removeFromCart, updateQuantity, topUpAmount, setInventoryError, inventoryError }: { 
   total: number; 
   onSuccess: () => void; 
   isMinOrderMet: boolean; 
@@ -35,6 +35,8 @@ function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, custome
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   topUpAmount: number;
+  setInventoryError: React.Dispatch<React.SetStateAction<string | null>>;
+  inventoryError: string | null;
 }) {
   const stripe = useStripe()
   const elements = useElements()
@@ -81,7 +83,7 @@ function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, custome
 
     if (!response.ok) {
       if (data.error === 'Inventory changes detected') {
-        setError(data.message);
+        setInventoryError(data.message);
         updateCartWithAvailableQuantities(data.outOfStockItems);
       } else {
         setError(data.error || 'An error occurred');
@@ -132,6 +134,11 @@ function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, custome
 
   return (
     <form onSubmit={handleSubmit}>
+      {inventoryError && (
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded">
+          <p>{inventoryError}</p>
+        </div>
+      )}
       <CardElement onChange={(e) => setCardComplete(e.complete)} />
       {error && <div className="text-red-500 mt-2">{error}</div>}
       <Button 
@@ -217,6 +224,15 @@ export default function Cart({
     return () => clearInterval(intervalId);
   }, []);
 
+  const [inventoryError, setInventoryError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Only clear inventory error if the cart is not empty and there's no ongoing inventory error
+    if (cart.length > 0 && !inventoryError) {
+      setInventoryError(null);
+    }
+  }, [cart, inventoryError]);
+
   const handlePaymentSuccess = async () => {
     const expectedDeliveryTime = calculateExpectedDeliveryTime();
     setExpectedDeliveryTime(expectedDeliveryTime);
@@ -279,8 +295,6 @@ export default function Cart({
         
         updateQuantity(id, newQuantity);
       }
-    } else {
-      console.log(`Item with id ${id} not found in cart or products not loaded`);
     }
   };
 
@@ -366,8 +380,13 @@ export default function Cart({
               </div>
             </div>
           ) : cart.length === 0 ? (
-            <div className="flex-grow flex items-center justify-center">
-              <p className="text-center text-gray-500">Your cart is empty</p>
+            <div className="flex-grow flex items-center justify-center flex-col">
+              <p className="text-center text-gray-500 mb-4">Your cart is empty</p>
+              {inventoryError && (
+                <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded max-w-md">
+                  <p>{inventoryError}</p>
+                </div>
+              )}
             </div>
           ) : (
             <>
@@ -472,6 +491,8 @@ export default function Cart({
                             removeFromCart={removeFromCart}
                             updateQuantity={updateQuantity}
                             topUpAmount={topUpAmount}
+                            setInventoryError={setInventoryError}
+                            inventoryError={inventoryError}
                           />
                         </Elements>
                       </div>
