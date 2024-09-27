@@ -27,6 +27,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ isStoreOpen }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       setIsLoading(true);
+      console.log("Fetching Products");
       try {
         const response = await fetch(`/api/products?t=${Date.now()}`);
         if (!response.ok) {
@@ -42,6 +43,11 @@ const ProductGrid: React.FC<ProductGridProps> = ({ isStoreOpen }) => {
     };
 
     fetchProducts();
+
+    // Polling for updates every 30 seconds
+    const intervalId = setInterval(fetchProducts, 30000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const filteredProducts = useMemo(() => {
