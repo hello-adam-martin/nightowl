@@ -5,9 +5,9 @@ import { Info, MapPin } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import AddressForm from "@/components/AddressForm"
 import ProductGrid from '@/components/ProductGrid'
+import ClosedStoreNotice from '@/components/ClosedStoreNotice'
 import { storeConfig, siteInfo } from '@/config/config'
 import Link from 'next/link'
-import ClosedStoreNotice from '@/components/ClosedStoreNotice'
 import Image from 'next/image'
 import { checkStoreStatus, StoreStatus } from '@/utils/storeStatus';
 

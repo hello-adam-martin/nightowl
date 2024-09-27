@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { storeConfig } from '@/config/config'
-import { siteInfo } from '@/config/config'
 import Link from 'next/link'
+import { storeConfig, siteInfo } from '@/config/config'
 import { formatTime24to12 } from '@/utils/timeFormatting'
 
 export default function AboutPage() {
@@ -157,7 +156,6 @@ export default function AboutPage() {
           </div>
         </div>
       </div>
-      {/* Remove the Cart component from here */}
     </div>
   )
 }

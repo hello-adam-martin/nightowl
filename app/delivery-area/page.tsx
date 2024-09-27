@@ -2,9 +2,9 @@
 
 import { useState, useRef, useCallback, useMemo } from 'react';
 import { GoogleMap, useJsApiLoader, Polygon, Autocomplete, Marker } from '@react-google-maps/api';
-import { storeConfig } from '@/config/config';
 import { Libraries } from '@react-google-maps/api';
 import { Check, X } from 'lucide-react';
+import { storeConfig } from '@/config/config';
 
 interface LatLng {
   lat: number;
