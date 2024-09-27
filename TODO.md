@@ -9,5 +9,4 @@ NICE TO HAVE
 - email receipts - ask for email address after placing order.
 
 ENHANCEMENTS
-- Move Cart to layout - so we don't need to call on every page.
 - Integrate analytics

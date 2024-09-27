@@ -1,8 +1,16 @@
 # NightOwl
 
-NightOwl is a Next.js-based web application for a late-night delivery service. It allows users to browse products, add items to their cart, and place orders for delivery within a specified service area.
+NightOwl is a Next.js-based web application for a late-night delivery service. It allows users to browse products, add items to their cart, and place orders for delivery within a specified service area, with a focus on providing essential services during off-hours.
 
-## Features
+## Unique Features
+
+- **Dynamic Store Hours**: Real-time store status updates based on configurable operating hours.
+- **Automatic Order Top-Up**: Automatically adds a top-up amount to meet the minimum order value.
+- **Countdown to Store Opening**: Displays a countdown timer when the store is closed, showing when it will open next.
+- **Flexible Service Area**: Configurable service area using geolocation coordinates.
+- **Local Business Integration**: Supports partnerships with local businesses, showcasing community involvement.
+
+## Core Features
 
 - Product browsing with category filtering
 - Cart management
@@ -50,7 +58,8 @@ NightOwl is a Next.js-based web application for a late-night delivery service. I
 - `app/`: Next.js app directory containing pages and layouts
 - `components/`: Reusable React components
 - `context/`: React context providers for state management
-- `lib/`: Utility functions and helpers
+- `config/`: Configuration files for store settings
+- `utils/`: Utility functions and helpers
 - `public/`: Static assets
 - `types/`: TypeScript type definitions
 
