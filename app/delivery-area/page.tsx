@@ -3,7 +3,6 @@
 import { useState, useRef, useCallback, useMemo } from 'react';
 import { GoogleMap, useJsApiLoader, Polygon, Autocomplete, Marker } from '@react-google-maps/api';
 import { storeConfig } from '@/config/config';
-import Cart from '@/components/Cart';
 import { Libraries } from '@react-google-maps/api';
 import { Check, X } from 'lucide-react';
 
@@ -140,10 +139,6 @@ const DeliveryAreaPage = () => {
           </div>
         </div>
       </div>
-
-      <Cart
-        deliveryCharge={storeConfig.serviceInfo.deliveryCharge}
-      />
     </div>
   );
 };

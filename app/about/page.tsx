@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { storeConfig } from '@/config/config'
-import Cart from '@/components/Cart'
 import { siteInfo } from '@/config/config'
 import Link from 'next/link'
 import { formatTime24to12 } from '@/utils/timeFormatting'
@@ -158,10 +157,7 @@ export default function AboutPage() {
           </div>
         </div>
       </div>
-
-      <Cart
-        deliveryCharge={storeConfig.serviceInfo.deliveryCharge}
-      />
+      {/* Remove the Cart component from here */}
     </div>
   )
 }

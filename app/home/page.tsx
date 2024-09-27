@@ -5,7 +5,6 @@ import { Info, MapPin } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import AddressForm from "@/components/AddressForm"
 import ProductGrid from '@/components/ProductGrid'
-import Cart from '@/components/Cart'
 import { storeConfig, siteInfo } from '@/config/config'
 import Link from 'next/link'
 import ClosedStoreNotice from '@/components/ClosedStoreNotice'
@@ -86,10 +85,6 @@ export function HomePage() {
             <h2 className="text-xl font-semibold mb-4 text-center">Products</h2>
             <ProductGrid isStoreOpen={storeStatus.isOpen} />
           </div>
-
-          <Cart
-            deliveryCharge={storeConfig.serviceInfo.deliveryCharge}
-          />
         </div>
       </div>
     </div>

@@ -4,7 +4,11 @@ import "./globals.css";
 import ClientProviders from './ClientProviders'
 import Footer from '@/components/Footer'
 import TopBar from '@/components/TopBar'
-import { siteInfo } from "@/config/config";
+import dynamic from 'next/dynamic'  // Add this import
+import { siteInfo, storeConfig } from "@/config/config";
+
+// Dynamically import the Cart component with SSR disabled
+const Cart = dynamic(() => import('@/components/Cart'), { ssr: false });
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -33,10 +37,11 @@ export default function RootLayout({
         <ClientProviders>
           <div className="flex flex-col min-h-screen">
             <TopBar />
-            <main className="flex-grow pt-16"> {/* Add padding-top to account for fixed TopBar */}
+            <main className="flex-grow pt-16">
               {children}
             </main>
             <Footer />
+            <Cart deliveryCharge={storeConfig.serviceInfo.deliveryCharge} />
           </div>
         </ClientProviders>
       </body>
