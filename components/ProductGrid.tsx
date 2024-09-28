@@ -102,10 +102,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ isStoreOpen }) => {
     );
   }
 
-  if (!filteredProducts || filteredProducts.length === 0) {
-    return <div>No products available</div>;
-  }
-
+  // Update this section to always show the search input
   return (
     <div>
       <div className="mb-6">
@@ -151,98 +148,102 @@ const ProductGrid: React.FC<ProductGridProps> = ({ isStoreOpen }) => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {filteredProducts.map((product: Product) => (
-          <Card key={product.id} className={isOutOfStock(product.inventory) ? "opacity-60" : ""}>
-            <CardHeader>
-              <div className="flex flex-col">
-                <div className="flex justify-between items-start">
-                  <CardTitle>{product.name}</CardTitle>
-                  <span className="px-2 py-1 bg-gray-200 text-gray-800 text-xs font-semibold rounded-full">
-                    {product.category_id}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600 mt-1">
-                  {product.description?.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-                </p>
-              </div>
-            </CardHeader>
-            <CardContent className="p-4 flex flex-col">
-              <div className="relative w-full mb-2 h-[200px] sm:h-auto sm:aspect-square">
-                <Image 
-                  src={product.image ? `/product-images/${product.image}` : "/NightOwl.png"}
-                  alt={product.name} 
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className={`rounded-md object-cover ${!product.image ? 'placeholder-image' : ''}`}
-                />
-              </div>
-              <div className="flex flex-col justify-between flex-grow">
-                <div>
-                  <div className="flex justify-between items-center">
-                    <p>Price: ${product.price.toFixed(2)}</p>
-                    <div>
-                      {isLowStock(product.inventory) && (
-                        <p className="text-yellow-600 text-sm">Low stock</p>
-                      )}
-                      {isOutOfStock(product.inventory) && (
-                        <p className="text-red-600 text-sm font-semibold">Out of stock</p>
-                      )}
-                    </div>
+        {filteredProducts.length > 0 ? (
+          filteredProducts.map((product: Product) => (
+            <Card key={product.id} className={isOutOfStock(product.inventory) ? "opacity-60" : ""}>
+              <CardHeader>
+                <div className="flex flex-col">
+                  <div className="flex justify-between items-start">
+                    <CardTitle>{product.name}</CardTitle>
+                    <span className="px-2 py-1 bg-gray-200 text-gray-800 text-xs font-semibold rounded-full">
+                      {product.category_id}
+                    </span>
                   </div>
-                  {product.supplier && (
-                    <p className="text-sm text-gray-600">Supplied By: {product.supplier}</p>
-                  )}
+                  <p className="text-sm text-gray-600 mt-1">
+                    {product.description?.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                  </p>
                 </div>
-              </div>
-            </CardContent>
-            <CardFooter>
-              {isStoreOpen ? (
-                isVerified && isServiceable ? (
-                  <div className="w-full flex justify-end">
-                    {getItemQuantity(product.id) > 0 ? (
-                      <div className="flex items-center">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => handleUpdateQuantity(product, false)}
-                          disabled={isOutOfStock(product.inventory)}
-                        >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        <span className="mx-2">{getItemQuantity(product.id)}</span>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => handleUpdateQuantity(product, true)}
-                          disabled={getItemQuantity(product.id) >= product.inventory || isOutOfStock(product.inventory)}
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
+              </CardHeader>
+              <CardContent className="p-4 flex flex-col">
+                <div className="relative w-full mb-2 h-[200px] sm:h-auto sm:aspect-square">
+                  <Image 
+                    src={product.image ? `/product-images/${product.image}` : "/NightOwl.png"}
+                    alt={product.name} 
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className={`rounded-md object-cover ${!product.image ? 'placeholder-image' : ''}`}
+                  />
+                </div>
+                <div className="flex flex-col justify-between flex-grow">
+                  <div>
+                    <div className="flex justify-between items-center">
+                      <p>Price: ${product.price.toFixed(2)}</p>
+                      <div>
+                        {isLowStock(product.inventory) && (
+                          <p className="text-yellow-600 text-sm">Low stock</p>
+                        )}
+                        {isOutOfStock(product.inventory) && (
+                          <p className="text-red-600 text-sm font-semibold">Out of stock</p>
+                        )}
                       </div>
-                    ) : (
-                      <Button 
-                        onClick={() => {
-                          addToCart({ id: product.id.toString(), name: product.name, price: product.price, quantity: 1 });
-                        }}
-                        disabled={isOutOfStock(product.inventory)}
-                      >
-                        {isOutOfStock(product.inventory) ? 'Out of Stock' : 'Add to Cart'}
-                      </Button>
+                    </div>
+                    {product.supplier && (
+                      <p className="text-sm text-gray-600">Supplied By: {product.supplier}</p>
                     )}
                   </div>
-                ) : (
-                  <p className="text-sm text-yellow-600 italic">Address required for ordering.</p>
-                )
-              ) : null}
-            </CardFooter>
-          </Card>
-        ))}
+                </div>
+              </CardContent>
+              <CardFooter>
+                {isStoreOpen ? (
+                  isVerified && isServiceable ? (
+                    <div className="w-full flex justify-end">
+                      {getItemQuantity(product.id) > 0 ? (
+                        <div className="flex items-center">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => handleUpdateQuantity(product, false)}
+                            disabled={isOutOfStock(product.inventory)}
+                          >
+                            <Minus className="h-4 w-4" />
+                          </Button>
+                          <span className="mx-2">{getItemQuantity(product.id)}</span>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => handleUpdateQuantity(product, true)}
+                            disabled={getItemQuantity(product.id) >= product.inventory || isOutOfStock(product.inventory)}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button 
+                          onClick={() => {
+                            addToCart({ id: product.id.toString(), name: product.name, price: product.price, quantity: 1 });
+                          }}
+                          disabled={isOutOfStock(product.inventory)}
+                        >
+                          {isOutOfStock(product.inventory) ? 'Out of Stock' : 'Add to Cart'}
+                        </Button>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-yellow-600 italic">Address required for ordering.</p>
+                  )
+                ) : null}
+              </CardFooter>
+            </Card>
+          ))
+        ) : (
+          <div>No products available</div> // Always show this message if no products match
+        )}
       </div>
 
       {isStoreOpen && !isVerified && (
         <div className="mt-6 p-4 bg-yellow-100 border border-yellow-400 rounded-md">
           <p className="text-center text-yellow-700">
-            Please provide your address to start shoppping.
+            Please provide your address to start shopping.
           </p>
         </div>
       )}
