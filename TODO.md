@@ -1,7 +1,13 @@
 BUGS
-- PRODUCTS ARE CACHED when nextjs build runs (i.e deployed on vercel)
-- When doing a search - the search dissapears when text is entered that does not match any products
-- Our countdown is slightly out - it is calculating 60 secs for the last minute rather than checking actual seconds remaining (not a biggie)
+
+MUST DO
+- update the polygon with the new locations
+- find a new name as NightOwl is not available
+- register the domain
+- setup email
+- update contact details
+- setup payment gateway to go live
+
 
 NICE TO HAVE
 - email receipts - ask for email address after placing order.

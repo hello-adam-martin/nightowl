@@ -10,9 +10,14 @@ import Link from 'next/link'
 import Image from 'next/image'
 import ProductGrid from '@/components/ProductGrid'
 import { checkStoreStatus } from '@/utils/storeStatus';
+import { useState } from 'react';
 
 export default function HomePage() {
-  const storeStatus = checkStoreStatus();
+  const [storeStatus, setStoreStatus] = useState(checkStoreStatus());
+
+  const handleStoreOpen = () => {
+    setStoreStatus(checkStoreStatus()); // Reload store status
+  };
 
   // Split the description into paragraphs
   const descriptionParagraphs = siteInfo.longDescription.split('<br>')
@@ -67,7 +72,7 @@ export default function HomePage() {
               {storeStatus.isOpen ? (
                 <AddressForm serviceInfo={storeConfig.serviceInfo} />
               ) : (
-                <ClosedStoreNotice />
+                <ClosedStoreNotice onStoreOpen={handleStoreOpen} />
               )}
             </div>
           </div>

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { checkStoreStatus, StoreStatus } from '@/utils/storeStatus'
 import { formatTime24to12 } from '@/utils/timeFormatting' // Add this import
 
-const ClosedStoreNotice: React.FC = () => {
+const ClosedStoreNotice: React.FC<{ onStoreOpen: () => void }> = ({ onStoreOpen }) => {
   const [storeStatus, setStoreStatus] = useState<StoreStatus>({
     isOpen: false,
     nextOpeningDay: '',
@@ -31,7 +31,7 @@ const ClosedStoreNotice: React.FC = () => {
     };
 
     updateStoreStatus();
-    const statusInterval = setInterval(updateStoreStatus, 60000); // Update every minute
+    const statusInterval = setInterval(updateStoreStatus, 1000); // Update every second
 
     return () => clearInterval(statusInterval);
   }, []);
@@ -45,6 +45,12 @@ const ClosedStoreNotice: React.FC = () => {
       return () => clearInterval(timer);
     }
   }, [countdown]);
+
+  useEffect(() => {
+    if (storeStatus.isOpen) {
+      onStoreOpen(); // Notify parent when store opens
+    }
+  }, [storeStatus.isOpen, onStoreOpen]);
 
   return (
     <Card className="border-2 border-yellow-500 shadow-lg p-4 sm:p-6">

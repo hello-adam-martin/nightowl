@@ -4,7 +4,7 @@ export interface StoreStatus {
   isOpen: boolean;
   nextOpeningDay: string;
   nextOpeningTime: string;
-  closingTime: string; // Add this line
+  closingTime: string;
   timeUntilOpen: string;
   secondsUntilOpen: number;
 }
@@ -12,7 +12,7 @@ export interface StoreStatus {
 export function checkStoreStatus(): StoreStatus {
   const now = new Date();
   const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase() as keyof typeof storeConfig.hours;
-  const currentTime = now.getHours() * 60 + now.getMinutes();
+  const currentTime = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
 
   const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
   let daysToAdd = 0;
