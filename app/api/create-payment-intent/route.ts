@@ -27,9 +27,7 @@ export async function POST(req: Request) {
     if (!inventoryCheck.success) {
       return NextResponse.json({ 
         error: 'Inventory changes detected',
-        message: inventoryCheck.outOfStockItems.length === cartItems.length
-          ? 'All items in your cart are no longer available and have been removed. Please add new items to your cart before proceeding.'
-          : 'Some items in your cart have limited availability. We\'ve adjusted your cart accordingly. Please review before proceeding.',
+        message: 'Some items in your cart have limited availability. We\'ve adjusted your cart accordingly. Please review before proceeding.',
         outOfStockItems: inventoryCheck.outOfStockItems 
       }, { status: 400 })
     }
