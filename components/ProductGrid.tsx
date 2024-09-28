@@ -30,14 +30,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ isStoreOpen }) => {
     const fetchProducts = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch('/api/products', { 
-          cache: 'no-store',
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0',
-          }
-        });
+        const response = await fetch('/api/products');
         if (!response.ok) {
           throw new Error('Failed to fetch products');
         }
