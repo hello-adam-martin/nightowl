@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useState, useEffect, Suspense } from 'react'
 import { Info, MapPin } from 'lucide-react'
@@ -8,13 +8,17 @@ import ClosedStoreNotice from '@/components/ClosedStoreNotice'
 import { storeConfig, siteInfo } from '@/config/config'
 import Link from 'next/link'
 import Image from 'next/image'
-import dynamic from 'next/dynamic'
+import { default as dynamicImport } from 'next/dynamic'
 import { checkStoreStatus, type StoreStatus } from '@/utils/storeStatus';
 
 // Dynamically import ProductGrid with no SSR
-const ProductGrid = dynamic(() => import('@/components/ProductGrid'), { ssr: false })
+const ProductGrid = dynamicImport(() => import('@/components/ProductGrid'), { ssr: false })
 
-export default function HomePage() {
+export const runtime = 'edge'
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
+const HomePage = () => {
   const [storeStatus, setStoreStatus] = useState<StoreStatus>(() => checkStoreStatus());
 
   useEffect(() => {
@@ -96,5 +100,4 @@ export default function HomePage() {
   )
 }
 
-export const runtime = 'edge'
-export const revalidate = 0
+export default dynamicImport(() => Promise.resolve(HomePage), { ssr: false })
