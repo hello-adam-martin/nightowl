@@ -14,6 +14,7 @@ import { formatAddress } from '@/utils/addressFormatter';
 import { format } from 'date-fns';
 import { checkStoreStatus, StoreStatus } from '@/utils/storeStatus';
 import { Product } from '@/types/product';
+import { formatTime24to12 } from '@/utils/timeFormatting'
 
 interface CartProps {
   deliveryCharge: number;
@@ -41,14 +42,6 @@ function CheckoutForm({ total, onSuccess, isMinOrderMet, isAddressValid, custome
   const [error, setError] = useState<string | null>(null)
   const [processing, setProcessing] = useState(false)
   const [cardComplete, setCardComplete] = useState(false)
-
-  const calculateExpectedDeliveryTime = () => {
-    const now = new Date();
-    const [minTime, maxTime] = storeConfig.serviceInfo.deliveryTime.split('-').map(t => parseInt(t));
-    const averageTime = (minTime + maxTime) / 2;
-    const deliveryTime = new Date(now.getTime() + averageTime * 60000);
-    return deliveryTime.toISOString(); // Return ISO 8601 format
-  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -168,6 +161,15 @@ async function fetchProducts(): Promise<Product[]> {
   return response.json();
 }
 
+// Utility function for calculating expected delivery time
+const calculateExpectedDeliveryTime = () => {
+  const now = new Date();
+  const [minTime, maxTime] = storeConfig.serviceInfo.deliveryTime.split('-').map(t => parseInt(t));
+  const averageTime = (minTime + maxTime) / 2;
+  const deliveryTime = new Date(now.getTime() + averageTime * 60000);
+  return deliveryTime.toISOString(); // Return ISO 8601 format
+};
+
 export default function Cart({
   deliveryCharge,
 }: CartProps) {
@@ -212,7 +214,7 @@ export default function Cart({
   useEffect(() => {
     const intervalId = setInterval(() => {
       setStoreStatus(checkStoreStatus());
-    }, 60000); // Update every minute
+    }, 1000); // Update every second
 
     return () => clearInterval(intervalId);
   }, []);
@@ -282,14 +284,6 @@ export default function Cart({
     } else {
       console.log(`Item with id ${id} not found in cart or products not loaded`);
     }
-  };
-
-  const calculateExpectedDeliveryTime = () => {
-    const now = new Date();
-    const [minTime, maxTime] = storeConfig.serviceInfo.deliveryTime.split('-').map(t => parseInt(t));
-    const averageTime = (minTime + maxTime) / 2;
-    const deliveryTime = new Date(now.getTime() + averageTime * 60000);
-    return deliveryTime.toISOString(); // Return ISO 8601 format
   };
 
   const formatDeliveryTime = (isoString: string) => {
@@ -439,8 +433,7 @@ export default function Cart({
                       <div className="flex items-center mt-2 text-gray-600">
                         <Clock className="mr-2 h-5 w-5" />
                         <span>
-                          Open {storeStatus.nextOpeningDay} at {storeStatus.nextOpeningTime}
-                          {storeStatus.timeUntilOpen && ` (in ${storeStatus.timeUntilOpen})`}
+                          Open {storeStatus.nextOpeningDay} at {formatTime24to12(storeStatus.nextOpeningTime)}
                         </span>
                       </div>
                     </div>

@@ -71,7 +71,7 @@ export default function TopBar() {
             <p className="truncate">
               {storeStatus.isOpen 
                 ? `Closes at ${formattedClosingTime}` 
-                : `Opens ${storeStatus.nextOpeningDay} at ${formattedNextOpeningTime}`}
+                : `Open ${storeStatus.nextOpeningDay} at ${formattedNextOpeningTime}`}
             </p>
           </div>
           <div className="flex-1 flex items-center justify-end space-x-4">
