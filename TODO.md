@@ -1,5 +1,7 @@
 BUGS
-- When store closes, the cart is still allowing checkout for a minute or so after the store has closed. Also, need to display the time information with am / pm and display the time until open correctly.
+
+NEXT
+- create maintenance mode
 
 MUST DO
 - update the polygon with the new locations

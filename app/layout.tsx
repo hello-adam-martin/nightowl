@@ -4,8 +4,10 @@ import "./globals.css";
 import ClientProviders from './ClientProviders'
 import Footer from '@/components/Footer'
 import TopBar from '@/components/TopBar'
-import dynamic from 'next/dynamic'  // Add this import
-import { siteInfo, storeConfig } from "@/config/config";
+import dynamic from 'next/dynamic';
+import { siteInfo, storeConfig } from "@/config/config"; // Import siteInfo
+import MaintenanceMode from '@/components/MaintenanceMode'; // Import MaintenanceMode
+import { MAINTENANCE_MODE } from "@/config/config"; // Import MAINTENANCE_MODE
 
 // Dynamically import the Cart component with SSR disabled
 const Cart = dynamic(() => import('@/components/Cart'), { ssr: false });
@@ -31,6 +33,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Check if the application is in maintenance mode
+  if (MAINTENANCE_MODE) {
+    return <MaintenanceMode />; // Render MaintenanceMode if in maintenance
+  }
+
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
