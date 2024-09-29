@@ -1,5 +1,5 @@
 // Maintenance mode configuration
-export const MAINTENANCE_MODE = true; // Set to true to enable maintenance mode
+export const MAINTENANCE_MODE = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === 'true'; // Set to true to enable maintenance mode
 
 export const LOW_STOCK_THRESHOLD = 10;
 export const SHOW_OUT_OF_STOCK_ITEMS = false;

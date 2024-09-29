@@ -1,11 +1,10 @@
 BUGS
 
 NEXT
-- create maintenance mode
+- find a new name as NightOwl is not available
 
 MUST DO
 - update the polygon with the new locations
-- find a new name as NightOwl is not available
 - register the domain
 - setup email
 - update contact details
