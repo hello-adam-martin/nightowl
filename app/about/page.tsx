@@ -107,7 +107,7 @@ export default function AboutPage() {
                 <div className="space-y-4">
                   <div>
                     <h4 className="font-medium">Q: How fast is your delivery?</h4>
-                    <p className="text-gray-500">We aim to deliver within 30-45 minutes of order placement, depending on your location.</p>
+                    <p className="text-gray-500">We aim to deliver within 30-45 minutes of order placement.</p>
                   </div>
                   <div>
                     <h4 className="font-medium">Q: Do you have a minimum order amount?</h4>

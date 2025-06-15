@@ -1,7 +1,7 @@
 // Maintenance mode configuration
 export const MAINTENANCE_MODE = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === 'true'; // Set to true to enable maintenance mode
 
-export const LOW_STOCK_THRESHOLD = 10;
+export const LOW_STOCK_THRESHOLD = 3;
 export const SHOW_OUT_OF_STOCK_ITEMS = false;
 
 export const storeConfig = {
@@ -51,8 +51,8 @@ export const storeConfig = {
     deliveryCharge: 10
   },
   hours: {
-    monday: { open: '07:30', close: '17:40' },
-    tuesday: { open: '15:08', close: '23:00' },
+    monday: { open: '11:44', close: '17:40' },
+    tuesday: { open: '11:45', close: '23:00' },
     wednesday: { open: '08:00', close: '23:00' },
     thursday: { open: '14:37', close: '21:40' },
     friday: { open: '11:54', close: '00:00' },
